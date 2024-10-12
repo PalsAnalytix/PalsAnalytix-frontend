@@ -7,7 +7,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import CFAPage from "./pages/CFAPage";
 import SCRPage from './pages/SCRPage';
 import UserDashboard from './pages/UserDashboard';
-import TestSeries from './pages/testSeries';
+import TestSeries from './pagesTestSeries';
 import TestPage from './pages/TestPage';
 
 
