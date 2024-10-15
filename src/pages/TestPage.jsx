@@ -144,7 +144,7 @@ const TestPage = () => {
           <p className="text-lg mb-6 text-gray-600">
             {currentQuestion.questionStatement} 
           </p>
-          <img src={currentQuestion.questionImage} alt="questionImage" className="max-h-40 mb-2"/>
+          {currentQuestion.questionImage ? <img src={currentQuestion.questionImage} alt="questionImage" className="max-h-40 mb-2"/> : ""}
           </div>
           <div className="space-y-3">
             {["A", "B", "C", "D"].map((option) => (
