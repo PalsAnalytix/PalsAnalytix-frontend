@@ -1,15 +1,16 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
+
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
-  
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -20,16 +21,32 @@ const Navbar = () => {
   };
 
   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    // Add event listener to detect clicks outside the dropdown
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      // Clean up the event listener when the component unmounts
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
     const saveUserToDB = async () => {
       if (isAuthenticated && user) {
         try {
           // Send the user data to your backend
           console.log(user);
           const response = await axios.post(`${BASE_URL}/registerdb`, user);
-          if(response.data.user.email === ADMIN_EMAIL){
+          if (response.data.user.email === ADMIN_EMAIL) {
             console.log(response.data.user.email);
             console.log(ADMIN_EMAIL);
-            navigate("/admin");
+            navigate('/admin');
           }
         } catch (error) {
           console.error('Error registering user:', error);
@@ -67,7 +84,7 @@ const Navbar = () => {
         </div>
         <div className="flex items-center relative">
           {isAuthenticated ? (
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={toggleDropdown}
                 className="bg-[#FEE154] text-black px-4 py-2 rounded mr-4"
@@ -82,12 +99,6 @@ const Navbar = () => {
                   >
                     Dashboard
                   </button>
-                  {/* <button
-                    onClick={() => handleNavigation('/attempted-tests')}
-                    className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Attempted Tests
-                  </button> */}
                   <button
                     onClick={() => logout({ returnTo: window.location.origin })}
                     className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
