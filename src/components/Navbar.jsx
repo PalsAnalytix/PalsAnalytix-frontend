@@ -48,7 +48,7 @@ const Navbar = () => {
             className="text-xl font-bold text-blue-500 cursor-pointer"
             onClick={() => handleNavigation('/')}
           >
-            Pals Analytix
+            PalsAnalytix
           </h1>
         </div>
         <div className="flex items-center space-x-6">

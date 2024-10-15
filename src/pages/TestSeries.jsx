@@ -3,12 +3,16 @@ import Navbar from "../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { ArrowRight } from "lucide-react";
 import { Clock, FileText, Languages, Award } from "lucide-react";
 import { fetchTests, setSelectedTest } from "../redux/slices/testsSlice"; // Import the fetchTests action
 import StartTestDialog from "../components/StartTestDialog";
 
 const HeroSection = () => {
+  const { loginWithRedirect, isAuthenticated } = useAuth0();
+  const navigate = useNavigate();
+
   return (
     <div className="bg-gradient-to-b from-green-100 to-blue-100 py-16 px-16 md:py-24 lg:py-32 min-h-[70vh] lg:min-h-screen flex items-center">
       <div className="container mx-auto px-4">
@@ -48,18 +52,31 @@ const HeroSection = () => {
           <div className="lg:w-[30%]">
             <div className="bg-white p-6 lg:p-8 rounded-lg shadow-xl max-w-sm mx-auto">
               <h3 className="text-xl lg:text-2xl font-bold text-center text-blue-800 mb-4 lg:mb-6">
-                Join PalsAnalytix Today
+                {isAuthenticated ? 'Welcome Back!' : 'Join PalsAnalytix Today'}
               </h3>
               <div className="border-t border-gray-200 my-4 lg:my-6"></div>
               <p className="text-gray-600 text-center text-sm lg:text-base mb-4 lg:mb-6">
-                Start your journey towards financial excellence with our proven
-                test series. Get access to thousands of practice questions and
-                mock exams.
+                {isAuthenticated
+                  ? 'Visit your dashboard to explore more features and continue your learning journey.'
+                  : 'Start your journey towards financial excellence with our proven test series. Get access to thousands of practice questions and mock exams.'}
               </p>
-              <button className="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-semibold py-3 lg:py-4 px-6 lg:px-8 rounded-lg text-base lg:text-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
-                Get Started Now
-                <ArrowRight className="ml-2" size={18} />
-              </button>
+              {isAuthenticated ? (
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg text-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center"
+                >
+                  Visit Dashboard
+                  <ArrowRight className="ml-2" size={20} />
+                </button>
+              ) : (
+                <button
+                  onClick={() => loginWithRedirect()}
+                  className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg text-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center"
+                >
+                  Get Started Today
+                  <ArrowRight className="ml-2" size={20} />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -67,6 +84,7 @@ const HeroSection = () => {
     </div>
   );
 };
+
 
 const TestItem = ({ test, onStart,id }) => {
   return (
