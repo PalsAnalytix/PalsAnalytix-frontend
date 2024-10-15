@@ -1,8 +1,10 @@
 import React from "react";
 import Navbar from "../components/Navbar";
 import CFACurriculumSection from "../components/CFACurriculumSection";
+import { useNavigate } from "react-router-dom";
 
 const CfaPage = () => {
+  const navigate = useNavigate();
   return (
     <div>
       <Navbar />
@@ -93,9 +95,11 @@ const CfaPage = () => {
             Ready to Start Your CFA® Journey?
           </h3>
           <p className="mt-2 text-gray-600">
-            Sign up today and access comprehensive study resources!
+            Subscribe today and access comprehensive study resources!
           </p>
-          <button className="mt-4 px-6 py-2 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition duration-300 ease-in-out transform hover:scale-105">
+          <button 
+          onClick={()=>{navigate("/subscription")}}
+          className="mt-4 px-6 py-2 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition duration-300 ease-in-out transform hover:scale-105">
             Register Now
           </button>
         </section>
