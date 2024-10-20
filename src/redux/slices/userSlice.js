@@ -80,24 +80,24 @@ export const fetchBulkQuestionDetails = createAsyncThunk(
 //   }
 // };
 
-// export const updateUserWhatsAppDetails = createAsyncThunk(
-//   'user/updateUserWhatsAppDetails',
-//   async ({ phoneNo, currentChapterForWhatsapp, currentCourseForWhatsapp }, { getState }) => {
-//     const { auth0ID } = getState().userDetails;
-//     const response = await axios.put(`${BASE_URL}/user/${auth0ID}/whatsapp`, {
-//       phoneNo,
-//       currentChapterForWhatsapp,
-//       currentCourseForWhatsapp,
-//     });
+export const updateUserWhatsAppDetails = createAsyncThunk(
+  'user/updateUserWhatsAppDetails',
+  async ({ phoneNo, currentChapterForWhatsapp, currentCourseForWhatsapp }, { getState }) => {
+    const { auth0ID } = getState().userDetails;
+    const response = await axios.put(`${BASE_URL}/user/${auth0ID}/whatsapp`, {
+      phoneNo,
+      currentChapterForWhatsapp,
+      currentCourseForWhatsapp,
+    });
 
-//     const message = "Hello from PalsAnalytix, Thank you for choosing us and we will help yu in every way possible to achieve your dreams."
-//     const accessToken = import.meta.env.VITE_WHATSAPP_ACCESS_TOKEN;
-//     if(response){
-//       sendWhatsAppMessage(phoneNo, message,accessToken);
-//     }
-//     return response.data;
-//   }
-// );
+    const message = "Hello from PalsAnalytix, Thank you for choosing us and we will help yu in every way possible to achieve your dreams."
+    const accessToken = import.meta.env.VITE_WHATSAPP_ACCESS_TOKEN;
+    if(response){
+      sendWhatsAppMessage(phoneNo, message,accessToken);
+    }
+    return response.data;
+  }
+);
 
 // Helper function to calculate question stats based on course types
 const calculateQuestionStats = (questions) => {
