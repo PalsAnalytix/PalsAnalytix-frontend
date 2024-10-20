@@ -22,6 +22,9 @@ export const fetchUserData = createAsyncThunk(
       if (userData.attemptedQuestions && userData.attemptedQuestions.length > 0) {
         console.log("bulk request k andr")
         const questionDetails = await thunkAPI.dispatch(fetchBulkQuestionDetails(userData.attemptedQuestions)).unwrap();
+
+        console.log("questionDetails");
+        console.log(questionDetails);
         userData.questionDetails = questionDetails;
         userData.questionStats = calculateQuestionStats(questionDetails);
         console.log("bulk req m")
@@ -41,6 +44,7 @@ export const fetchBulkQuestionDetails = createAsyncThunk(
   'user/fetchBulkQuestionDetails',
   async (questionIds, thunkAPI) => {
     try {
+      console.log(questionIds);
       const response = await axios.post(`${BASE_URL}/getQuestionsByIds`,{ids : questionIds});
       if (!response.statusText) {
         throw new Error('Failed to fetch question details');
