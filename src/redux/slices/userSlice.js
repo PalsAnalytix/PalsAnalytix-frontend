@@ -16,12 +16,18 @@ export const fetchUserData = createAsyncThunk(
       const userData = await response.data;
       console.log(userData);
 
+      console.log("bulk request se upr")
+
       // Fetch the question details in bulk using the question IDs from user data
       if (userData.attemptedQuestions && userData.attemptedQuestions.length > 0) {
+        console.log("bulk request k andr")
         const questionDetails = await thunkAPI.dispatch(fetchBulkQuestionDetails(userData.attemptedQuestions)).unwrap();
         userData.questionDetails = questionDetails;
         userData.questionStats = calculateQuestionStats(questionDetails);
+        console.log("bulk req m")
       }
+
+      console.log("userData fetched");
 
       return userData;
     } catch (error) {
@@ -40,6 +46,7 @@ export const fetchBulkQuestionDetails = createAsyncThunk(
         throw new Error('Failed to fetch question details');
       }
       console.log(response);
+      console.log("bulkQuestion fetched");
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
@@ -111,6 +118,7 @@ const calculateQuestionStats = (questions) => {
       questionStats.Right++;
     }
   });
+  console.log(questionStats);
 
   return questionStats;
 };
