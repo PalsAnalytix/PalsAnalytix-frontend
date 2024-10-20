@@ -10,7 +10,7 @@ export const fetchUserData = createAsyncThunk(
     try {
       const response = await axios.get(`${BASE_URL}/user/${userId}`);
       console.log(response);
-      if (!response.statusText) {
+      if (!response.status == 200) {
         throw new Error('Failed to fetch user data');
       }
       const userData = await response.data;
