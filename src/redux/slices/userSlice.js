@@ -47,50 +47,50 @@ export const fetchBulkQuestionDetails = createAsyncThunk(
   }
 );
 
-const sendWhatsAppMessage = async (phoneNumber, templateName, accessToken) => {
-  try {
-    const response = await axios.post(
-      'https://graph.facebook.com/v20.0/421141977755763/messages',
-      {
-        messaging_product: 'whatsapp',
-        to: `91${phoneNumber}`,
-        type: 'template',
-        template: {
-          name: 'hello_world',
-          language: { code: 'en_US' },
-        },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    console.log('Message sent successfully:', response.data);
-  } catch (error) {
-    console.error('Error sending message:', error.response ? error.response.data : error.message);
-  }
-};
+// const sendWhatsAppMessage = async (phoneNumber, templateName, accessToken) => {
+//   try {
+//     const response = await axios.post(
+//       'https://graph.facebook.com/v20.0/421141977755763/messages',
+//       {
+//         messaging_product: 'whatsapp',
+//         to: `91${phoneNumber}`,
+//         type: 'template',
+//         template: {
+//           name: 'hello_world',
+//           language: { code: 'en_US' },
+//         },
+//       },
+//       {
+//         headers: {
+//           Authorization: `Bearer ${accessToken}`,
+//           'Content-Type': 'application/json',
+//         },
+//       }
+//     );
+//     console.log('Message sent successfully:', response.data);
+//   } catch (error) {
+//     console.error('Error sending message:', error.response ? error.response.data : error.message);
+//   }
+// };
 
-export const updateUserWhatsAppDetails = createAsyncThunk(
-  'user/updateUserWhatsAppDetails',
-  async ({ phoneNo, currentChapterForWhatsapp, currentCourseForWhatsapp }, { getState }) => {
-    const { auth0ID } = getState().userDetails;
-    const response = await axios.put(`${BASE_URL}/user/${auth0ID}/whatsapp`, {
-      phoneNo,
-      currentChapterForWhatsapp,
-      currentCourseForWhatsapp,
-    });
+// export const updateUserWhatsAppDetails = createAsyncThunk(
+//   'user/updateUserWhatsAppDetails',
+//   async ({ phoneNo, currentChapterForWhatsapp, currentCourseForWhatsapp }, { getState }) => {
+//     const { auth0ID } = getState().userDetails;
+//     const response = await axios.put(`${BASE_URL}/user/${auth0ID}/whatsapp`, {
+//       phoneNo,
+//       currentChapterForWhatsapp,
+//       currentCourseForWhatsapp,
+//     });
 
-    const message = "Hello from PalsAnalytix, Thank you for choosing us and we will help yu in every way possible to achieve your dreams."
-    const accessToken = import.meta.env.VITE_WHATSAPP_ACCESS_TOKEN;
-    if(response){
-      sendWhatsAppMessage(phoneNo, message,accessToken);
-    }
-    return response.data;
-  }
-);
+//     const message = "Hello from PalsAnalytix, Thank you for choosing us and we will help yu in every way possible to achieve your dreams."
+//     const accessToken = import.meta.env.VITE_WHATSAPP_ACCESS_TOKEN;
+//     if(response){
+//       sendWhatsAppMessage(phoneNo, message,accessToken);
+//     }
+//     return response.data;
+//   }
+// );
 
 // Helper function to calculate question stats based on course types
 const calculateQuestionStats = (questions) => {
