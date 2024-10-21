@@ -108,9 +108,9 @@ export const updateUserWhatsAppDetails = createAsyncThunk(
     const message =
       "Hello from PalsAnalytix, Thank you for choosing us and we will help yu in every way possible to achieve your dreams.";
     const accessToken = import.meta.env.VITE_WHATSAPP_ACCESS_TOKEN;
-    if (response) {
-      sendWhatsAppMessage(phoneNo, message, accessToken);
-    }
+    // if (response) {
+    //   sendWhatsAppMessage(phoneNo, message, accessToken);
+    // }
     return response.data;
   }
 );
