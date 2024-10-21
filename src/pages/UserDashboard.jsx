@@ -16,6 +16,7 @@ import Navbar from "../components/Navbar";
 import { PieChart, Pie, Cell, ResponsiveContainer, Label } from "recharts";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import WhatsAppModal from "../components/WhatsappModal";
+import BulkUpload from "../components/BulkUpload";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

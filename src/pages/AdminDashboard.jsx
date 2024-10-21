@@ -12,6 +12,7 @@ import axios from "axios";
 import EditQuestionModal from "../components/EditQuestionModal";
 import AddQuestionModal from "../components/AddQuestionModal";
 import TestModal from "../components/TestModal";
+import BulkUpload from "../components/BulkUpload";
 const BASE_URL = import.meta.env.VITE_BASE_URL; // Make sure this is correctly set up
 
 const Navbar = () => {
@@ -33,7 +34,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
         <div className="flex items-center">
           <h1 className="text-xl font-bold text-blue-500 cursor-pointer">
-            Pals Analytix
+            PalsAnalytix
           </h1>
         </div>
         <div className="flex items-center relative">
@@ -101,7 +102,7 @@ const AdminDashboard = () => {
       setFilteredQuestions(
         questions.filter((q) => {
           let courses = [];
-          
+
           // Check if courses is an array
           if (Array.isArray(q.courses)) {
             courses = q.courses; // No need to parse since it is already an array
@@ -113,14 +114,13 @@ const AdminDashboard = () => {
               courses = [q.courses]; // If parsing fails, treat it as a single course string
             }
           }
-          
+
           // Return true if the filter matches any course in the array
           return courses.includes(filter);
         })
       );
     }
   }, [filter, questions]);
-  
 
   // Sorting questions by most recent first
   const sortedQuestions = [...filteredQuestions].sort(
@@ -191,24 +191,25 @@ const AdminDashboard = () => {
 
         {/* Add Question Button */}
         <div className="flex justify-end">
-        <div className="flex justify-end mb-4 mr-4">
-          <button
-            className="bg-blue-500 hover:bg-blue-800 text-white py-2 px-4 rounded shadow"
-            onClick={() => setIsAddModalOpen(true)}
-          >
-            Add New Question
-          </button>
+          <div className="flex justify-end mb-4 mr-4">
+            <button
+              className="bg-blue-500 hover:bg-blue-800 text-white py-2 px-4 rounded shadow"
+              onClick={() => setIsAddModalOpen(true)}
+            >
+              Add New Question
+            </button>
+          </div>
+          <div className="flex justify-end mb-4 mr-4">
+            <button
+              className="bg-blue-500 hover:bg-blue-800 text-white py-2 px-4 rounded shadow"
+              onClick={() => setIsTestModalOpen(true)}
+            >
+              Add New Test
+            </button>
+          </div>
+
+          <BulkUpload />
         </div>
-        <div className="flex justify-end mb-4">
-          <button
-            className="bg-blue-500 hover:bg-blue-800 text-white py-2 px-4 rounded shadow"
-            onClick={() => setIsTestModalOpen(true)}
-          >
-            Add New Test
-          </button>
-        </div>
-        </div>
-        
 
         {/* Tags Section */}
         <div className="flex flex-wrap gap-2 mb-6">
@@ -362,9 +363,14 @@ const AdminDashboard = () => {
           />
         )}
 
-        { (
-          <TestModal isOpen={isTestModalOpen} onClose={()=>{setIsTestModalOpen(false)}} />
-        )}
+        {
+          <TestModal
+            isOpen={isTestModalOpen}
+            onClose={() => {
+              setIsTestModalOpen(false);
+            }}
+          />
+        }
 
         {/* Delete Confirmation Modal */}
         {showDeleteConfirmation && (

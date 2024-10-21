@@ -8,7 +8,7 @@ export const fetchQuestions = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(`${BASE_URL}/questions`);
-      console.log("Axios response:", response); // Log the full response object
+      // console.log("Axios response:", response); // Log the full response object
       return response.data; // This should contain the questions
     } catch (error) {
       console.error("Error fetching questions:", error); // Log the error for debugging
@@ -49,6 +49,28 @@ export const updateQuestion = createAsyncThunk(
   async ({ id, updatedQuestion }) => {
     const response = await axios.put(`${BASE_URL}/question/${id}`, updatedQuestion);
     return response.data;
+  }
+);
+
+
+export const uploadQuestions = createAsyncThunk(
+  "questions/uploadQuestions",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/uploadxlsx`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      // console.log(response);
+
+      if (response.status === 200) {
+        return response.data.newQuestions;
+      } else {
+        return rejectWithValue("Error uploading questions");
+      }
+    } catch (error) {
+      return rejectWithValue(error.response.data || "Failed to upload questions");
+    }
   }
 );
 
@@ -140,6 +162,19 @@ const questionsSlice = createSlice({
       .addCase(deleteQuestion.fulfilled, (state, action) => {
         state.items = state.items.filter(question => question._id !== action.payload);
         state.stats = calculateStats(state.items);
+      })
+      .addCase(uploadQuestions.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(uploadQuestions.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        // Assuming the backend returns the newly added questions
+        state.items = [...state.items, ...action.payload];
+        state.stats = calculateStats(state.items);
+      })
+      .addCase(uploadQuestions.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || 'Error uploading questions';
       });
   },
 });
