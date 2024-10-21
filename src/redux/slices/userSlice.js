@@ -54,7 +54,7 @@ export const fetchBulkQuestionDetails = createAsyncThunk(
       const response = await axios.post(`${BASE_URL}/getQuestionsByIds`, {
         ids: questionIds,
       });
-      if (!response.statusText) {
+      if (response.status != 200) {
         throw new Error("Failed to fetch question details");
       }
       console.log(response);
