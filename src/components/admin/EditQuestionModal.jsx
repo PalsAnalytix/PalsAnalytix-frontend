@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
-import {updateQuestion} from "../redux/slices/questionsSlice";
+import {updateQuestion} from "../../redux/slices/questionsSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const EditQuestionModal = ({ isOpen, onClose, question, onSave }) => {

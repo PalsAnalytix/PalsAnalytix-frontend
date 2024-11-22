@@ -1,11 +1,17 @@
 import React from "react";
+import { useState } from "react";
 import { ArrowRight } from "lucide-react";
-import Navbar from "../components/Navbar";
-import { useAuth0 } from '@auth0/auth0-react';
+import Navbar from "../components/common/Navbar";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import LoginModal from "../components/auth/LoginModal";
+import SignupModal from "../components/auth/SignupModal";
+import { clearError } from "../redux/slices/authSlice";
 
-const HeroSection = () => {
-  const { loginWithRedirect, isAuthenticated } = useAuth0();
+const HeroSection = ({ onGetStarted }) => {
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  console.log(isAuthenticated);
+  const { profile } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
   return (
@@ -15,17 +21,25 @@ const HeroSection = () => {
           {/* Left Side - Text (70% on larger screens) */}
           <div className="text-center lg:text-left lg:w-[70%] mb-12 lg:mb-0 pr-0 lg:pr-12">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-blue-900 mb-4 lg:mb-6 leading-tight">
-              Elevate Your Financial Career with <br className="hidden lg:block" />
+              Elevate Your Financial Career with{" "}
+              <br className="hidden lg:block" />
               <span className="text-green-600">PalsAnalytix</span>
             </h1>
             <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-gray-700 mb-3 lg:mb-4">
-              CFA | FRM | SCR Exam Preparation
+              CFA® | FRM® | SCR® Exam Preparation
             </h2>
             <p className="text-base lg:text-lg text-gray-600 mb-6 lg:mb-8 max-w-4xl mx-auto lg:mx-0 leading-relaxed">
-              PalsAnalytix is your ultimate companion for CFA Level 1, FRM Level 1, and SCR® exam preparation. We've revolutionized the way professionals and students approach these challenging certifications, offering a unique blend of technology and expertise.
+              PalsAnalytix is your ultimate companion for CFA® Level 1, FRM®
+              Level 1, and SCR® exam preparation. We've revolutionized the way
+              professionals and students approach these challenging
+              certifications, offering a unique blend of technology and
+              expertise.
             </p>
             <p className="text-base lg:text-lg text-gray-600 mb-6 lg:mb-8 max-w-4xl mx-auto lg:mx-0 leading-relaxed">
-              Our innovative platform delivers daily questions via WhatsApp, Telegram, or email, adapting to your busy schedule. With instant results, progress tracking, and personalized mock exams, we're transforming exam preparation into a seamless, effective journey.
+              Our innovative platform delivers daily questions via WhatsApp,
+              Telegram, or email, adapting to your busy schedule. With instant
+              results, progress tracking, and personalized mock exams, we're
+              transforming exam preparation into a seamless, effective journey.
             </p>
             <div className="flex flex-wrap justify-center lg:justify-start gap-2 lg:gap-3 text-sm lg:text-base font-medium text-gray-700">
               <span className="bg-white hover:bg-green-300 px-3 py-1 lg:px-4 lg:py-2 rounded-full shadow">
@@ -47,17 +61,17 @@ const HeroSection = () => {
           <div className="lg:w-[30%]">
             <div className="bg-white shadow-xl rounded-lg p-6 lg:p-8 max-w-sm mx-auto">
               <h3 className="text-xl lg:text-2xl font-bold text-center text-blue-900 mb-4 lg:mb-6">
-                {isAuthenticated ? 'Welcome Back!' : 'Join PalsAnalytix Today'}
+                {isAuthenticated ? "Welcome Back!" : "Join PalsAnalytix Today"}
               </h3>
               <div className="border-t border-gray-200 my-4 lg:my-6"></div>
               <p className="text-gray-600 text-center text-sm lg:text-base mb-4 lg:mb-6">
                 {isAuthenticated
-                  ? 'Visit your dashboard to explore more features and continue your learning journey.'
-                  : 'Embark on your journey to financial excellence. Access our comprehensive test series, featuring thousands of practice questions and tailored mock exams.'}
+                  ? "Visit your dashboard to explore more features and continue your learning journey."
+                  : "Embark on your journey to financial excellence. Access our comprehensive test series, featuring thousands of practice questions and tailored mock exams."}
               </p>
               {isAuthenticated ? (
                 <button
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate("/dashboard")}
                   className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg text-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center"
                 >
                   Visit Dashboard
@@ -65,7 +79,7 @@ const HeroSection = () => {
                 </button>
               ) : (
                 <button
-                  onClick={() => loginWithRedirect()}
+                  onClick={onGetStarted} // Use the passed prop
                   className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg text-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center"
                 >
                   Get Started Today
@@ -80,12 +94,39 @@ const HeroSection = () => {
   );
 };
 
-
 const LandingPage = () => {
   const navigate = useNavigate();
-  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState("login");
+  const dispatch = useDispatch();
+
   const handleNavigation = (path) => {
     navigate(path);
+  };
+
+  const closeAuthModal = () => {
+    setShowAuthModal(false);
+    setAuthMode("login");
+    dispatch(clearError());
+  };
+
+  const handleLoginSuccess = () => {
+    closeAuthModal();
+  };
+
+  const switchToRegister = () => {
+    setAuthMode("register");
+    dispatch(clearError());
+  };
+
+  const switchToLogin = () => {
+    setAuthMode("login");
+    dispatch(clearError());
+  };
+
+  // Add handler for Get Started button
+  const handleGetStarted = () => {
+    setShowAuthModal(true);
   };
 
   return (
@@ -93,7 +134,7 @@ const LandingPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <HeroSection/>
+      <HeroSection onGetStarted={handleGetStarted} />
       {/* Why Choose PalsAnalytix Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="container mx-auto">
@@ -168,22 +209,22 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                title: "CFA (Chartered Financial Analyst)",
+                title: "CFA® (Chartered Financial Analyst)",
                 link: "/cfa",
                 description:
-                  "The CFA program is the gold standard for investment analysis and portfolio management. Our course covers all three levels, focusing on ethics, quantitative methods, economics, financial reporting, corporate finance, and more.",
+                  "The CFA® program is the gold standard for investment analysis and portfolio management. Our course covers all three levels, focusing on ethics, quantitative methods, economics, financial reporting, corporate finance, and more.",
               },
               {
-                title: "FRM (Financial Risk Manager)",
+                title: "FRM® (Financial Risk Manager)",
                 link: "/frm",
                 description:
-                  "Recognized globally, the FRM certification is crucial for professionals in risk management. Our comprehensive program covers market risk, credit risk, operational risk, and investment management, preparing you for both Part I and Part II of the exam.",
+                  "Recognized globally, the FRM® certification is crucial for professionals in risk management. Our comprehensive program covers market risk, credit risk, operational risk, and investment management, preparing you for both Part I and Part II of the exam.",
               },
               {
-                title: "SCR (Sustainability and Climate Risk)",
+                title: "SCR® (Sustainability and Climate Risk)",
                 link: "/scr",
                 description:
-                  "As sustainability becomes central to financial decision-making, the SCR certification is increasingly valuable. Our course covers climate science, financial risks of climate change, and strategies for managing climate-related risks in various business contexts.",
+                  "As sustainability becomes central to financial decision-making, the SCR® certification is increasingly valuable. Our course covers climate science, financial risks of climate change, and strategies for managing climate-related risks in various business contexts.",
               },
             ].map((course, index) => (
               <div key={index} className="bg-white shadow-xl rounded-lg p-6">
@@ -204,6 +245,26 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
+
+      {showAuthModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg w-full max-w-md">
+            {authMode === "login" ? (
+              <LoginModal
+                onSuccess={handleLoginSuccess}
+                onClose={closeAuthModal}
+                onSignupClick={switchToRegister}
+              />
+            ) : (
+              <SignupModal
+                onSuccess={switchToLogin}
+                onClose={closeAuthModal}
+                onLoginClick={switchToLogin}
+              />
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-8">

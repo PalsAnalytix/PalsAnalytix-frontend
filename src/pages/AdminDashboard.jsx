@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchQuestions,
@@ -9,17 +8,25 @@ import {
   updateQuestion,
 } from "../redux/slices/questionsSlice";
 import axios from "axios";
-import EditQuestionModal from "../components/EditQuestionModal";
-import AddQuestionModal from "../components/AddQuestionModal";
-import TestModal from "../components/TestModal";
-import BulkUpload from "../components/BulkUpload";
+import EditQuestionModal from "../components/admin/EditQuestionModal";
+import AddQuestionModal from "../components/admin/AddQuestionModal";
+import TestModal from "../components/admin/TestModal";
+import BulkUpload from "../components/admin/BulkUpload";
+import { logout, clearError} from "../redux/slices/authSlice"
 const BASE_URL = import.meta.env.VITE_BASE_URL; // Make sure this is correctly set up
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+  const dispatch = useDispatch();
+  const { isAuthenticated } =  useSelector((state) => state.auth);
 
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
+    setDropdownOpen(false);
+  };
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -49,7 +56,7 @@ const Navbar = () => {
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md py-2 z-50">
                   <button
-                    onClick={() => logout({ returnTo: window.location.origin })}
+                    onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     Logout
@@ -77,6 +84,7 @@ const AdminDashboard = () => {
   const questions = useSelector((state) => state.questions.items);
   const status = useSelector((state) => state.questions.status);
   const error = useSelector((state) => state.questions.error);
+  const isAdmin = useSelector((state) => state.auth.isAdmin);
 
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [filter, setFilter] = useState("");
@@ -89,33 +97,26 @@ const AdminDashboard = () => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   useEffect(() => {
+    if (!isAdmin) {
+      // navigate('/');
+      return; // Prevent unnecessary data fetching
+    }
+
     if (status === "idle") {
       dispatch(fetchQuestions());
     }
-  }, [dispatch, status]);
+  }, [isAdmin, status, dispatch, navigate]);
 
-  // Filter questions based on tags
+  // Secondary useEffect for filtering - only runs after data is loaded
   useEffect(() => {
+    if (!questions.length) return;
+
     if (filter === "") {
       setFilteredQuestions(questions);
     } else {
       setFilteredQuestions(
         questions.filter((q) => {
-          let courses = [];
-
-          // Check if courses is an array
-          if (Array.isArray(q.courses)) {
-            courses = q.courses; // No need to parse since it is already an array
-          } else if (typeof q.courses === "string") {
-            // If it's a string, try parsing it to ensure it's a valid array
-            try {
-              courses = JSON.parse(q.courses);
-            } catch (e) {
-              courses = [q.courses]; // If parsing fails, treat it as a single course string
-            }
-          }
-
-          // Return true if the filter matches any course in the array
+          let courses = Array.isArray(q.courses) ? q.courses : [q.courses];
           return courses.includes(filter);
         })
       );
@@ -154,7 +155,7 @@ const AdminDashboard = () => {
     setShowDeleteConfirmation(true);
   };
 
-  return (
+  return isAdmin ? (
     <div>
       <Navbar />
 
@@ -400,7 +401,7 @@ const AdminDashboard = () => {
         )}
       </div>
     </div>
-  );
+  ) : <>Error</>;
 };
 
 export default AdminDashboard;

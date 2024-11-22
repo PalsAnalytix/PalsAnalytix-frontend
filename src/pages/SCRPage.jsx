@@ -1,8 +1,8 @@
 import React from "react";
-import Navbar from "../components/Navbar";
-import CurriculumSection from "../components/CurriculumSection";
-import SCRExamPolicy from "../components/SCRExamPolicy";
-import SCRInfoSection from "../components/SCRInfoSection";
+import Navbar from "../components/common/Navbar";
+import CurriculumSection from "../components/scr/CurriculumSection";
+import SCRExamPolicy from "../components/scr/SCRExamPolicy";
+import SCRInfoSection from "../components/scr/SCRInfoSection";
 import { useNavigate } from "react-router-dom";
 
 const ScrPage = () => {
@@ -39,7 +39,7 @@ const ScrPage = () => {
             significance of sustainability and climate risk management continues
             to grow in the financial sector, businesses and investors are
             realizing the necessity to address and mitigate the risks associated
-            with climate change. Recognizing this need, the GARP SCR®®
+            with climate change. Recognizing this need, the GARP SCR®
             Certificate offers a comprehensive understanding of these risks
             along with the necessary tools and techniques to manage them.
           </p>
@@ -91,7 +91,7 @@ const ScrPage = () => {
                 required apart from the Material referred to in our course.
               </li>
               <li>
-                <b>Certified Trainers</b> - Our trainers are SCR®® with years of
+                <b>Certified Trainers</b> - Our trainers are SCR® with years of
                 experience in Sustainability and Climate Risk with top Banks.
               </li>
               <li>

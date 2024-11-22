@@ -1,6 +1,6 @@
 import React from "react";
-import Navbar from "../components/Navbar";
-import CFACurriculumSection from "../components/CFACurriculumSection";
+import Navbar from "../components/common/Navbar";
+import CFACurriculumSection from "../components/cfa/CFACurriculumSection";
 import { useNavigate } from "react-router-dom";
 
 const CfaPage = () => {

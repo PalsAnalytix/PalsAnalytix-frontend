@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/common/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -7,7 +7,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { ArrowRight } from "lucide-react";
 import { Clock, FileText, Languages, Award } from "lucide-react";
 import { fetchTests, setSelectedTest } from "../redux/slices/testsSlice"; // Import the fetchTests action
-import StartTestDialog from "../components/StartTestDialog";
+import StartTestDialog from "../components/comp/StartTestDialog";
 
 const HeroSection = () => {
   const { loginWithRedirect, isAuthenticated } = useAuth0();
@@ -24,12 +24,12 @@ const HeroSection = () => {
               <span className="text-green-600">Expert-Crafted</span> Test Series
             </h1>
             <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-gray-700 mb-3 lg:mb-4">
-              CFA | FRM | SCR Preparation
+              CFA® | FRM® | SCR® Preparation
             </h2>
             <p className="text-base lg:text-lg text-gray-600 mb-6 lg:mb-8 max-w-3xl mx-auto lg:mx-0">
               Elevate your financial career with our comprehensive,
               industry-leading test series. Designed by experts to maximize your
-              success in CFA, FRM, and SCR exams. Our adaptive learning platform
+              success in CFA®, FRM®, and SCR® exams. Our adaptive learning platform
               ensures you're always challenged at the right level.
             </p>
             <div className="flex flex-wrap justify-center lg:justify-start gap-2 lg:gap-3 text-sm lg:text-base font-medium text-gray-700">

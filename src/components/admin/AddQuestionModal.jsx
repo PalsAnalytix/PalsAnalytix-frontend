@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import { useDispatch } from "react-redux";
-import { addQuestion } from "../redux/slices/questionsSlice";
+import { addQuestion } from "../../redux/slices/questionsSlice";
 import axios from "axios";
 
 const AddQuestionModal = ({ isOpen, onClose }) => {
@@ -24,7 +24,30 @@ const AddQuestionModal = ({ isOpen, onClose }) => {
   const [submitMessage, setSubmitMessage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
-  const chapters = Array.from({ length: 40 }, (_, i) => `Chapter ${i + 1}`);
+  const chapterNames = [
+    "SCR - Foundations of Climate Change",
+    "SCR - Sustainability",
+    "SCR - Climate Change Risk",
+    "SCR - Sustainability and Climate Policy, Culture, and Governance",
+    "SCR - Green and Sustainable Finance: Markets and Instruments",
+    "SCR - Climate Risk Measurement and Management",
+    "SCR - Climate Models and Scenario Analysis",
+    "SCR - Net Zero",
+    "SCR - Climate and Nature Risk Assessment",
+    "SCR - Transition Planning and Carbon Reporting",
+    "CFA - Ethical and Professional Standards",
+    "CFA - Quantitative Methods",
+    "CFA - Economics",
+    "CFA - Financial Statement Analysis",
+    "CFA - Corporate Issuers",
+    "CFA - Equity Investments",
+    "CFA - Fixed Income",
+    "CFA - Derivatives",
+    "CFA - Alternative Assets",
+    "CFA - Portfolio Management",
+  ];
+
+  const chapters = chapterNames.map((name, i) => `Chapter ${i + 1}: ${name}`);
   const coursesList = ["SCR", "FRM", "CFA"];
 
   const handleInputChange = (e) => {

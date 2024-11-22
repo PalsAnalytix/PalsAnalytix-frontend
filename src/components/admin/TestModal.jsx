@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
-import { createTest } from "../redux/slices/testsSlice";
-import { fetchQuestions } from "../redux/slices/questionsSlice";
+import { createTest } from "../../redux/slices/testsSlice";
+import { fetchQuestions } from "../../redux/slices/questionsSlice";
 
 const TestModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();

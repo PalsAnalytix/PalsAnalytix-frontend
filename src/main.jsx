@@ -1,25 +1,14 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import { Auth0Provider } from "@auth0/auth0-react";
-import { Provider } from "react-redux";
-import { store } from "./redux/store.js";
-import App from "./App.jsx";
-import "./index.css";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
+import App from './App';
+import './index.css';
 
-const root = createRoot(document.getElementById("root"));
-
-root.render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
-        <Auth0Provider
-          domain="palsanalytix.us.auth0.com"
-          clientId="pSKcVPlsxvZSfMinRuVZOZrzjgBl6uop"
-          authorizationParams={{
-            redirect_uri: window.location.origin,
-          }}
-        >
-          <App />
-        </Auth0Provider>
+      <App />
     </Provider>
   </React.StrictMode>
 );

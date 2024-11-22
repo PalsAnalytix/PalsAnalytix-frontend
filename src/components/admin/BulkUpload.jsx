@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { uploadQuestions } from '../redux/slices/questionsSlice';
+import { uploadQuestions } from '../../redux/slices/questionsSlice';
 import { Upload, X } from 'lucide-react';
 
 const BulkUpload = () => {
