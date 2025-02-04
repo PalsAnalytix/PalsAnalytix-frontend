@@ -9,6 +9,8 @@ const axiosInstance = axios.create({
   baseURL: BASE_URL,
 });
 
+
+
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -20,7 +22,21 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+
 // Async thunks
+
+export const fetchSampleQuestions = createAsyncThunk(
+  "user/fetchSampleQuestions",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`${BASE_URL}/api/random-questions`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 export const fetchUserProfile = createAsyncThunk(
   "user/fetchProfile",
   async (_, { rejectWithValue }) => {
@@ -51,12 +67,20 @@ export const fetchQuestionStats = createAsyncThunk(
 
 export const updateUserWhatsAppDetails = createAsyncThunk(
   "user/updateWhatsApp",
-  async (whatsappData, { rejectWithValue }) => {
+  async ({ userId, phoneNo, currentChapterForWhatsapp, currentCourseForWhatsapp }, { dispatch }) => {
     try {
-      const response = await axiosInstance.put("/api/user/whatsapp", whatsappData);
+      const response = await axiosInstance.put(`${BASE_URL}/update_preference_Chapter/${userId}`, {
+        phoneNo,
+        currentChapterForWhatsapp,
+        currentCourseForWhatsapp
+      });
+      
+      // After successful update, fetch the updated profile
+      dispatch(fetchUserProfile());
+      
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      throw error;
     }
   }
 );
@@ -68,6 +92,8 @@ const initialState = {
   loading: true,
   questionStats : null,
   whatsapp: null,
+  sampleQuestions: [], // Add this new field
+  sampleQuestionsLoading: false, // Add loading state for sample questions
   //   _id: null,
   //   name: "",
   //   email: "",
@@ -108,22 +134,10 @@ const userSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Fetch Profile
     builder
-      .addCase(fetchUserProfile.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchUserProfile.fulfilled, (state, action) => {
-        state.loading = false;
-        state.profile = action.payload;
-      })
-      .addCase(fetchUserProfile.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.message || "Failed to fetch profile";
-      })
+      
 
-    // Fetch Question Stats
+      // Question Stats cases
       .addCase(fetchQuestionStats.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -131,20 +145,22 @@ const userSlice = createSlice({
       .addCase(fetchQuestionStats.fulfilled, (state, action) => {
         state.loading = false;
         state.questionStats = action.payload.data;
+        state.error = null;
       })
       .addCase(fetchQuestionStats.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "Failed to fetch question stats";
       })
 
-    // Update WhatsApp Details
+      // WhatsApp Update cases
       .addCase(updateUserWhatsAppDetails.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(updateUserWhatsAppDetails.fulfilled, (state, action) => {
         state.loading = false;
-        state.whatsapp = action.payload.data;
+        // We don't update the state here because fetchUserProfile will be called
+        state.error = null;
       })
       .addCase(updateUserWhatsAppDetails.rejected, (state, action) => {
         state.loading = false;
@@ -156,6 +172,12 @@ const userSlice = createSlice({
 export const { clearUserData, clearError } = userSlice.actions;
 
 // Selectors
+
+// Add some helpful selectors
+export const selectUserProfile = (state) => state.user.profile;
+export const selectUserLoading = (state) => state.user.loading;
+export const selectUserError = (state) => state.user.error;
+export const selectQuestionStats = (state) => state.user.questionStats;
 
 
 export default userSlice.reducer;

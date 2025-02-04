@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { X, BookOpen, GraduationCap, Send } from "lucide-react";
 import { updateUserWhatsAppDetails } from "../../redux/slices/userSlice";
 import PhoneInput from "react-phone-input-2";
@@ -7,6 +7,7 @@ import "react-phone-input-2/lib/style.css";
 
 const WhatsAppModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const [phoneNo, setPhoneNo] = useState("");
   const [currentChapter, setCurrentChapter] = useState("");
   const [currentCourse, setCurrentCourse] = useState("");
@@ -57,21 +58,22 @@ const WhatsAppModal = ({ isOpen, onClose }) => {
     try {
       setLoading(true);
       setError("");
-
-      if (!phoneNo || !currentChapter || !currentCourse) {
+  
+      if (!currentChapter || !currentCourse) {
         throw new Error("Please fill in all fields");
       }
-
-      const formattedPhone = phoneNo.startsWith("+") ? phoneNo : `+${phoneNo}`;
-
-      await dispatch(
+  
+      // Get the updated user data from the response
+      const updatedUser = await dispatch(
         updateUserWhatsAppDetails({
-          phoneNo: formattedPhone,
+          userId: user._id,
           currentChapterForWhatsapp: currentChapter,
           currentCourseForWhatsapp: currentCourse,
         })
       ).unwrap();
-
+  
+      // Update the user in Redux state
+  
       onClose();
     } catch (err) {
       setError(err.message || "Something went wrong");
@@ -99,7 +101,7 @@ const WhatsAppModal = ({ isOpen, onClose }) => {
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gradient-to-r from-blue-500 to-purple-500">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">Daily Questions</h2>
-            <p className="text-sm text-gray-500 mt-1">Subscribe to WhatsApp updates</p>
+            <p className="text-sm text-gray-500 mt-1">Subscribe to Daily Questions updates</p>
           </div>
           <button
             onClick={onClose}
@@ -234,7 +236,7 @@ const WhatsAppModal = ({ isOpen, onClose }) => {
             <svg className="w-5 h-5 inline-block mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span>You'll receive carefully curated daily practice questions directly on WhatsApp for your selected course and chapter.</span>
+            <span>You'll receive carefully curated daily practice questions for your selected course and chapter.</span>
           </p>
         </div>
       </div>

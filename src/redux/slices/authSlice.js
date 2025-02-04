@@ -143,6 +143,7 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+
 export const fetchUserProfile = createAsyncThunk(
   "auth/fetchProfile",
   async (_, { rejectWithValue }) => {
@@ -157,11 +158,13 @@ export const fetchUserProfile = createAsyncThunk(
           },
         });
         console.log(response);
+        
         return response.data.data;
-      } ;
-
-      const response = await axios.get(`${BASE_URL}/user/profile`)
-      return response.data;
+      } 
+      else{
+        const response = await axios.get(`${BASE_URL}/user/profile`)
+        return response.data;
+      }
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -221,10 +224,9 @@ const authSlice = createSlice({
       .addCase(signupUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "Signup failed";
-      });
+      })
 
-    // OTP Verification
-    builder
+
       .addCase(verifyOTP.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -236,10 +238,9 @@ const authSlice = createSlice({
       .addCase(verifyOTP.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "OTP verification failed";
-      });
+      })
 
-    // Login
-    builder
+
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -259,10 +260,9 @@ const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "Login failed";
-      });
+      })
 
-    // Forgot Password
-    builder
+
       .addCase(forgotPassword.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -276,10 +276,9 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload?.message || "Failed to send OTP";
         state.resetPasswordStatus = "failed";
-      });
+      })
 
-    // Reset Password
-    builder
+
       .addCase(resetPassword.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -291,16 +290,15 @@ const authSlice = createSlice({
       .addCase(resetPassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "Password reset failed";
-      });
-    
-    builder
+      })
+
+
       .addCase(fetchUserProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
-        console.log(action.payload);
         state.user = action.payload;
         state.isAuthenticated = true;
       })
@@ -308,24 +306,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload?.message || "Failed to fetch user profile";
         state.isAuthenticated = false;
-      });
-
-    // builder
-    //   .addCase(loadUser.pending, (state) => {
-    //     state.loading = true;
-    //   })
-    //   .addCase(loadUser.fulfilled, (state, action) => {
-    //     state.loading = false;
-    //     state.isAuthenticated = true;
-    //     state.user = action.payload.data;
-    //   })
-    //   .addCase(loadUser.rejected, (state, action) => {
-    //     state.loading = false;
-    //     state.isAuthenticated = false;
-    //     state.user = null;
-    //     state.token = null;
-    //     localStorage.removeItem("token");
-    //   });
+      })
   },
 });
 

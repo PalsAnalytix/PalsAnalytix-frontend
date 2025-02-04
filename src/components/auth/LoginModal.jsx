@@ -18,7 +18,6 @@ const LoginModal = ({ onSuccess, onSignupClick, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Format phone number: remove '+' and spaces
       const sanitizedPhone = formData.phone.replace(/[+\s]/g, '');
       const loginData = { ...formData, phone: sanitizedPhone };
       
@@ -31,7 +30,7 @@ const LoginModal = ({ onSuccess, onSignupClick, onClose }) => {
       }
       onSuccess();
     } catch (err) {
-      // Error is handled by the reducer
+      // Error handled by showing simplified message
     }
   };
 
@@ -44,8 +43,8 @@ const LoginModal = ({ onSuccess, onSignupClick, onClose }) => {
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm">
-              {error}
+            <div className="text-center text-red-500 text-sm">
+              Unable to log in. Please check your credentials and try again.
             </div>
           )}
           

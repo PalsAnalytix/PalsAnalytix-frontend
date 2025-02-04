@@ -1,31 +1,24 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Navigate } from "react-router-dom";
 import {
-  User,
-  Mail,
-  Phone,
-  Award,
-  Calendar,
-  BookOpen,
-  CheckCircle,
-  XCircle,
-  Bell,
-  Clock,
-  TrendingUp
-} from 'lucide-react';
-import Navbar from '../components/common/Navbar';
-import WhatsAppModal from '../components/comp/WhatsappModal';
+  User, Mail, Phone, Bell, Clock, TrendingUp, BookOpen,
+  CheckCircle, Star, Activity, Target
+} from "lucide-react";
+import { fetchUserProfile } from "../redux/slices/authSlice";
+import Navbar from "../components/common/Navbar";
+import WhatsAppModal from "../components/comp/WhatsappModal";
+import UserQuestions from "../components/user/UserQuestions";
 
 const StatCard = ({ title, value, icon: Icon, color }) => (
-  <div className="bg-white p-6 rounded-lg shadow-md">
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-sm text-gray-600 mb-1">{title}</p>
-        <p className="text-2xl font-bold">{value}</p>
+  <div className="bg-white rounded-lg shadow-sm p-4 hover:bg-gray-50 transition-colors">
+    <div className="flex items-center gap-3">
+      <div className={`p-2 rounded-lg ${color}`}>
+        <Icon className="w-5 h-5 text-white" />
       </div>
-      <div className={`p-3 rounded-full ${color}`}>
-        <Icon className="w-6 h-6 text-white" />
+      <div>
+        <p className="text-sm text-gray-600">{title}</p>
+        <p className="text-lg font-semibold mt-0.5">{value}</p>
       </div>
     </div>
   </div>
@@ -33,32 +26,38 @@ const StatCard = ({ title, value, icon: Icon, color }) => (
 
 const SubscriptionCard = ({ subscription }) => {
   const getStatusColor = (status) => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'bg-green-100 text-green-800';
-      case 'EXPIRED':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+    switch (status?.toUpperCase()) {
+      case "ACTIVE": return "bg-green-100 text-green-800 border-green-200";
+      case "EXPIRED": return "bg-red-100 text-red-800 border-red-200";
+      default: return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h3 className="text-lg font-semibold mb-4">Subscription Details</h3>
-      <div className="space-y-3">
-        <div className="flex justify-between items-center">
-          <span className="text-gray-600">Current Plan</span>
-          <span className="font-medium">{subscription.currentSubscriptionPlan}</span>
+    <div className="bg-white rounded-lg shadow-sm">
+      <div className="p-3 border-b border-gray-100">
+        <div className="flex items-center gap-2 font-medium">
+          <Star className="w-4 h-4 text-yellow-500" />
+          Subscription Details
         </div>
-        <div className="flex justify-between items-center">
+      </div>
+      <div className="p-4 space-y-3">
+        <div className="flex items-center justify-between text-sm bg-gray-50 rounded-md p-2">
+          <span className="text-gray-600">Current Plan</span>
+          <span className="font-medium text-blue-600">{subscription.currentSubscriptionPlan}</span>
+        </div>
+        <div className="flex items-center justify-between text-sm bg-gray-50 rounded-md p-2">
+          <span className="text-gray-600">Current Chapter</span>
+          <span className="font-medium">{subscription.currentChapterForWhatsapp || "N/A"}</span>
+        </div>
+        <div className="flex items-center justify-between text-sm">
           <span className="text-gray-600">Status</span>
-          <span className={`px-2 py-1 rounded-full text-sm ${getStatusColor(subscription.status)}`}>
+          <span className={`px-2 py-0.5 rounded-full text-sm border ${getStatusColor(subscription.status)}`}>
             {subscription.status}
           </span>
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-600">Expiry Date</span>
+        <div className="flex items-center justify-between text-sm bg-gray-50 rounded-md p-2">
+          <span className="text-gray-600">Expires On</span>
           <span className="font-medium">
             {new Date(subscription.subscriptionExpiryDate).toLocaleDateString()}
           </span>
@@ -69,44 +68,57 @@ const SubscriptionCard = ({ subscription }) => {
 };
 
 const ProgressCard = ({ metrics }) => (
-  <div className="bg-white p-6 rounded-lg shadow-md">
-    <h3 className="text-lg font-semibold mb-4">Performance Overview</h3>
-    <div className="space-y-4">
-      {Object.entries(metrics.courseWiseProgress).map(([course, progress]) => (
-        <div key={course}>
-          <div className="flex justify-between mb-1">
-            <span className="text-sm font-medium text-gray-700">{course}</span>
-            <span className="text-sm font-medium text-gray-700">
-              {((progress.correctAnswers / progress.questionsAttempted) * 100 || 0).toFixed(1)}%
-            </span>
+  <div className="bg-white rounded-lg shadow-sm">
+    <div className="p-3 border-b border-gray-100">
+      <div className="flex items-center gap-2 font-medium">
+        <Activity className="w-4 h-4 text-blue-500" />
+        Performance Overview
+      </div>
+    </div>
+    <div className="p-4 space-y-4">
+      {Object.entries(metrics.courseWiseProgress).map(([course, progress]) => {
+        const percentage = ((progress.correctAnswers / progress.questionsAttempted) * 100 || 0).toFixed(1);
+        return (
+          <div key={course} className="space-y-1.5">
+            <div className="flex justify-between items-center text-sm">
+              <span className="font-medium text-gray-700">{course}</span>
+              <div className="flex items-center gap-1.5">
+                <span className="font-medium text-gray-700">{percentage}%</span>
+                <Target className="w-3.5 h-3.5 text-blue-500" />
+              </div>
+            </div>
+            <div className="relative w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <div
+                className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
+                style={{ width: `${percentage}%` }}
+              />
+            </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-blue-600 h-2 rounded-full"
-              style={{
-                width: `${(progress.correctAnswers / progress.questionsAttempted) * 100 || 0}%`
-              }}
-            />
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   </div>
 );
 
 const UserDashboard = () => {
+  const dispatch = useDispatch();
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
-  const { isAuthenticated, loading, user } = useSelector((state) => state.auth);
-  const profile = (user);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const profile = user;
+  const loading = useSelector((state) => state.auth.loading);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" />;
-  }
+  useEffect(() => {
+    if (isAuthenticated && !user) {
+      dispatch(fetchUserProfile());
+    }
+  }, [isAuthenticated, user, dispatch]);
 
+  if (!isAuthenticated) return <Navigate to="/" />;
+  
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex justify-center items-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500" />
+        <div className="animate-spin h-6 w-6 border-b-2 border-blue-500" />
       </div>
     );
   }
@@ -114,40 +126,40 @@ const UserDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="container mx-auto px-4 py-8">
-        {/* User Profile Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
-            <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-              <span className="text-3xl font-bold text-white">
+      <div className="container mx-auto px-4 py-6">
+        {/* Profile Header */}
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-xl font-bold text-white">
                 {profile.username.charAt(0).toUpperCase()}
               </span>
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900">{profile.username}</h1>
-              <div className="mt-2 space-y-1">
-                <p className="text-gray-600 flex items-center">
-                  <Mail className="w-4 h-4 mr-2" />
+              <h1 className="text-lg font-semibold text-gray-900">{profile.username}</h1>
+              <div className="mt-1 space-y-0.5">
+                <p className="text-sm text-gray-600 flex items-center">
+                  <Mail className="w-4 h-4 mr-1.5" />
                   {profile.email}
                 </p>
-                <p className="text-gray-600 flex items-center">
-                  <Phone className="w-4 h-4 mr-2" />
+                <p className="text-sm text-gray-600 flex items-center">
+                  <Phone className="w-4 h-4 mr-1.5" />
                   {profile.phoneNumber}
                 </p>
               </div>
             </div>
             <button
               onClick={() => setIsWhatsAppModalOpen(true)}
-              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center"
+              className="px-3 py-1.5 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 transition-colors flex items-center"
             >
-              <Bell className="w-4 h-4 mr-2" />
-              Update WhatsApp Preferences
+              <Bell className="w-4 h-4 mr-1.5" />
+              Update Questions Preferences
             </button>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           <StatCard
             title="Total Questions"
             value={profile.performanceMetrics.totalQuestionsAttempted}
@@ -174,10 +186,18 @@ const UserDashboard = () => {
           />
         </div>
 
-        {/* Subscription and Progress */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Subscription and Progress Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
           <SubscriptionCard subscription={profile} />
           <ProgressCard metrics={profile.performanceMetrics} />
+        </div>
+
+        {/* Questions Section */}
+        <div className="mt-4">
+          <UserQuestions
+            isSubscribed={profile.currentSubscriptionPlan !== "FREE"}
+            questions={profile.questions}
+          />
         </div>
       </div>
 
