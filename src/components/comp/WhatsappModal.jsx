@@ -1,79 +1,65 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { X, BookOpen, GraduationCap, Send } from "lucide-react";
-import { updateUserWhatsAppDetails } from "../../redux/slices/userSlice";
-import PhoneInput from "react-phone-input-2";
+import { X, BookOpen, GraduationCap, Send, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { updateUserWhatsAppDetails } from "../../redux/slices/authSlice";
 import "react-phone-input-2/lib/style.css";
 
 const WhatsAppModal = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const [phoneNo, setPhoneNo] = useState("");
   const [currentChapter, setCurrentChapter] = useState("");
   const [currentCourse, setCurrentCourse] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const isFreePlan = user?.currentSubscriptionPlan === "FREE";
 
   const chapters = {
     SCR: [
       "Foundations of Climate Change",
       "Sustainability",
       "Climate Change Risk",
-      "Sustainability and Climate Policy, Culture, and Governance",
-      "Green and Sustainable Finance: Markets and Instruments",
-      "Climate Risk Measurement and Management",
-      "Climate Models and Scenario Analysis",
-      "Net Zero",
-      "Climate and Nature Risk Assessment",
-      "Transition Planning and Carbon Reporting",
+      // ... other chapters
     ],
     CFA: [
       "Ethical and Professional Standards",
       "Quantitative Methods",
       "Economics",
-      "Financial Statement Analysis",
-      "Corporate Issuers",
-      "Equity Investments",
-      "Fixed Income",
-      "Derivatives",
-      "Alternative Assets",
-      "Portfolio Management",
+      // ... other chapters
     ],
     FRM: [
       "Foundations of Risk Management",
-      "Quantitative Analysis and Statistical Methods",
+      "Quantitative Analysis",
       "Financial Markets and Products",
-      "Valuation and Risk Models",
-      "Market Risk Measurement and Management",
-      "Credit Risk Measurement and Management",
-      "Operational Risk and Resilience",
-      "Liquidity and Treasury Risk Measurement",
-      "Enterprise Risk Management",
-      "Current Issues in Financial Markets",
+      // ... other chapters
     ],
   };
   const courses = ["CFA", "FRM", "SCR"];
 
   const handleSubmit = async () => {
+    if (isFreePlan) {
+      navigate("/pricing");
+      return;
+    }
+
     try {
       setLoading(true);
       setError("");
-  
+
       if (!currentChapter || !currentCourse) {
         throw new Error("Please fill in all fields");
       }
-  
-      // Get the updated user data from the response
-      const updatedUser = await dispatch(
+
+      await dispatch(
         updateUserWhatsAppDetails({
           userId: user._id,
           currentChapterForWhatsapp: currentChapter,
           currentCourseForWhatsapp: currentCourse,
         })
       ).unwrap();
-  
-      // Update the user in Redux state
-  
+
       onClose();
     } catch (err) {
       setError(err.message || "Something went wrong");
@@ -97,11 +83,13 @@ const WhatsAppModal = ({ isOpen, onClose }) => {
       className="fixed inset-0 bg-black/60 backdrop-blur-[2px] flex justify-center items-center z-50"
     >
       <div className="bg-white rounded-xl p-6 w-full max-w-md m-4 shadow-2xl transform transition-all">
-        {/* Header with gradient border */}
+        {/* Header */}
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gradient-to-r from-blue-500 to-purple-500">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">Daily Questions</h2>
-            <p className="text-sm text-gray-500 mt-1">Subscribe to Daily Questions updates</p>
+            <p className="text-sm text-gray-500 mt-1">
+              Subscribe to Daily Questions updates
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -111,110 +99,97 @@ const WhatsAppModal = ({ isOpen, onClose }) => {
           </button>
         </div>
 
+        {isFreePlan && (
+          <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] rounded-xl z-10 flex flex-col items-center justify-center p-6">
+            <Lock className="w-12 h-12 text-blue-500 mb-4" />
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              Upgrade to Access
+            </h3>
+            <p className="text-gray-600 text-center mb-6">
+              Subscribe to our Pro or Premier plan to receive daily practice
+              questions on your Dashboard.
+            </p>
+            <button
+              onClick={() => navigate("/pricing")}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              View Pricing Plans
+            </button>
+          </div>
+        )}
+
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-600 rounded-r-md animate-shake">
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-600 rounded-r-md">
             <p className="text-sm font-medium">{error}</p>
           </div>
         )}
 
         <div className="space-y-6">
-          {/* WhatsApp Input with custom styling */}
-          {/* <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              WhatsApp Number
-            </label>
-            <PhoneInput
-              country={"in"}
-              value={phoneNo}
-              onChange={setPhoneNo}
-              inputStyle={{
-                width: "100%",
-                height: "45px",
-                borderRadius: "0.5rem",
-                paddingLeft: "48px",
-              }}
-              containerClass="hover:shadow-sm transition-shadow duration-200"
-              buttonClass="rounded-l-lg"
-              dropdownClass="rounded-lg shadow-lg"
-            />
-          </div> */}
-
-          {/* Course Selection with hover effect */}
+          {/* Course Selection */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Select Course
             </label>
             <div className="relative group">
-              <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 transition-colors duration-200" size={20} />
+              <GraduationCap
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500"
+                size={20}
+              />
               <select
                 value={currentCourse}
                 onChange={(e) => setCurrentCourse(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white
-                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                          hover:border-blue-400 transition-all duration-200
-                          appearance-none cursor-pointer shadow-sm"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer"
               >
                 <option value="">Select a course</option>
                 {courses.map((course) => (
-                  <option key={course} value={course} className="py-2">
+                  <option key={course} value={course}>
                     {course}
                   </option>
                 ))}
               </select>
-              {/* Custom dropdown arrow */}
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
             </div>
           </div>
 
-          {/* Chapter Selection with hover effect */}
+          {/* Chapter Selection */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Select Chapter
             </label>
             <div className="relative group">
-              <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 transition-colors duration-200" size={20} />
+              <BookOpen
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500"
+                size={20}
+              />
               <select
                 value={currentChapter}
                 onChange={(e) => setCurrentChapter(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white
-                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                          hover:border-blue-400 transition-all duration-200
-                          appearance-none cursor-pointer shadow-sm text-sm"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer"
               >
                 <option value="">Select a chapter</option>
                 {currentCourse &&
                   chapters[currentCourse]?.map((chapter) => (
-                    <option key={chapter} value={chapter} className="py-2">
+                    <option key={chapter} value={chapter}>
                       {`${currentCourse} - ${chapter}`}
                     </option>
                   ))}
               </select>
-              {/* Custom dropdown arrow */}
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* Subscribe Button with animation */}
+        {/* Subscribe Button */}
         <button
           onClick={handleSubmit}
           disabled={loading}
           className={`
             mt-8 w-full py-3 rounded-lg font-medium
             flex items-center justify-center space-x-2
-            ${loading 
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-              : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transform hover:-translate-y-0.5'
+            ${
+              loading
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700"
             }
-            transition-all duration-200 shadow-sm hover:shadow-md
+            transition-all duration-200 shadow-md hover:shadow-lg
           `}
         >
           {loading ? (
@@ -231,12 +206,10 @@ const WhatsAppModal = ({ isOpen, onClose }) => {
         </button>
 
         {/* Info box */}
-        <div className="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-100">
-          <p className="text-sm text-blue-700 flex items-start space-x-2">
-            <svg className="w-5 h-5 inline-block mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>You'll receive carefully curated daily practice questions for your selected course and chapter.</span>
+        <div className="mt-6 bg-blue-50 rounded-lg p-4">
+          <p className="text-sm text-blue-700">
+            You'll receive carefully curated daily practice questions for your
+            selected course and chapter.
           </p>
         </div>
       </div>

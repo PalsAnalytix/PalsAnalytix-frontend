@@ -3,52 +3,32 @@ import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
+// Create axios instance with interceptors
+const axiosInstance = axios.create({
+  baseURL: BASE_URL,
+});
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Admin credentials
 const ADMIN_PHONE = "91123456789";
 const ADMIN_PASSWORD = "123456789";
-
-// const axiosInstance = axios.create({
-//   baseURL: BASE_URL,
-// });
-
-// axiosInstance.interceptors.request.use(
-//   (config) => {
-//     const token = localStorage.getItem("token");
-//     console.log(token);
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     }
-//     return config;
-//   },
-//   (error) => Promise.reject(error)
-// );
-
-// export const loadUser = createAsyncThunk(
-//   "auth/loadUser",
-//   async (_, { rejectWithValue }) => {
-//     try {
-//       const token = localStorage.getItem("token");
-//       if (!token) throw new Error("No token found");
-
-//       const response = await axiosInstance.get("/user/profile");
-//       return response.data;
-//     } catch (error) {
-//       localStorage.removeItem("token"); // Clear invalid token
-//       return rejectWithValue(error.response?.data || error.message);
-//     }
-//   }
-// );
-
 
 // Async thunks
 export const signupUser = createAsyncThunk(
   "auth/signup",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        `${BASE_URL}/signup`,
-        userData
-      );
+      const response = await axios.post(`${BASE_URL}/signup`, userData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -77,30 +57,28 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await axios.post(`${BASE_URL}/login`, credentials);
 
-      console.log(response);
-      
       if (response.data.user.isAdmin) {
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("isAdmin", response.data.user.isAdmin);
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("isAdmin", response.data.user.isAdmin);
         return {
-          ...response.data
+          ...response.data,
         };
-      }
-      else{
+      } else {
         const userResponse = await axios.get(`${BASE_URL}/user/profile`, {
           headers: {
             Authorization: `Bearer ${response.data.token}`,
           },
         });
 
-        console.log(userResponse);
+        const userData = userResponse.data.data;
+        const stats = calculateStats(userData);
+        const userRes = { ...userData, stats };
 
-        
         localStorage.setItem("token", response.data.token);
         const res = {
-          token : response.data.token,
-          user : userResponse.data.data
-        }
+          token: response.data.token,
+          user: userRes,
+        };
         return res;
       }
     } catch (error) {
@@ -114,12 +92,9 @@ export const forgotPassword = createAsyncThunk(
   "auth/forgotPassword",
   async (phoneNumber, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        `${BASE_URL}/forgot-password`,
-        {
-          phoneNumber,
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/forgot-password`, {
+        phoneNumber,
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -143,28 +118,109 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
-
 export const fetchUserProfile = createAsyncThunk(
   "auth/fetchProfile",
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
       const admin = localStorage.getItem("isAdmin");
-      if(admin)return;
-      if (token){
-        const response = await axios.get(`${BASE_URL}/user/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log(response);
-        
-        return response.data.data;
-      } 
-      else{
-        const response = await axios.get(`${BASE_URL}/user/profile`)
-        return response.data;
+      
+      // If admin, return early without fetching profile
+      if (admin === "true") {
+        return { isAdmin: true };
       }
+
+      if (!token) {
+        throw new Error("No token available");
+      }
+
+      const response = await axios.get(`${BASE_URL}/user/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const userData = response.data.data;
+
+      // Calculate stats from user data
+      const stats = calculateStats(userData);
+
+      return { ...userData, stats };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+// Helper function to calculate stats
+const calculateStats = (userData) => {
+  const { questions, performanceMetrics } = userData;
+
+  // Calculate stats based on questions and performanceMetrics
+  // This is just an example, adjust according to your data structure
+  const totalQuestions = questions.length;
+  const attemptedQuestions = questions.filter((q) => q.attempted).length;
+  const correctAnswers = questions.filter(
+    (q) => q.attemptDetails.isCorrect
+  ).length;
+  const averageTime = performanceMetrics.averageTimePerQuestion || 0;
+  const successRate =
+    attemptedQuestions > 0 ? (correctAnswers / attemptedQuestions) * 100 : 0;
+
+  return {
+    totalQuestions,
+    attemptedQuestions,
+    correctAnswers,
+    averageTime,
+    successRate,
+  };
+};
+
+export const fetchSampleQuestions = createAsyncThunk(
+  "auth/fetchSampleQuestions",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        `${BASE_URL}/api/random-questions`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const updateUserWhatsAppDetails = createAsyncThunk(
+  "auth/updateWhatsApp",
+  async (
+    { userId, currentChapterForWhatsapp, currentCourseForWhatsapp },
+    { dispatch }
+  ) => {
+    try {
+      const response = await axiosInstance.put(
+        `${BASE_URL}/update_preference_Chapter/${userId}`,
+        {
+          currentChapterForWhatsapp,
+          currentCourseForWhatsapp,
+        }
+      );
+      return response.data.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
+export const attemptQuestion = createAsyncThunk(
+  "auth/attemptQuestion",
+  async ({ questionId, attemptDetails }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put(
+        `${BASE_URL}/api/user/attemptQuestion/${questionId}`,
+        { attemptDetails }
+      );
+      const userData = response.data;
+      const stats = calculateStats(userData);
+      return { ...userData, stats };
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -181,6 +237,9 @@ const initialState = {
   otpSent: false,
   otpVerified: false,
   resetPasswordStatus: "idle",
+  whatsapp: null,
+  sampleQuestions: [],
+  sampleQuestionsLoading: false,
 };
 
 // Auth slice
@@ -209,6 +268,11 @@ const authSlice = createSlice({
       state.resetPasswordStatus = "idle";
       state.error = null;
     },
+    clearUserData: (state) => {
+      state.user = null;
+      state.whatsapp = null;
+      state.sampleQuestions = [];
+    },
   },
   extraReducers: (builder) => {
     // Signup
@@ -226,7 +290,6 @@ const authSlice = createSlice({
         state.error = action.payload?.message || "Signup failed";
       })
 
-
       .addCase(verifyOTP.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -239,7 +302,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload?.message || "OTP verification failed";
       })
-
 
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
@@ -254,14 +316,13 @@ const authSlice = createSlice({
         state.error = null;
 
         if (state.isAdmin) {
-          localStorage.setItem('isAdmin', 'true');
+          localStorage.setItem("isAdmin", "true");
         }
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "Login failed";
       })
-
 
       .addCase(forgotPassword.pending, (state) => {
         state.loading = true;
@@ -278,7 +339,6 @@ const authSlice = createSlice({
         state.resetPasswordStatus = "failed";
       })
 
-
       .addCase(resetPassword.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -292,13 +352,19 @@ const authSlice = createSlice({
         state.error = action.payload?.message || "Password reset failed";
       })
 
-
       .addCase(fetchUserProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
+        
+        // If it's an admin, just mark as authenticated
+        if (action.payload.isAdmin) {
+          state.isAuthenticated = true;
+          return;
+        }
+      
         state.user = action.payload;
         state.isAuthenticated = true;
       })
@@ -307,9 +373,58 @@ const authSlice = createSlice({
         state.error = action.payload?.message || "Failed to fetch user profile";
         state.isAuthenticated = false;
       })
+
+      .addCase(fetchSampleQuestions.pending, (state) => {
+        state.sampleQuestionsLoading = true;
+      })
+      .addCase(fetchSampleQuestions.fulfilled, (state, action) => {
+        state.sampleQuestionsLoading = false;
+        state.sampleQuestions = action.payload;
+      })
+      .addCase(fetchSampleQuestions.rejected, (state, action) => {
+        state.sampleQuestionsLoading = false;
+        state.error =
+          action.payload?.message || "Failed to fetch sample questions";
+      })
+      .addCase(updateUserWhatsAppDetails.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateUserWhatsAppDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        // User profile will be updated by fetchUserProfile
+      })
+      .addCase(updateUserWhatsAppDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.payload?.message || "Failed to update WhatsApp details";
+      })
+
+      .addCase(attemptQuestion.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(attemptQuestion.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log(action.payload);
+        state.user = action.payload;
+      })
+      .addCase(attemptQuestion.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to update question attempt";
+      });
   },
 });
 
-export const { logout, clearError, resetAuthState, setAuthenticated  } = authSlice.actions;
-export default authSlice.reducer;
+export const {
+  logout,
+  clearError,
+  resetAuthState,
+  setAuthenticated,
+  clearUserData,
+} = authSlice.actions;
 
+export const selectUserProfile = (state) => state.auth.user;
+export const selectUserLoading = (state) => state.auth.loading;
+export const selectUserError = (state) => state.auth.error;
+
+export default authSlice.reducer;

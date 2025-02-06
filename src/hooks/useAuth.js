@@ -1,7 +1,7 @@
 // src/hooks/useAuth.js
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserProfile } from '../redux/slices/userSlice';
+import { fetchUserProfile } from '../redux/slices/authSlice';
 import { setAuthenticated } from '../redux/slices/authSlice'; // New action to update isAuthenticated
 
 const useAuth = () => {

@@ -1,96 +1,107 @@
-import React from "react";
-import { useState } from "react";
-import { ArrowRight } from "lucide-react";
-import Navbar from "../components/common/Navbar";
+import React, { useState } from "react";
+import { ArrowRight, Book, BarChart2, Users, Shield, Brain, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { clearError } from "../redux/slices/authSlice";
+import Navbar from "../components/common/Navbar";
 import LoginModal from "../components/auth/LoginModal";
 import SignupModal from "../components/auth/SignupModal";
-import { clearError } from "../redux/slices/authSlice";
+
+const FeatureCard = ({ icon: Icon, title, description }) => (
+  <div className="bg-white rounded-xl p-6 shadow-lg transform hover:scale-105 transition-transform duration-300">
+    <div className="flex items-center space-x-4 mb-4">
+      <div className="bg-blue-100 p-3 rounded-lg">
+        <Icon className="w-6 h-6 text-blue-600" />
+      </div>
+      <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+    </div>
+    <p className="text-gray-600 leading-relaxed">{description}</p>
+  </div>
+);
+
+const CourseCard = ({ title, description, link, onClick }) => (
+  <div className="bg-white rounded-xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
+    <div className="bg-gradient-to-r from-blue-600 to-blue-800 h-2" />
+    <div className="p-6">
+      <h3 className="text-xl font-bold text-gray-900 mb-4">{title}</h3>
+      <p className="text-gray-600 mb-6 leading-relaxed">{description}</p>
+      <button
+        onClick={onClick}
+        className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 font-semibold py-3 px-6 rounded-lg hover:from-yellow-500 hover:to-yellow-600 transition duration-300 ease-in-out flex items-center justify-center"
+      >
+        Explore Curriculum
+        <ArrowRight className="ml-2 w-5 h-5" />
+      </button>
+    </div>
+  </div>
+);
 
 const HeroSection = ({ onGetStarted }) => {
   const { isAuthenticated } = useSelector((state) => state.auth);
-  console.log(isAuthenticated);
-  const { profile } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
   return (
-    <section className="bg-gradient-to-b from-green-100 to-blue-100 py-16 px-16 md:py-24 lg:py-32 min-h-[70vh] lg:min-h-screen flex items-center">
-      <div className="container mx-auto">
-        <div className="flex flex-col lg:flex-row items-center justify-between">
-          {/* Left Side - Text (70% on larger screens) */}
-          <div className="text-center lg:text-left lg:w-[70%] mb-12 lg:mb-0 pr-0 lg:pr-12">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-blue-900 mb-4 lg:mb-6 leading-tight">
-              Elevate Your Financial Career with{" "}
-              <br className="hidden lg:block" />
-              <span className="text-green-600">PalsAnalytix</span>
-            </h1>
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-gray-700 mb-3 lg:mb-4">
-              CFA® | FRM® | SCR® Exam Preparation
-            </h2>
-            <p className="text-base lg:text-lg text-gray-600 mb-6 lg:mb-8 max-w-4xl mx-auto lg:mx-0 leading-relaxed">
-              PalsAnalytix is your ultimate companion for CFA® Level 1, FRM®
-              Level 1, and SCR® exam preparation. We've revolutionized the way
-              professionals and students approach these challenging
-              certifications, offering a unique blend of technology and
-              expertise.
-            </p>
-            <p className="text-base lg:text-lg text-gray-600 mb-6 lg:mb-8 max-w-4xl mx-auto lg:mx-0 leading-relaxed">
-              Our innovative platform delivers daily questions via WhatsApp,
-              Telegram, or email, adapting to your busy schedule. With instant
-              results, progress tracking, and personalized mock exams, we're
-              transforming exam preparation into a seamless, effective journey.
-            </p>
-            <div className="flex flex-wrap justify-center lg:justify-start gap-2 lg:gap-3 text-sm lg:text-base font-medium text-gray-700">
-              <span className="bg-white hover:bg-green-300 px-3 py-1 lg:px-4 lg:py-2 rounded-full shadow">
-                Adaptive Learning
-              </span>
-              <span className="bg-white hover:bg-green-300 px-3 py-1 lg:px-4 lg:py-2 rounded-full shadow">
-                Real-Time Analytics
-              </span>
-              <span className="bg-white hover:bg-green-300 px-3 py-1 lg:px-4 lg:py-2 rounded-full shadow">
-                Expert Support
-              </span>
-              <span className="bg-white hover:bg-green-300 px-3 py-1 lg:px-4 lg:py-2 rounded-full shadow">
-                Performance Tracking
-              </span>
-            </div>
-          </div>
-
-          {/* Right Side - Call to Action (30% on larger screens) */}
-          <div className="lg:w-[30%]">
-            <div className="bg-white shadow-xl rounded-lg p-6 lg:p-8 max-w-sm mx-auto">
-              <h3 className="text-xl lg:text-2xl font-bold text-center text-blue-900 mb-4 lg:mb-6">
-                {isAuthenticated ? "Welcome Back!" : "Join PalsAnalytix Today"}
-              </h3>
-              <div className="border-t border-gray-200 my-4 lg:my-6"></div>
-              <p className="text-gray-600 text-center text-sm lg:text-base mb-4 lg:mb-6">
-                {isAuthenticated
-                  ? "Visit your dashboard to explore more features and continue your learning journey."
-                  : "Embark on your journey to financial excellence. Access our comprehensive test series, featuring thousands of practice questions and tailored mock exams."}
+    <div className="relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-green-50 to-blue-50 opacity-70" />
+      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+      <section className="relative py-20 lg:py-32 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+            <div className="lg:w-[60%] space-y-8">
+              <div className="space-y-4">
+                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                  Master Your Financial Future with{" "}
+                  <span className="text-blue-600">PalsAnalytix</span>
+                </h1>
+                <h2 className="text-2xl lg:text-3xl font-semibold text-gray-700">
+                  CFA® | FRM® | SCR® Excellence
+                </h2>
+              </div>
+              <p className="text-lg text-gray-600 leading-relaxed max-w-2xl">
+                Join thousands of successful professionals who've transformed their careers through our innovative exam preparation platform. Expert-led content, adaptive learning, and real-time analytics combine to create your pathway to success.
               </p>
-              {isAuthenticated ? (
-                <button
-                  onClick={() => navigate("/dashboard")}
-                  className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg text-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center"
-                >
-                  Visit Dashboard
-                  <ArrowRight className="ml-2" size={20} />
-                </button>
-              ) : (
-                <button
-                  onClick={onGetStarted} // Use the passed prop
-                  className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg text-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center"
-                >
-                  Get Started Today
-                  <ArrowRight className="ml-2" size={20} />
-                </button>
-              )}
+              <div className="flex flex-wrap gap-3">
+                {["24/7 Expert Support", "Adaptive Learning", "Real-Time Analytics", "95% Pass Rate"].map((feature) => (
+                  <span key={feature} className="bg-white px-4 py-2 rounded-full shadow-md text-gray-700 font-medium hover:bg-blue-50 transition-colors duration-300">
+                    {feature}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="lg:w-[40%] w-full max-w-md">
+              <div className="bg-white rounded-2xl shadow-2xl p-8 backdrop-blur-lg bg-opacity-90">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+                  {isAuthenticated ? "Welcome Back!" : "Start Your Journey Today"}
+                </h3>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Shield className="w-5 h-5 text-green-500" />
+                      <span>Industry-recognized certifications</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Brain className="w-5 h-5 text-blue-500" />
+                      <span>Personalized learning paths</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Target className="w-5 h-5 text-red-500" />
+                      <span>Targeted exam preparation</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={isAuthenticated ? () => navigate("/dashboard") : onGetStarted}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-8 rounded-xl text-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center"
+                  >
+                    {isAuthenticated ? "Go to Dashboard" : "Get Started Free"}
+                    <ArrowRight className="ml-2" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 };
 
@@ -100,177 +111,124 @@ const LandingPage = () => {
   const [authMode, setAuthMode] = useState("login");
   const dispatch = useDispatch();
 
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
+  const features = [
+    {
+      icon: Book,
+      title: "Comprehensive Content",
+      description: "Access our extensive library of study materials, practice questions, and mock exams designed by industry experts."
+    },
+    {
+      icon: BarChart2,
+      title: "Performance Analytics",
+      description: "Track your progress with detailed analytics and insights, helping you focus on areas that need improvement."
+    },
+    {
+      icon: Users,
+      title: "Community Support",
+      description: "Join a community of driven professionals and get support from peers and mentors throughout your journey."
+    }
+  ];
 
-  const closeAuthModal = () => {
-    setShowAuthModal(false);
-    setAuthMode("login");
-    dispatch(clearError());
-  };
+  const courses = [
+    {
+      title: "CFA® Program",
+      description: "Master investment analysis and portfolio management with our comprehensive CFA® preparation program.",
+      link: "/cfa"
+    },
+    {
+      title: "FRM® Certification",
+      description: "Develop expertise in risk management with our specialized FRM® certification preparation course.",
+      link: "/frm"
+    },
+    {
+      title: "SCR® Certificate",
+      description: "Lead the way in sustainable finance with our cutting-edge SCR® certificate program.",
+      link: "/scr"
+    }
+  ];
 
-  const handleLoginSuccess = () => {
-    closeAuthModal();
-  };
-
-  const switchToRegister = () => {
-    setAuthMode("register");
-    dispatch(clearError());
-  };
-
-  const switchToLogin = () => {
-    setAuthMode("login");
-    dispatch(clearError());
-  };
-
-  // Add handler for Get Started button
-  const handleGetStarted = () => {
-    setShowAuthModal(true);
+  const handleModalControls = {
+    close: () => {
+      setShowAuthModal(false);
+      setAuthMode("login");
+      dispatch(clearError());
+    },
+    switchToRegister: () => {
+      setAuthMode("register");
+      dispatch(clearError());
+    },
+    switchToLogin: () => {
+      setAuthMode("login");
+      dispatch(clearError());
+    },
+    handleGetStarted: () => setShowAuthModal(true)
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-100 to-blue-100">
+    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
       <Navbar />
+      <HeroSection onGetStarted={handleModalControls.handleGetStarted} />
 
-      {/* Hero Section */}
-      <HeroSection onGetStarted={handleGetStarted} />
-      {/* Why Choose PalsAnalytix Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-semibold text-blue-900 mb-6 text-center">
-            Why PalsAnalytix Stands Out
-          </h2>
-          <p className="text-lg text-gray-700 max-w-3xl mx-auto text-center leading-relaxed mb-12">
-            At PalsAnalytix, we've reimagined exam preparation. Our platform is
-            designed to make your journey towards certification not just
-            effective, but also engaging and tailored to your unique learning
-            style.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Personalized Daily Questions",
-                description:
-                  "Select your focus areas and receive daily practice questions that adapt to your progress, ensuring you're always challenged at the right level.",
-              },
-              {
-                title: "Comprehensive Feedback Loop",
-                description:
-                  "Receive instant results and in-depth explanations for each question, turning every interaction into a valuable learning opportunity.",
-              },
-              {
-                title: "Extensive Question Bank",
-                description:
-                  "Access over 10,000 questions covering all exam topics, complemented by full-length mock exams that simulate the real testing environment.",
-              },
-              {
-                title: "Multi-Platform Accessibility",
-                description:
-                  "Study seamlessly across WhatsApp, Telegram, email, and our web platform. Your prep adapts to your lifestyle, not the other way around.",
-              },
-              {
-                title: "Advanced Analytics Dashboard",
-                description:
-                  "Track your performance with our detailed analytics. Identify strengths, pinpoint weaknesses, and watch your progress unfold in real-time.",
-              },
-              {
-                title: "Stress-Reduction Focused",
-                description:
-                  "Our approach breaks down the daunting task of exam prep into manageable daily goals, building your confidence steadily as you progress.",
-              },
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="bg-gradient-to-b from-white to-blue-50 shadow-lg rounded-lg p-6"
-              >
-                <h3 className="text-xl font-bold text-blue-900 mb-4">
-                  {item.title}
-                </h3>
-                <p className="text-gray-600">{item.description}</p>
-              </div>
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-16">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">Why Choose PalsAnalytix</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Experience a revolutionary approach to exam preparation that combines cutting-edge technology with expert guidance.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <FeatureCard key={index} {...feature} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Course Offerings Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-100 to-green-100">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-semibold text-blue-900 mb-6 text-center">
-            Our Specialized Courses
-          </h2>
-          <p className="text-lg text-gray-700 max-w-3xl mx-auto text-center leading-relaxed mb-12">
-            PalsAnalytix offers targeted preparation for three of the most
-            sought-after financial certifications. Each course is meticulously
-            designed to align with the latest exam patterns and industry
-            requirements.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "CFA® (Chartered Financial Analyst)",
-                link: "/cfa",
-                description:
-                  "The CFA® program is the gold standard for investment analysis and portfolio management. Our course covers all three levels, focusing on ethics, quantitative methods, economics, financial reporting, corporate finance, and more.",
-              },
-              {
-                title: "FRM® (Financial Risk Manager)",
-                link: "/frm",
-                description:
-                  "Recognized globally, the FRM® certification is crucial for professionals in risk management. Our comprehensive program covers market risk, credit risk, operational risk, and investment management, preparing you for both Part I and Part II of the exam.",
-              },
-              {
-                title: "SCR® (Sustainability and Climate Risk)",
-                link: "/scr",
-                description:
-                  "As sustainability becomes central to financial decision-making, the SCR® certification is increasingly valuable. Our course covers climate science, financial risks of climate change, and strategies for managing climate-related risks in various business contexts.",
-              },
-            ].map((course, index) => (
-              <div key={index} className="bg-white shadow-xl rounded-lg p-6">
-                <h3 className="text-xl font-bold text-blue-900 mb-4">
-                  {course.title}
-                </h3>
-                <p className="text-gray-600 mb-6">{course.description}</p>
-                <button
-                  onClick={() => {
-                    handleNavigation(`${course.link}`);
-                  }}
-                  className="w-full bg-[#FEE154] text-black font-semibold py-3 px-6 rounded-lg hover:bg-yellow-500 transition duration-300 ease-in-out"
-                >
-                  Explore Curriculum
-                </button>
-              </div>
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-50 to-white">
+        <div className="max-w-7xl mx-auto space-y-16">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">Our Professional Certifications</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Choose from our selection of industry-leading certification programs designed to accelerate your career.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {courses.map((course, index) => (
+              <CourseCard
+                key={index}
+                {...course}
+                onClick={() => navigate(course.link)}
+              />
             ))}
           </div>
         </div>
       </section>
 
       {showAuthModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-md">
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
             {authMode === "login" ? (
               <LoginModal
-                onSuccess={handleLoginSuccess}
-                onClose={closeAuthModal}
-                onSignupClick={switchToRegister}
+                onSuccess={handleModalControls.close}
+                onClose={handleModalControls.close}
+                onSignupClick={handleModalControls.switchToRegister}
               />
             ) : (
               <SignupModal
-                onSuccess={switchToLogin}
-                onClose={closeAuthModal}
-                onLoginClick={switchToLogin}
+                onSuccess={handleModalControls.switchToLogin}
+                onClose={handleModalControls.close}
+                onLoginClick={handleModalControls.switchToLogin}
               />
             )}
           </div>
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-gray-400">
-            &copy; 2024 PalsAnalytix. All rights reserved.
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-gray-400">
+            &copy; {new Date().getFullYear()} PalsAnalytix. All rights reserved.
           </p>
         </div>
       </footer>

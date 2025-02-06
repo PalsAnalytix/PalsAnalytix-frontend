@@ -2,8 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Navigate } from "react-router-dom";
 import {
-  User, Mail, Phone, Bell, Clock, TrendingUp, BookOpen,
-  CheckCircle, Star, Activity, Target
+  User,
+  Mail,
+  Phone,
+  Bell,
+  Clock,
+  TrendingUp,
+  BookOpen,
+  CheckCircle,
+  Star,
+  Activity,
+  Target,
+  MessageSquare,
 } from "lucide-react";
 import { fetchUserProfile } from "../redux/slices/authSlice";
 import Navbar from "../components/common/Navbar";
@@ -27,9 +37,12 @@ const StatCard = ({ title, value, icon: Icon, color }) => (
 const SubscriptionCard = ({ subscription }) => {
   const getStatusColor = (status) => {
     switch (status?.toUpperCase()) {
-      case "ACTIVE": return "bg-green-100 text-green-800 border-green-200";
-      case "EXPIRED": return "bg-red-100 text-red-800 border-red-200";
-      default: return "bg-gray-100 text-gray-800 border-gray-200";
+      case "ACTIVE":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "EXPIRED":
+        return "bg-red-100 text-red-800 border-red-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -44,15 +57,23 @@ const SubscriptionCard = ({ subscription }) => {
       <div className="p-4 space-y-3">
         <div className="flex items-center justify-between text-sm bg-gray-50 rounded-md p-2">
           <span className="text-gray-600">Current Plan</span>
-          <span className="font-medium text-blue-600">{subscription.currentSubscriptionPlan}</span>
+          <span className="font-medium text-blue-600">
+            {subscription.currentSubscriptionPlan}
+          </span>
         </div>
         <div className="flex items-center justify-between text-sm bg-gray-50 rounded-md p-2">
           <span className="text-gray-600">Current Chapter</span>
-          <span className="font-medium">{subscription.currentChapterForWhatsapp || "N/A"}</span>
+          <span className="font-medium">
+            {subscription.currentChapterForWhatsapp || "N/A"}
+          </span>
         </div>
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-600">Status</span>
-          <span className={`px-2 py-0.5 rounded-full text-sm border ${getStatusColor(subscription.status)}`}>
+          <span
+            className={`px-2 py-0.5 rounded-full text-sm border ${getStatusColor(
+              subscription.status
+            )}`}
+          >
             {subscription.status}
           </span>
         </div>
@@ -77,7 +98,9 @@ const ProgressCard = ({ metrics }) => (
     </div>
     <div className="p-4 space-y-4">
       {Object.entries(metrics.courseWiseProgress).map(([course, progress]) => {
-        const percentage = ((progress.correctAnswers / progress.questionsAttempted) * 100 || 0).toFixed(1);
+        const percentage = (
+          (progress.correctAnswers / progress.questionsAttempted) * 100 || 0
+        ).toFixed(1);
         return (
           <div key={course} className="space-y-1.5">
             <div className="flex justify-between items-center text-sm">
@@ -100,11 +123,49 @@ const ProgressCard = ({ metrics }) => (
   </div>
 );
 
+const SideInsightsPanel = () => {
+  return (
+    <div className="bg-white rounded-lg shadow-sm p-4 space-y-4">
+      <div className="flex items-center gap-2 font-medium border-b pb-2">
+        <MessageSquare className="w-4 h-4 text-blue-500" />
+        Quick Insights
+      </div>
+      <div className="space-y-3">
+        <div className="bg-gray-50 p-3 rounded-md">
+          <p className="text-sm text-gray-600">Recommended Topics</p>
+          <ul className="text-xs text-gray-500 list-disc list-inside mt-1">
+            <li>Mathematics Chapter 3</li>
+            <li>Physics Mechanics</li>
+            <li>Chemistry Organic Compounds</li>
+          </ul>
+        </div>
+        <div className="bg-gray-50 p-3 rounded-md">
+          <p className="text-sm text-gray-600">Study Suggestions</p>
+          <p className="text-xs text-gray-500 mt-1">
+            Focus on improving your performance in topics with lower success
+            rates.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const handleWhatsAppModalOpen = () => {
+  if (profile.currentSubscriptionPlan === "FREE") {
+    // Redirect to pricing page
+    navigate("/pricing");
+  } else {
+    setIsWhatsAppModalOpen(true);
+  }
+};
+
 const UserDashboard = () => {
   const dispatch = useDispatch();
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const profile = user;
+  console.log(profile);
   const loading = useSelector((state) => state.auth.loading);
 
   useEffect(() => {
@@ -114,7 +175,7 @@ const UserDashboard = () => {
   }, [isAuthenticated, user, dispatch]);
 
   if (!isAuthenticated) return <Navigate to="/" />;
-  
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex justify-center items-center">
@@ -124,10 +185,9 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-200">
       <Navbar />
       <div className="container mx-auto px-4 py-6">
-        {/* Profile Header */}
         <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
           <div className="flex flex-col md:flex-row items-center gap-4">
             <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -136,7 +196,9 @@ const UserDashboard = () => {
               </span>
             </div>
             <div className="flex-1">
-              <h1 className="text-lg font-semibold text-gray-900">{profile.username}</h1>
+              <h1 className="text-xl font-semibold text-gray-900">
+                {profile.username}
+              </h1>
               <div className="mt-1 space-y-0.5">
                 <p className="text-sm text-gray-600 flex items-center">
                   <Mail className="w-4 h-4 mr-1.5" />
@@ -158,46 +220,49 @@ const UserDashboard = () => {
           </div>
         </div>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           <StatCard
             title="Total Questions"
-            value={profile.performanceMetrics.totalQuestionsAttempted}
+            value={profile.stats.totalQuestions}
             icon={BookOpen}
             color="bg-blue-500"
           />
           <StatCard
-            title="Correct Answers"
-            value={profile.performanceMetrics.correctAnswers}
+            title="Attempted Questions"
+            value={profile.stats.attemptedQuestions}
             icon={CheckCircle}
             color="bg-green-500"
           />
           <StatCard
             title="Average Time"
-            value={`${Math.round(profile.performanceMetrics.averageTimePerQuestion)}s`}
+            value={`${Math.round(profile.stats.averageTime)}s`}
             icon={Clock}
             color="bg-purple-500"
           />
           <StatCard
             title="Success Rate"
-            value={`${((profile.performanceMetrics.correctAnswers / profile.performanceMetrics.totalQuestionsAttempted) * 100 || 0).toFixed(1)}%`}
+            value={`${profile.stats.successRate.toFixed(1)}%`}
             icon={TrendingUp}
             color="bg-indigo-500"
           />
         </div>
 
-        {/* Subscription and Progress Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-          <SubscriptionCard subscription={profile} />
-          <ProgressCard metrics={profile.performanceMetrics} />
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div className="lg:col-span-1">
+            <SideInsightsPanel />
+          </div>
 
-        {/* Questions Section */}
-        <div className="mt-4">
-          <UserQuestions
-            isSubscribed={profile.currentSubscriptionPlan !== "FREE"}
-            questions={profile.questions}
-          />
+          <div className="lg:col-span-3 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SubscriptionCard subscription={profile} />
+              <ProgressCard metrics={profile.performanceMetrics} />
+            </div>
+
+            <UserQuestions
+              isSubscribed={profile.currentSubscriptionPlan !== "FREE"}
+              questions={profile.questions}
+            />
+          </div>
         </div>
       </div>
 
@@ -205,6 +270,14 @@ const UserDashboard = () => {
         isOpen={isWhatsAppModalOpen}
         onClose={() => setIsWhatsAppModalOpen(false)}
       />
+
+      <footer className="bg-gray-900 text-white py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-gray-400">
+            &copy; 2024 PalsAnalytix. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

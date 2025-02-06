@@ -98,7 +98,7 @@ const CfaPage = () => {
             Subscribe today and access comprehensive study resources!
           </p>
           <button 
-          onClick={()=>{navigate("/subscription")}}
+          onClick={()=>{navigate("/pricing")}}
           className="mt-4 px-6 py-2 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition duration-300 ease-in-out transform hover:scale-105">
             Register Now
           </button>
