@@ -2,18 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Navigate } from "react-router-dom";
 import {
-  User,
-  Mail,
-  Phone,
-  Bell,
-  Clock,
-  TrendingUp,
-  BookOpen,
-  CheckCircle,
-  Star,
-  Activity,
-  Target,
-  MessageSquare,
+  User, Mail, Phone, Bell, Clock, TrendingUp, BookOpen,
+  CheckCircle, Star, Activity, Target, MessageSquare,
 } from "lucide-react";
 import { fetchUserProfile } from "../redux/slices/authSlice";
 import Navbar from "../components/common/Navbar";
@@ -21,14 +11,14 @@ import WhatsAppModal from "../components/comp/WhatsappModal";
 import UserQuestions from "../components/user/UserQuestions";
 
 const StatCard = ({ title, value, icon: Icon, color }) => (
-  <div className="bg-white rounded-lg shadow-sm p-4 hover:bg-gray-50 transition-colors">
-    <div className="flex items-center gap-3">
-      <div className={`p-2 rounded-lg ${color}`}>
-        <Icon className="w-5 h-5 text-white" />
+  <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 hover:bg-gray-50 transition-colors">
+    <div className="flex items-center gap-2 sm:gap-3">
+      <div className={`p-1.5 sm:p-2 rounded-lg ${color}`}>
+        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
       </div>
       <div>
-        <p className="text-sm text-gray-600">{title}</p>
-        <p className="text-lg font-semibold mt-0.5">{value}</p>
+        <p className="text-xs sm:text-sm text-gray-600">{title}</p>
+        <p className="text-base sm:text-lg font-semibold mt-0.5">{value}</p>
       </div>
     </div>
   </div>
@@ -49,35 +39,31 @@ const SubscriptionCard = ({ subscription }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm">
       <div className="p-3 border-b border-gray-100">
-        <div className="flex items-center gap-2 font-medium">
+        <div className="flex items-center gap-2 font-medium text-sm sm:text-base">
           <Star className="w-4 h-4 text-yellow-500" />
           Subscription Details
         </div>
       </div>
-      <div className="p-4 space-y-3">
-        <div className="flex items-center justify-between text-sm bg-gray-50 rounded-md p-2">
+      <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
+        <div className="flex items-center justify-between text-xs sm:text-sm bg-gray-50 rounded-md p-2">
           <span className="text-gray-600">Current Plan</span>
           <span className="font-medium text-blue-600">
             {subscription.currentSubscriptionPlan}
           </span>
         </div>
-        <div className="flex items-center justify-between text-sm bg-gray-50 rounded-md p-2">
+        <div className="flex items-center justify-between text-xs sm:text-sm bg-gray-50 rounded-md p-2">
           <span className="text-gray-600">Current Chapter</span>
           <span className="font-medium">
             {subscription.currentChapterForWhatsapp || "N/A"}
           </span>
         </div>
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center justify-between text-xs sm:text-sm">
           <span className="text-gray-600">Status</span>
-          <span
-            className={`px-2 py-0.5 rounded-full text-sm border ${getStatusColor(
-              subscription.status
-            )}`}
-          >
+          <span className={`px-2 py-0.5 rounded-full text-xs sm:text-sm border ${getStatusColor(subscription.status)}`}>
             {subscription.status}
           </span>
         </div>
-        <div className="flex items-center justify-between text-sm bg-gray-50 rounded-md p-2">
+        <div className="flex items-center justify-between text-xs sm:text-sm bg-gray-50 rounded-md p-2">
           <span className="text-gray-600">Expires On</span>
           <span className="font-medium">
             {new Date(subscription.subscriptionExpiryDate).toLocaleDateString()}
@@ -91,23 +77,21 @@ const SubscriptionCard = ({ subscription }) => {
 const ProgressCard = ({ metrics }) => (
   <div className="bg-white rounded-lg shadow-sm">
     <div className="p-3 border-b border-gray-100">
-      <div className="flex items-center gap-2 font-medium">
+      <div className="flex items-center gap-2 font-medium text-sm sm:text-base">
         <Activity className="w-4 h-4 text-blue-500" />
         Performance Overview
       </div>
     </div>
-    <div className="p-4 space-y-4">
+    <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
       {Object.entries(metrics.courseWiseProgress).map(([course, progress]) => {
-        const percentage = (
-          (progress.correctAnswers / progress.questionsAttempted) * 100 || 0
-        ).toFixed(1);
+        const percentage = ((progress.correctAnswers / progress.questionsAttempted) * 100 || 0).toFixed(1);
         return (
           <div key={course} className="space-y-1.5">
-            <div className="flex justify-between items-center text-sm">
+            <div className="flex justify-between items-center text-xs sm:text-sm">
               <span className="font-medium text-gray-700">{course}</span>
               <div className="flex items-center gap-1.5">
                 <span className="font-medium text-gray-700">{percentage}%</span>
-                <Target className="w-3.5 h-3.5 text-blue-500" />
+                <Target className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500" />
               </div>
             </div>
             <div className="relative w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -123,49 +107,36 @@ const ProgressCard = ({ metrics }) => (
   </div>
 );
 
-const SideInsightsPanel = () => {
-  return (
-    <div className="bg-white rounded-lg shadow-sm p-4 space-y-4">
-      <div className="flex items-center gap-2 font-medium border-b pb-2">
-        <MessageSquare className="w-4 h-4 text-blue-500" />
-        Quick Insights
+const SideInsightsPanel = () => (
+  <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 space-y-3 sm:space-y-4">
+    <div className="flex items-center gap-2 font-medium text-sm sm:text-base border-b pb-2">
+      <MessageSquare className="w-4 h-4 text-blue-500" />
+      Quick Insights
+    </div>
+    <div className="space-y-2 sm:space-y-3">
+      <div className="bg-gray-50 p-2.5 sm:p-3 rounded-md">
+        <p className="text-xs sm:text-sm text-gray-600">Recommended Topics</p>
+        <ul className="text-xs text-gray-500 list-disc list-inside mt-1">
+          <li>Mathematics Chapter 3</li>
+          <li>Physics Mechanics</li>
+          <li>Chemistry Organic Compounds</li>
+        </ul>
       </div>
-      <div className="space-y-3">
-        <div className="bg-gray-50 p-3 rounded-md">
-          <p className="text-sm text-gray-600">Recommended Topics</p>
-          <ul className="text-xs text-gray-500 list-disc list-inside mt-1">
-            <li>Mathematics Chapter 3</li>
-            <li>Physics Mechanics</li>
-            <li>Chemistry Organic Compounds</li>
-          </ul>
-        </div>
-        <div className="bg-gray-50 p-3 rounded-md">
-          <p className="text-sm text-gray-600">Study Suggestions</p>
-          <p className="text-xs text-gray-500 mt-1">
-            Focus on improving your performance in topics with lower success
-            rates.
-          </p>
-        </div>
+      <div className="bg-gray-50 p-2.5 sm:p-3 rounded-md">
+        <p className="text-xs sm:text-sm text-gray-600">Study Suggestions</p>
+        <p className="text-xs text-gray-500 mt-1">
+          Focus on improving your performance in topics with lower success rates.
+        </p>
       </div>
     </div>
-  );
-};
-
-const handleWhatsAppModalOpen = () => {
-  if (profile.currentSubscriptionPlan === "FREE") {
-    // Redirect to pricing page
-    navigate("/pricing");
-  } else {
-    setIsWhatsAppModalOpen(true);
-  }
-};
+  </div>
+);
 
 const UserDashboard = () => {
   const dispatch = useDispatch();
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const profile = user;
-  console.log(profile);
   const loading = useSelector((state) => state.auth.loading);
 
   useEffect(() => {
@@ -187,40 +158,40 @@ const UserDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-200">
       <Navbar />
-      <div className="container mx-auto px-4 py-6">
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-xl font-bold text-white">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 mb-4">
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-lg sm:text-xl font-bold text-white">
                 {profile.username.charAt(0).toUpperCase()}
               </span>
             </div>
-            <div className="flex-1">
-              <h1 className="text-xl font-semibold text-gray-900">
+            <div className="flex-1 text-center sm:text-left">
+              <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
                 {profile.username}
               </h1>
               <div className="mt-1 space-y-0.5">
-                <p className="text-sm text-gray-600 flex items-center">
-                  <Mail className="w-4 h-4 mr-1.5" />
+                <p className="text-xs sm:text-sm text-gray-600 flex items-center justify-center sm:justify-start">
+                  <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
                   {profile.email}
                 </p>
-                <p className="text-sm text-gray-600 flex items-center">
-                  <Phone className="w-4 h-4 mr-1.5" />
+                <p className="text-xs sm:text-sm text-gray-600 flex items-center justify-center sm:justify-start">
+                  <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
                   {profile.phoneNumber}
                 </p>
               </div>
             </div>
             <button
               onClick={() => setIsWhatsAppModalOpen(true)}
-              className="px-3 py-1.5 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 transition-colors flex items-center"
+              className="w-full sm:w-auto px-3 py-1.5 bg-green-500 text-white text-xs sm:text-sm rounded-md hover:bg-green-600 transition-colors flex items-center justify-center"
             >
-              <Bell className="w-4 h-4 mr-1.5" />
+              <Bell className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
               Update Questions Preferences
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4">
           <StatCard
             title="Total Questions"
             value={profile.stats.totalQuestions}
@@ -247,13 +218,13 @@ const UserDashboard = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
           <div className="lg:col-span-1">
             <SideInsightsPanel />
           </div>
 
-          <div className="lg:col-span-3 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="lg:col-span-3 space-y-3 sm:space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <SubscriptionCard subscription={profile} />
               <ProgressCard metrics={profile.performanceMetrics} />
             </div>
@@ -271,9 +242,9 @@ const UserDashboard = () => {
         onClose={() => setIsWhatsAppModalOpen(false)}
       />
 
-      <footer className="bg-gray-900 text-white py-8">
+      <footer className="bg-gray-900 text-white py-6 sm:py-8 mt-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-gray-400">
+          <p className="text-center text-xs sm:text-sm text-gray-400">
             &copy; 2024 PalsAnalytix. All rights reserved.
           </p>
         </div>
