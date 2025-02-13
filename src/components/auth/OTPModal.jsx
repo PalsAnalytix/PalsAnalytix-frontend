@@ -2,17 +2,17 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { verifyOTP } from '../../redux/slices/authSlice';
 
-const OTPModal = ({ onSuccess, onLoginClick, onClose, phone }) => {
+const OTPModal = ({ onSuccess, onLoginClick, onClose, email }) => {
   const dispatch = useDispatch();
   const { loading, error, otpSent, otpVerified } = useSelector((state) => state.auth);
-  console.log(phone)
+  console.log(email)
   
   const [otp, setOTP] = useState('');
 
   const handleOTPVerification = async (e) => {
     e.preventDefault();
     try {
-      await dispatch(verifyOTP({ phone, otp })).unwrap();
+      await dispatch(verifyOTP({ email, otp })).unwrap();
       onSuccess();
     } catch (err) {
       // Error handled by reducer
@@ -57,7 +57,7 @@ const OTPModal = ({ onSuccess, onLoginClick, onClose, phone }) => {
                 title="Please enter a 6-digit OTP"
               />
               <p className="text-sm text-gray-500 mt-2">
-                Please enter the 6-digit OTP sent to your phone number {phone}
+                Please enter the 6-digit OTP sent to your Email Id - {email}
               </p>
             </div>
 

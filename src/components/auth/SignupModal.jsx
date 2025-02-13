@@ -204,7 +204,7 @@ const SignupModal = ({ onSuccess, onLoginClick, onClose }) => {
           onSuccess={handleOTPSuccess}
           onLoginClick={handleOTPLoginClick}
           onClose={handleOTPClose}
-          phone={formData.phone}
+          email={formData.email}
         />
       )}
     </div>

@@ -38,10 +38,10 @@ export const signupUser = createAsyncThunk(
 
 export const verifyOTP = createAsyncThunk(
   "auth/verifyOTP",
-  async ({ phone, otp }, { rejectWithValue }) => {
+  async ({ email, otp }, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${BASE_URL}/verify-otp`, {
-        phone,
+        email,
         code: otp,
       });
       return response.data;
@@ -56,6 +56,7 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${BASE_URL}/login`, credentials);
+      console.log(response);
 
       if (response.data.user.isAdmin) {
         localStorage.setItem("token", response.data.token);

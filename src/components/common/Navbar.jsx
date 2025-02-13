@@ -19,7 +19,13 @@ const Navbar = () => {
   const mobileMenuRef = useRef(null);
 
   const handleNavigation = (path) => {
-    navigate(path);
+    // Check if the path is /dashboard and handle admin redirect
+    if (path === '/dashboard') {
+      const isAdmin = localStorage.getItem('isAdmin') === 'true';
+      navigate(isAdmin ? '/admin' : '/dashboard');
+    } else {
+      navigate(path);
+    }
     setDropdownOpen(false);
     setMobileMenuOpen(false);
   };

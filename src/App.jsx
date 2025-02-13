@@ -24,7 +24,7 @@ function App() {
   const dispatch = useDispatch();
   const isAuthenticated = useAuth(); // Using the custom hook
   const { user } = useSelector((state) => state.auth);
-  const isAdmin = user?.phoneNumber === import.meta.env.VITE_ADMIN_PHONE;
+  const isAdmin = user?.email === import.meta.env.VITE_ADMIN_EMAIL;
 
   useEffect(() => {
     if (localStorage.getItem("token")) {

@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/slices/authSlice';
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
 import { useNavigate } from 'react-router-dom';
 
 const LoginModal = ({ onSuccess, onSignupClick, onClose }) => {
@@ -11,17 +9,15 @@ const LoginModal = ({ onSuccess, onSignupClick, onClose }) => {
   const { loading, error } = useSelector((state) => state.auth);
   
   const [formData, setFormData] = useState({
-    phone: '',
+    email: '',
     password: ''
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const sanitizedPhone = formData.phone.replace(/[+\s]/g, '');
-      const loginData = { ...formData, phone: sanitizedPhone };
-      
-      const result = await dispatch(loginUser(loginData)).unwrap();
+      const result = await dispatch(loginUser(formData)).unwrap();
+      console.log(result);
       if (result.user.isAdmin) {
         navigate('/admin');
         onSuccess();
@@ -57,47 +53,14 @@ const LoginModal = ({ onSuccess, onSignupClick, onClose }) => {
               </div>
             )}
             
-            <div className="relative">
-              <PhoneInput
-                country={'in'}
-                value={formData.phone}
-                onChange={phone => setFormData({ ...formData, phone })}
-                inputProps={{
-                  required: true,
-                  placeholder: "Phone Number"
-                }}
-                containerStyle={{ width: '100%' }}
-                inputStyle={{
-                  width: '100%',
-                  height: '48px',
-                  fontSize: '16px',
-                  borderRadius: '0.75rem',
-                  borderColor: '#D1D5DB',
-                  backgroundColor: 'white',
-                  paddingTop: '8px',
-                  paddingBottom: '8px'
-                }}
-                buttonStyle={{
-                  borderRadius: '0.75rem 0 0 0.75rem',
-                  borderColor: '#D1D5DB',
-                  backgroundColor: '#F9FAFB',
-                  padding: '8px'
-                }}
-                dropdownStyle={{
-                  width: '300px',
-                  borderRadius: '0.75rem',
-                  borderColor: '#D1D5DB'
-                }}
-                searchStyle={{
-                  width: '100%',
-                  margin: '0.5rem 0',
-                  padding: '0.75rem',
-                  borderRadius: '0.5rem',
-                  borderColor: '#D1D5DB'
-                }}
-                enableSearch={true}
-                disableSearchIcon={true}
-                searchPlaceholder="Search country..."
+            <div>
+              <input
+                type="email"
+                placeholder="Email Address"
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                required
               />
             </div>
 
