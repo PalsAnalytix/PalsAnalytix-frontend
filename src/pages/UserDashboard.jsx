@@ -218,11 +218,6 @@ const UserDashboard = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
-          <div className="lg:col-span-1">
-            <SideInsightsPanel />
-          </div>
-
           <div className="lg:col-span-3 space-y-3 sm:space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <SubscriptionCard subscription={profile} />
@@ -235,7 +230,7 @@ const UserDashboard = () => {
             />
           </div>
         </div>
-      </div>
+      
 
       <WhatsAppModal
         isOpen={isWhatsAppModalOpen}

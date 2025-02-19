@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { BookOpen, Lock, ExternalLink, ChevronRight, Crown, Check, X, AlertCircle } from "lucide-react";
+import { BookOpen, Lock, ExternalLink, ChevronRight, Crown, Check, X, AlertCircle,Calendar} from "lucide-react";
 import AttemptQuestionModal from './AttemptQuestionModal';
 import { attemptQuestion } from '../../redux/slices/authSlice';
-
+import { QuestionsLayout } from './LayoutFilters';
 const rightAnswerMap = { 1: 'A', 2: 'B', 3: 'C', 4: 'D' };
 
 const AnalysisModal = ({ question, isOpen, onClose }) => {
@@ -112,7 +112,25 @@ const UserQuestions = ({ isSubscribed, questions = [], loading }) => {
   const dispatch = useDispatch();
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [analysisQuestion, setAnalysisQuestion] = useState(null);
-  const displayQuestions = isSubscribed ? questions : questions.filter(q => q.isSampleQuestion);
+  const [filteredQuestions, setFilteredQuestions] = useState(questions);
+  
+  useEffect(() => {
+    setFilteredQuestions(questions);
+  }, [questions]);
+
+  const handleFilterChange = (newFilteredQuestions) => {
+    setFilteredQuestions(newFilteredQuestions);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-32">
+        <div className="animate-spin h-6 w-6 border-b-2 border-blue-500" />
+      </div>
+    );
+  }
+
+  const displayQuestions = isSubscribed ? filteredQuestions : filteredQuestions.filter(q => q.isSampleQuestion);
 
   const truncateText = (text, wordCount = 10) => 
     text?.split(' ').slice(0, wordCount).join(' ') + 
@@ -165,22 +183,34 @@ const UserQuestions = ({ isSubscribed, questions = [], loading }) => {
     </div>
   );
 
+
+  const formatDate = (dateString) => {
+    console.log(dateString);
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  
+
   return (
-    <div className="bg-white rounded-lg shadow-sm">
-      <div className="p-4 border-b border-gray-100 flex justify-between items-center">
-        <div className="flex items-center gap-2 font-medium">
-          <BookOpen className="w-4 h-4 text-blue-500" />
-          Questions Bank
+    <QuestionsLayout questions={questions} onFilterChange={handleFilterChange}>
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+          <div className="flex items-center gap-2 font-medium">
+            <BookOpen className="w-4 h-4 text-blue-500" />
+            Questions Bank
+          </div>
+          {!isSubscribed && (
+            <a href="/pricing" className="text-sm font-bold text-green-700 hover:underline flex items-center gap-1">
+              Upgrade <Crown className="w-4 h-4" />
+            </a>
+          )}
         </div>
-        {!isSubscribed && (
-          <a 
-            href="/pricing" 
-            className="text-sm font-bold text-green-700 hover:underline flex items-center gap-1"
-          >
-            Upgrade <Crown className="w-4 h-4" />
-          </a>
-        )}
-      </div>
+
 
       {displayQuestions.length === 0 ? (
         <div className="flex items-center justify-center h-32 p-4">
@@ -189,7 +219,7 @@ const UserQuestions = ({ isSubscribed, questions = [], loading }) => {
         </div>
       ) : (
         <div className="divide-y divide-gray-100">
-          {displayQuestions.map((item, index) => (
+        {filteredQuestions.map((item, index) => (
             <div 
               key={item.question._id || index} 
               className="p-4 hover:bg-gray-50 transition-colors"
@@ -209,6 +239,10 @@ const UserQuestions = ({ isSubscribed, questions = [], loading }) => {
                     Sample
                   </span>
                 )}
+                <div className="flex items-center gap-1 text-xs text-gray-500">
+                  <Calendar className="w-3 h-3" />
+                  {formatDate(item.assignedDate)}
+                </div>
               </div>
               <div className="flex items-center justify-between">
                 <p className="text-sm text-gray-900 flex-1 mr-4">
@@ -266,6 +300,7 @@ const UserQuestions = ({ isSubscribed, questions = [], loading }) => {
         onClose={() => setAnalysisQuestion(null)}
       />
     </div>
+    </QuestionsLayout>
   );
 };
 

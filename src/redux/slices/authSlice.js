@@ -155,6 +155,7 @@ export const fetchUserProfile = createAsyncThunk(
 // Helper function to calculate stats
 const calculateStats = (userData) => {
   const { questions, performanceMetrics } = userData;
+  console.log(performanceMetrics)
 
   // Calculate stats based on questions and performanceMetrics
   // This is just an example, adjust according to your data structure
