@@ -7,12 +7,14 @@ import {
   Navigate,
 } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
+import EnhancedFAQPage from "./pages/FAQ";
 import AdminDashboard from "./pages/AdminDashboard";
 import CFAPage from "./pages/CFAPage";
 import SCRPage from "./pages/SCRPage";
 import UserDashboard from "./pages/UserDashboard";
 import TestPage from "./pages/TestPage";
 import PricingPage from "./pages/PricingPage";
+import ContactPage from "./pages/ContactUs";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import useAuth from "./hooks/useAuth";
@@ -71,6 +73,8 @@ function App() {
           <Route path="/cfa" element={<CFAPage />} />
           <Route path="/scr" element={<SCRPage />} />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/FAQ" element={<EnhancedFAQPage />} />
 
           {/* Protected Routes */}
           <Route

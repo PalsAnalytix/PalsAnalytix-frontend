@@ -103,6 +103,18 @@ const Navbar = () => {
       >
         FRM®
       </button>
+      <button
+        onClick={() => handleNavigation("/faq")}
+        className={`${className} hover:text-blue-500`}
+      >
+        FAQ
+      </button>
+      <button
+        onClick={() => handleNavigation("/contact")}
+        className={`${className} hover:text-blue-500`}
+      >
+        Contact-Us
+      </button>
     </>
   );
 
