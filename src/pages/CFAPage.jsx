@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "../components/common/Navbar";
 import CFACurriculumSection from "../components/cfa/CFACurriculumSection";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/common/Footer";
 
 const CfaPage = () => {
   const navigate = useNavigate();
@@ -105,13 +106,7 @@ const CfaPage = () => {
         </section>
       </div>
 
-      <footer className="bg-gray-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-gray-400">
-            &copy; 2024 PalsAnalytix. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 };

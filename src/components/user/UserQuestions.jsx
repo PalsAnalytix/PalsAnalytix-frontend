@@ -4,14 +4,13 @@ import { BookOpen, Lock, ExternalLink, ChevronRight, Crown, Check, X, AlertCircl
 import AttemptQuestionModal from './AttemptQuestionModal';
 import { attemptQuestion } from '../../redux/slices/authSlice';
 import { QuestionsLayout } from './LayoutFilters';
+import { PaginatedQuestions } from './Pagination';
 const rightAnswerMap = { 1: 'A', 2: 'B', 3: 'C', 4: 'D' };
 
 const AnalysisModal = ({ question, isOpen, onClose }) => {
   if (!isOpen || !question) return null;
 
   const { attemptDetails, question: questionData } = question;
-
-  console.log(attemptDetails);
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -160,13 +159,11 @@ const UserQuestions = ({ isSubscribed, questions = [], loading }) => {
   };
   
   const handleSubmitAnswer = (attemptData) => {
-    console.log("Submitting answer");
     const updatedAttemptDetails = {
       attemptedOption: attemptData.selectedOption,
       timeSpent: attemptData.timeSpent,
       isCorrect: attemptData.selectedOption === rightAnswerMap[attemptData.question.question.rightAnswer]
     };
-    console.log("Attempt details:", updatedAttemptDetails);
   
     dispatch(attemptQuestion({
       questionId: selectedQuestion._id,
@@ -185,7 +182,6 @@ const UserQuestions = ({ isSubscribed, questions = [], loading }) => {
 
 
   const formatDate = (dateString) => {
-    console.log(dateString);
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -219,10 +215,13 @@ const UserQuestions = ({ isSubscribed, questions = [], loading }) => {
         </div>
       ) : (
         <div className="divide-y divide-gray-100">
-        {filteredQuestions.map((item, index) => (
+        
+          <PaginatedQuestions 
+          questions={displayQuestions} 
+          renderQuestion={(item, index) => (
             <div 
               key={item.question._id || index} 
-              className="p-4 hover:bg-gray-50 transition-colors"
+              className="p-4 hover:bg-gray-100 border-2 transition-colors"
             >
               <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
                 <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full text-xs font-medium">
@@ -282,8 +281,9 @@ const UserQuestions = ({ isSubscribed, questions = [], loading }) => {
                   </div>
                 </div>
               )}
-            </div>
-          ))}
+            </div> 
+          )}/>
+          
         </div>
       )}
 

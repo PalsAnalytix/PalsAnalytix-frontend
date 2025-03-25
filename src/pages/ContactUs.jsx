@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Navbar from "../components/common/Navbar";
 import emailjs from '@emailjs/browser'; // Import EmailJS
+import Footer from "../components/common/Footer";
 
 const emailJsUserId = import.meta.env.VITE_EMAIL_JS_USER_ID;
 const EmailjsServiceId = import.meta.env.VITE_EMAIL_JS_SERVICE_ID;
@@ -91,7 +92,7 @@ const ContactPage = () => {
       from_name: formData.name,
       to_name: "PalsAnalytix",
       message: formData.message,
-      email: formData.email,
+      from_email: formData.email,
       subject: formData.subject, // Include subject in the email
     };
 
@@ -105,7 +106,6 @@ const ContactPage = () => {
         params
       );
       
-      console.log("Email sent successfully:", response);
       setSubmitStatus("success");
       
       // Reset form after successful submission
@@ -121,7 +121,6 @@ const ContactPage = () => {
         setSubmitStatus(null);
       }, 5000);
     } catch (error) {
-      console.error("Email sending failed:", error);
       setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
@@ -479,13 +478,7 @@ const ContactPage = () => {
           </div>
         </div>
       </div>
-      <footer className="bg-gray-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-gray-400">
-            &copy; 2024 PalsAnalytix. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 };

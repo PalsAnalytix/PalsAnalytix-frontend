@@ -1,4 +1,5 @@
 import React from "react";
+import Footer from "../common/Footer";
 
 const CFACurriculumSection = () => {
   return (

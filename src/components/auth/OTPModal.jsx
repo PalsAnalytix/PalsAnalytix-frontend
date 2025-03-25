@@ -5,7 +5,6 @@ import { verifyOTP } from '../../redux/slices/authSlice';
 const OTPModal = ({ onSuccess, onLoginClick, onClose, email }) => {
   const dispatch = useDispatch();
   const { loading, error, otpSent, otpVerified } = useSelector((state) => state.auth);
-  console.log(email)
   
   const [otp, setOTP] = useState('');
 

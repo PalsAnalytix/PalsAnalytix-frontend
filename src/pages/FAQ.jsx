@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, Search, BookOpen, Award, Calendar, Users, MessageSquare, ArrowRight, Filter, Clock, CheckCircle, Mail, Phone, MapPin, Globe } from 'lucide-react';
 import Navbar from "../components/common/Navbar";
+import Footer from '../components/common/Footer';
 const EnhancedFAQPage = () => {
   const [openIndex, setOpenIndex] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -387,13 +388,7 @@ const EnhancedFAQPage = () => {
       </div>
       
     </div>
-    <footer className="bg-gray-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-gray-400">
-            &copy; 2024 PalsAnalytix. All rights reserved.
-          </p>
-        </div>
-      </footer>
+    <Footer/>
     </div>
   );
 };

@@ -144,8 +144,6 @@ const AddQuestionModal = ({ isOpen, onClose }) => {
       explanationImage: questionData.explanationImage,
     };
   
-    console.log('Submitting question data:', formData); // Log the data being sent
-  
     // Dispatch the Redux thunk to handle the API call
     const resultAction = await dispatch(addQuestion(formData));
   

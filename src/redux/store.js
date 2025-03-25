@@ -3,6 +3,7 @@ import questionReducer from "./slices/questionsSlice";
 import testsReducer from "./slices/testsSlice"
 import testPageReducer  from "./slices/testPageSlice";
 import authReducer from "./slices/authSlice";
+import paymentReducer from "./slices/paymentSlice"
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     tests: testsReducer,  
     testPage : testPageReducer,
     auth: authReducer,
+    payment : paymentReducer,
   },
   
 })

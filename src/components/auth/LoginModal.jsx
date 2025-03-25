@@ -17,7 +17,6 @@ const LoginModal = ({ onSuccess, onSignupClick, onClose }) => {
     e.preventDefault();
     try {
       const result = await dispatch(loginUser(formData)).unwrap();
-      console.log(result);
       if (result.user.isAdmin) {
         navigate('/admin');
         onSuccess();

@@ -21,13 +21,25 @@ const WhatsAppModal = ({ isOpen, onClose }) => {
       "Foundations of Climate Change",
       "Sustainability",
       "Climate Change Risk",
-      // ... other chapters
+      "Sustainability and Climate Policy, Culture, and Governance",
+      "Green and Sustainable Finance: Markets and Instruments",
+      "Climate Risk Measurement and Management",
+      "Climate Models and Scenario Analysis",
+      "Net Zero",
+      "Climate and Nature Risk Assessment",
+      "Transition Planning and Carbon Reporting",
     ],
     CFA: [
       "Ethical and Professional Standards",
       "Quantitative Methods",
       "Economics",
-      // ... other chapters
+      "Financial Statement Analysis",
+      "Corporate Issuers",
+      "Equity Investments",
+      "Fixed Income",
+      "Derivatives",
+      "Alternative Assets",
+      "Portfolio Management",
     ],
     FRM: [
       "Foundations of Risk Management",

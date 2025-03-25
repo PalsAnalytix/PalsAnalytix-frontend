@@ -98,10 +98,10 @@ const Navbar = () => {
         CFA®
       </button>
       <button
-        onClick={() => handleNavigation("/frm")}
+        onClick={() => handleNavigation("/pricing")}
         className={`${className} hover:text-blue-500`}
       >
-        FRM®
+        Pricing
       </button>
       <button
         onClick={() => handleNavigation("/faq")}

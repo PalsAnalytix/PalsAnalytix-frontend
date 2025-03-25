@@ -20,8 +20,6 @@ axiosInstance.interceptors.request.use(
 );
 
 // Admin credentials
-const ADMIN_PHONE = "91123456789";
-const ADMIN_PASSWORD = "123456789";
 
 // Async thunks
 export const signupUser = createAsyncThunk(
@@ -56,7 +54,7 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${BASE_URL}/login`, credentials);
-      console.log(response);
+      // console.log(response);
 
       if (response.data.user.isAdmin) {
         localStorage.setItem("token", response.data.token);
@@ -71,14 +69,13 @@ export const loginUser = createAsyncThunk(
           },
         });
 
-        const userData = userResponse.data.data;
-        const stats = calculateStats(userData);
-        const userRes = { ...userData, stats };
-
+        let userData = userResponse.data.data;
+        let ProgressMetrics = calculateProgress(userData);
+        userData = {...userData, ProgressMetrics};
         localStorage.setItem("token", response.data.token);
         const res = {
           token: response.data.token,
-          user: userRes,
+          user: userData,
         };
         return res;
       }
@@ -125,7 +122,7 @@ export const fetchUserProfile = createAsyncThunk(
     try {
       const token = localStorage.getItem("token");
       const admin = localStorage.getItem("isAdmin");
-      
+
       // If admin, return early without fetching profile
       if (admin === "true") {
         return { isAdmin: true };
@@ -140,41 +137,55 @@ export const fetchUserProfile = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-
       const userData = response.data.data;
-
-      // Calculate stats from user data
-      const stats = calculateStats(userData);
-
-      return { ...userData, stats };
+      let ProgressMetrics = calculateProgress(userData);
+      return { ...userData, ProgressMetrics };
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
-// Helper function to calculate stats
-const calculateStats = (userData) => {
-  const { questions, performanceMetrics } = userData;
-  console.log(performanceMetrics)
 
-  // Calculate stats based on questions and performanceMetrics
-  // This is just an example, adjust according to your data structure
-  const totalQuestions = questions.length;
-  const attemptedQuestions = questions.filter((q) => q.attempted).length;
-  const correctAnswers = questions.filter(
-    (q) => q.attemptDetails.isCorrect
+
+const calculateProgress = (userData) => {
+  const { questions } = userData;
+  const receivedCFAQuestions = questions.filter((q) =>
+    q.question.courses.includes("CFA")
   ).length;
-  const averageTime = performanceMetrics.averageTimePerQuestion || 0;
-  const successRate =
-    attemptedQuestions > 0 ? (correctAnswers / attemptedQuestions) * 100 : 0;
+  const receivedFRMQuestions = questions.filter((q) =>
+    q.question.courses.includes("FRM")
+  ).length;
+  const receivedSCRQuestions = questions.filter((q) =>
+    q.question.courses.includes("SCR")
+  ).length;
+  const attemptedCFAQuestions = questions.filter(
+    (q) => q.question.courses.includes("CFA") && q.attempted
+  ).length;
+  const attemptedFRMQuestions = questions.filter(
+    (q) => q.question.courses.includes("FRM") && q.attempted
+  ).length;
+  const attemptedSCRQuestions = questions.filter(
+    (q) => q.question.courses.includes("SCR") && q.attempted
+  ).length;
 
-  return {
-    totalQuestions,
-    attemptedQuestions,
-    correctAnswers,
-    averageTime,
-    successRate,
+  const ProgressMetrics = {
+    courseWiseProgress: {
+      CFA: {
+        questionsReceived: receivedCFAQuestions,
+        questionsAttempted: attemptedCFAQuestions,
+      },
+      FRM: {
+        questionsReceived: receivedFRMQuestions,
+        questionsAttempted: attemptedFRMQuestions,
+      },
+      SCR: {
+        questionsReceived: receivedSCRQuestions,
+        questionsAttempted: attemptedSCRQuestions,
+      },
+    },
   };
+
+  return ProgressMetrics;
 };
 
 export const fetchSampleQuestions = createAsyncThunk(
@@ -205,7 +216,11 @@ export const updateUserWhatsAppDetails = createAsyncThunk(
           currentCourseForWhatsapp,
         }
       );
-      return response.data.data;
+
+      const userData = response.data.data;
+
+      let ProgressMetrics = calculateProgress(userData);
+      return { ...userData, ProgressMetrics };
     } catch (error) {
       throw error;
     }
@@ -220,11 +235,22 @@ export const attemptQuestion = createAsyncThunk(
         `${BASE_URL}/api/user/attemptQuestion/${questionId}`,
         { attemptDetails }
       );
-      const userData = response.data;
-      const stats = calculateStats(userData);
-      return { ...userData, stats };
+      const userData = response.data.data;
+      const ProgressMetrics = calculateProgress(userData);
+      return { ...userData, ProgressMetrics };
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const updateUserPaymentDetails = createAsyncThunk(
+  "auth/updateUserPaymentDetails",
+  async ({ updatedUser }, { rejectWithValue }) => {
+    try {
+      return { updatedUser };
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -274,6 +300,18 @@ const authSlice = createSlice({
       state.user = null;
       state.whatsapp = null;
       state.sampleQuestions = [];
+    },
+    updateUserAfterSubscription: (state, action) => {
+      if (state.user) {
+        // Update only the subscription-related fields
+        state.user = {
+          ...state.user,
+          currentSubscriptionPlan: action.payload.currentSubscriptionPlan,
+          subscriptionDetails:
+            action.payload.subscriptionDetails ||
+            state.user.subscriptionDetails,
+        };
+      }
     },
   },
   extraReducers: (builder) => {
@@ -360,14 +398,15 @@ const authSlice = createSlice({
       })
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
-        
+
         // If it's an admin, just mark as authenticated
         if (action.payload.isAdmin) {
           state.isAuthenticated = true;
           return;
         }
-      
+
         state.user = action.payload;
+        // console.log(state.user);
         state.isAuthenticated = true;
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
@@ -407,7 +446,6 @@ const authSlice = createSlice({
       })
       .addCase(attemptQuestion.fulfilled, (state, action) => {
         state.loading = false;
-        console.log(action.payload);
         state.user = action.payload;
       })
       .addCase(attemptQuestion.rejected, (state, action) => {

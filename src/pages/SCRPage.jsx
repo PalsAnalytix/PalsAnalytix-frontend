@@ -4,6 +4,7 @@ import CurriculumSection from "../components/scr/CurriculumSection";
 import SCRExamPolicy from "../components/scr/SCRExamPolicy";
 import SCRInfoSection from "../components/scr/SCRInfoSection";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/common/Footer";
 
 const ScrPage = () => {
   const navigate = useNavigate();
@@ -139,13 +140,7 @@ const ScrPage = () => {
         
       </div>
 
-      <footer className="bg-gray-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-gray-400">
-            &copy; 2024 PalsAnalytix. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 };
