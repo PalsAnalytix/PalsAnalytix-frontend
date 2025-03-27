@@ -6,7 +6,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 export const fetchQuestions = createAsyncThunk(
     'admin/fetchQuestions',
     async ()=> {
-        const response = await axios.get(`${BASE_URL}/questions`);
+        const response = await axios.get(`${BASE_URL}/api/questions`);
         if(response.data){
             
         }

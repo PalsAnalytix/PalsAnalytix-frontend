@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import { useDispatch } from "react-redux";
 import { addQuestion } from "../../redux/slices/questionsSlice";
-import axios from "axios";
 
 const AddQuestionModal = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();

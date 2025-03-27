@@ -26,7 +26,7 @@ export const signupUser = createAsyncThunk(
   "auth/signup",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}/signup`, userData);
+      const response = await axios.post(`${BASE_URL}/api/signup`, userData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -38,7 +38,7 @@ export const verifyOTP = createAsyncThunk(
   "auth/verifyOTP",
   async ({ email, otp }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}/verify-otp`, {
+      const response = await axios.post(`${BASE_URL}/api/verify-otp`, {
         email,
         code: otp,
       });
@@ -53,7 +53,7 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}/login`, credentials);
+      const response = await axios.post(`${BASE_URL}/api/login`, credentials);
       // console.log(response);
 
       if (response.data.user.isAdmin) {
@@ -63,7 +63,7 @@ export const loginUser = createAsyncThunk(
           ...response.data,
         };
       } else {
-        const userResponse = await axios.get(`${BASE_URL}/user/profile`, {
+        const userResponse = await axios.get(`${BASE_URL}/api/user/profile`, {
           headers: {
             Authorization: `Bearer ${response.data.token}`,
           },
@@ -90,7 +90,7 @@ export const forgotPassword = createAsyncThunk(
   "auth/forgotPassword",
   async (phoneNumber, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}/forgot-password`, {
+      const response = await axios.post(`${BASE_URL}/api/forgot-password`, {
         phoneNumber,
       });
       return response.data;
@@ -104,7 +104,7 @@ export const resetPassword = createAsyncThunk(
   "auth/resetPassword",
   async ({ phoneNumber, otp, newPassword }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}/reset-password`, {
+      const response = await axios.post(`${BASE_URL}/api/reset-password`, {
         phoneNumber,
         otp,
         newPassword,
@@ -132,7 +132,7 @@ export const fetchUserProfile = createAsyncThunk(
         throw new Error("No token available");
       }
 
-      const response = await axios.get(`${BASE_URL}/user/profile`, {
+      const response = await axios.get(`${BASE_URL}/api/user/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -210,7 +210,7 @@ export const updateUserWhatsAppDetails = createAsyncThunk(
   ) => {
     try {
       const response = await axiosInstance.put(
-        `${BASE_URL}/update_preference_Chapter/${userId}`,
+        `${BASE_URL}/api/update_preference_Chapter/${userId}`,
         {
           currentChapterForWhatsapp,
           currentCourseForWhatsapp,

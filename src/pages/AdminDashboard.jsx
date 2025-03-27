@@ -7,7 +7,6 @@ import {
   deleteQuestion,
   updateQuestion,
 } from "../redux/slices/questionsSlice";
-import axios from "axios";
 import EditQuestionModal from "../components/admin/EditQuestionModal";
 import AddQuestionModal from "../components/admin/AddQuestionModal";
 import TestModal from "../components/admin/TestModal";

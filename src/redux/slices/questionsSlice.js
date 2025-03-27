@@ -7,7 +7,7 @@ export const fetchQuestions = createAsyncThunk(
   "questions/fetchQuestions",
   async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/questions`);
+      const response = await axios.get(`${BASE_URL}/api/questions`);
       // console.log("Axios response:", response); // Log the full response object
       return response.data; // This should contain the questions
     } catch (error) {
@@ -20,7 +20,7 @@ export const fetchQuestions = createAsyncThunk(
 export const deleteQuestion = createAsyncThunk(
   'questions/deleteQuestion',
   async (id) => {
-    await axios.delete(`${BASE_URL}/question/${id}`);
+    await axios.delete(`${BASE_URL}/api/question/${id}`);
     return id;
   }
 );
@@ -29,7 +29,7 @@ export const addQuestion = createAsyncThunk(
   "questions/addQuestion",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}/addquestion`, formData, {
+      const response = await axios.post(`${BASE_URL}/api/addquestion`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -47,7 +47,7 @@ export const addQuestion = createAsyncThunk(
 export const updateQuestion = createAsyncThunk(
   'questions/updateQuestion',
   async ({ id, updatedQuestion }) => {
-    const response = await axios.put(`${BASE_URL}/question/${id}`, updatedQuestion);
+    const response = await axios.put(`${BASE_URL}/api/question/${id}`, updatedQuestion);
     return response.data;
   }
 );
@@ -57,7 +57,7 @@ export const uploadQuestions = createAsyncThunk(
   "questions/uploadQuestions",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}/uploadxlsx`, formData, {
+      const response = await axios.post(`${BASE_URL}/api/uploadxlsx`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

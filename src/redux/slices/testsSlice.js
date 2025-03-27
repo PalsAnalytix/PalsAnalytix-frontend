@@ -4,18 +4,18 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 // Async Thunks for API requests
 export const fetchTests = createAsyncThunk('tests/fetchTests', async () => {
-  const response = await axios.get(`${BASE_URL}/tests`);
+  const response = await axios.get(`${BASE_URL}/api/tests`);
   return response.data;
 });
 
 export const createTest = createAsyncThunk('tests/createTest', async (testData) => {
   console.log(testData);
-  const response = await axios.post(`${BASE_URL}/tests`, testData);
+  const response = await axios.post(`${BASE_URL}/api/tests`, testData);
   return response.data;
 });
 
 export const deleteTest = createAsyncThunk('tests/deleteTest', async (id) => {
-  await axios.delete(`${BASE_URL}/tests/${id}`);
+  await axios.delete(`${BASE_URL}/api/tests/${id}`);
   return id;
 });
 

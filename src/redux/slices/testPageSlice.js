@@ -6,12 +6,12 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 export const fetchTestWithQuestions = createAsyncThunk(
   'test/fetchTestWithQuestions',
   async (testId) => {
-    const testResponse = await axios.get(`${BASE_URL}/tests/${testId}`);
+    const testResponse = await axios.get(`${BASE_URL}/api/tests/${testId}`);
     const testData = testResponse.data;
     console.log(testData)
     let questionsData = [];
     if (testData.questionsList.length > 0) {
-      const questionsResponse = await axios.get(`${BASE_URL}/questions`, {
+      const questionsResponse = await axios.get(`${BASE_URL}/api/questions`, {
         params: { ids: testData.questionsList.join(',') }
       });
       questionsData = questionsResponse.data;
@@ -25,7 +25,7 @@ export const submitTest = createAsyncThunk(
   'test/submitTest',
   async (_, { getState }) => {
     const { questions } = getState().test;
-    const response = await axios.post(`${BASE_URL}/submit-test`, { answers: questions });
+    const response = await axios.post(`${BASE_URL}/api/submit-test`, { answers: questions });
     return response.data;
   }
 );

@@ -18,7 +18,6 @@ import {
   Shield,
   Clock,
 } from "lucide-react";
-import axios from "axios";
 import Navbar from "../components/common/Navbar";
 import {
   createPaymentOrder,

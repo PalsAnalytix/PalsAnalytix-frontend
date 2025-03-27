@@ -6,7 +6,7 @@ export const fetchUserStats = createAsyncThunk(
   'userStats/fetch',
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${BASE_URL}/user-stats/${userId}`);
+      const response = await axios.get(`${BASE_URL}/api/user-stats/${userId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
