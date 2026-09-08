@@ -73,12 +73,13 @@ const StudentsTab = () => {
         <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white rounded px-4 py-2 sm:col-span-3">Create Student</button>
       </form>
       {msg && <p className="text-sm text-gray-700 mb-4">{msg}</p>}
-      <table className="min-w-full bg-white border text-sm">
+            <table className="min-w-full bg-white border text-sm">
         <thead>
           <tr>
             <th className="border px-2 py-1">Username</th>
             <th className="border px-2 py-1">Full Name</th>
             <th className="border px-2 py-1">Status</th>
+            <th className="border px-2 py-1">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -87,6 +88,22 @@ const StudentsTab = () => {
               <td className="border px-2 py-1">{s.username}</td>
               <td className="border px-2 py-1">{s.fullName}</td>
               <td className="border px-2 py-1">{s.status}</td>
+              <td className="border px-2 py-1">
+                <button
+                  onClick={async () => {
+                    if (!window.confirm(`Delete student "${s.username}"? This cannot be undone.`)) return;
+                    try {
+                      await axios.delete(`${BASE_URL}/api/mba/admin/students/${s._id}`, authHeader());
+                      loadStudents();
+                    } catch (err) {
+                      alert("Failed to delete student");
+                    }
+                  }}
+                  className="text-red-600 hover:underline"
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
