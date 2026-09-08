@@ -116,10 +116,12 @@ const StudentsTab = () => {
 const QuestionsTab = () => {
   const [questions, setQuestions] = useState([]);
   const [msg, setMsg] = useState("");
-  const [file, setFile] = useState(null);
+    const [file, setFile] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
-
+  const [imageQNum, setImageQNum] = useState("");
+  const [imageType, setImageType] = useState("Question");
+  const [imageLabel, setImageLabel] = useState("");
   const loadQuestions = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/api/mba/admin/questions`, authHeader());
@@ -147,8 +149,9 @@ const QuestionsTab = () => {
     }
   };
 
-  const uploadImage = async () => {
+    const uploadImage = async () => {
     if (!imageFile) return;
+    if (!imageQNum) { setMsg("Please enter a question number first."); return; }
     setMsg("Uploading image...");
     const formData = new FormData();
     formData.append("image", imageFile);
@@ -157,12 +160,13 @@ const QuestionsTab = () => {
         headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" },
       });
       setImageUrl(res.data.url);
-      setMsg("Image uploaded! Copy the URL below into your spreadsheet.");
+      setImageLabel(`Q${imageQNum} – ${imageType}`);
+      setMsg("Image uploaded! Copy the label and URL below into your spreadsheet.");
     } catch (err) {
       setMsg("Failed: " + (err.response?.data?.error || err.message));
     }
   };
-
+  
   const deleteQuestion = async (id) => {
     if (!window.confirm("Delete this question?")) return;
     try {
@@ -196,18 +200,33 @@ const QuestionsTab = () => {
 
   return (
     <div>
-      <div className="mb-6 border rounded p-4">
+            <div className="mb-6 border rounded p-4">
         <h3 className="font-semibold mb-2">Upload an Image (for a question or option)</h3>
+        <div className="flex flex-wrap gap-2 mb-2">
+          <input
+            type="number"
+            placeholder="Question #"
+            value={imageQNum}
+            onChange={(e) => setImageQNum(e.target.value)}
+            className="border rounded px-3 py-2 w-32"
+          />
+          <select value={imageType} onChange={(e) => setImageType(e.target.value)} className="border rounded px-3 py-2">
+            <option value="Question">Question image</option>
+            <option value="Option A">Option A image</option>
+            <option value="Option B">Option B image</option>
+            <option value="Option C">Option C image</option>
+          </select>
+        </div>
         <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} className="mb-2" />
         <button onClick={uploadImage} className="bg-blue-500 hover:bg-blue-700 text-white rounded px-4 py-2 block mb-2">Upload Image</button>
         {imageUrl && (
           <div>
+            <p className="text-sm font-semibold">{imageLabel}</p>
             <p className="text-sm break-all">{imageUrl}</p>
             <img src={imageUrl} alt="" className="max-w-xs mt-2" />
           </div>
         )}
       </div>
-
       <div className="mb-6 border rounded p-4">
         <h3 className="font-semibold mb-2">Bulk Upload Questions (Excel/CSV)</h3>
         <input type="file" accept=".xlsx,.xls,.csv" onChange={(e) => setFile(e.target.files[0])} className="mb-2" />
