@@ -9,6 +9,7 @@ import {
 import LandingPage from "./pages/LandingPage";
 import MbaLoginPage from "./pages/mba/MbaLoginPage";
 import MbaDashboard from "./pages/mba/MbaDashboard";
+import MbaTestPage from "./pages/mba/MbaTestPage";
 import EnhancedFAQPage from "./pages/FAQ";
 import AdminDashboard from "./pages/AdminDashboard";
 import CFAPage from "./pages/CFAPage";
@@ -72,6 +73,14 @@ function App() {
             element={
               <MbaProtectedRoute>
                 <MbaDashboard />
+              </MbaProtectedRoute>
+            }
+          />
+          <Route
+            path="/mba-evaluation/test/:testId"
+            element={
+              <MbaProtectedRoute>
+                <MbaTestPage />
               </MbaProtectedRoute>
             }
           />
