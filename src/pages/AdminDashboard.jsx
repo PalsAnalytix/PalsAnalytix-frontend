@@ -12,6 +12,7 @@ import AddQuestionModal from "../components/admin/AddQuestionModal";
 import TestModal from "../components/admin/TestModal";
 import BulkUpload from "../components/admin/BulkUpload";
 import { logout, clearError} from "../redux/slices/authSlice"
+import MbaEvaluationPanel from "../components/admin/MbaEvaluationPanel";
 const BASE_URL = import.meta.env.VITE_BASE_URL; // Make sure this is correctly set up
 
 const Navbar = () => {
@@ -92,8 +93,9 @@ const AdminDashboard = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isTestModalOpen, setIsTestModalOpen] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
-  const [questionToDelete, setQuestionToDelete] = useState(null);
+    const [questionToDelete, setQuestionToDelete] = useState(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [activeSection, setActiveSection] = useState("main");
 
   useEffect(() => {
     if (!isAdmin) {
@@ -158,7 +160,26 @@ const AdminDashboard = () => {
     <div>
       <Navbar />
 
-      <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
+            <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
+        <div className="flex gap-2 mb-6">
+          <button
+            onClick={() => setActiveSection("main")}
+            className={`px-4 py-2 rounded font-medium ${activeSection === "main" ? "bg-blue-500 text-white" : "bg-white text-gray-700 border"}`}
+          >
+            CFA / FRM / SCR
+          </button>
+          <button
+            onClick={() => setActiveSection("mba")}
+            className={`px-4 py-2 rounded font-medium ${activeSection === "mba" ? "bg-blue-500 text-white" : "bg-white text-gray-700 border"}`}
+          >
+            MBA Evaluation
+          </button>
+        </div>
+
+        {activeSection === "mba" ? (
+          <MbaEvaluationPanel />
+        ) : (
+        <>
         {/* Stats Section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
           <div className="bg-white p-4 rounded shadow">
@@ -372,7 +393,7 @@ const AdminDashboard = () => {
           />
         }
 
-        {/* Delete Confirmation Modal */}
+               {/* Delete Confirmation Modal */}
         {showDeleteConfirmation && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-xl">
@@ -397,6 +418,8 @@ const AdminDashboard = () => {
               </div>
             </div>
           </div>
+        )}
+        </>
         )}
       </div>
     </div>
