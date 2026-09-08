@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import MbaLoginPage from "./pages/mba/MbaLoginPage";
+import MbaDashboard from "./pages/mba/MbaDashboard";
 import EnhancedFAQPage from "./pages/FAQ";
 import AdminDashboard from "./pages/AdminDashboard";
 import CFAPage from "./pages/CFAPage";
@@ -66,6 +67,14 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/mba-evaluation" element={<MbaLoginPage />} />
+          <Route
+            path="/mba-evaluation/dashboard"
+            element={
+              <MbaProtectedRoute>
+                <MbaDashboard />
+              </MbaProtectedRoute>
+            }
+          />
           {/* Admin Route */}
           <Route
             path="/admin"
