@@ -187,7 +187,8 @@ const QuestionsTab = () => {
     }
   };
 
-    const [duplicateGroups, setDuplicateGroups] = useState([]);
+      const [duplicateGroups, setDuplicateGroups] = useState([]);
+  const [selectedForDelete, setSelectedForDelete] = useState(new Set());
 
   const checkDuplicates = async () => {
     try {
@@ -199,7 +200,7 @@ const QuestionsTab = () => {
     }
   };
 
-  const deleteFromDuplicates = async (id) => {
+    const deleteFromDuplicates = async (id) => {
     if (!window.confirm("Delete this question?")) return;
     try {
       await axios.delete(`${BASE_URL}/api/mba/admin/questions/${id}`, authHeader());
@@ -208,6 +209,32 @@ const QuestionsTab = () => {
     } catch (err) {
       alert("Failed to delete");
     }
+  };
+
+  const toggleSelected = (id) => {
+    setSelectedForDelete((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const deleteSelected = async () => {
+    if (!selectedForDelete.size) return;
+    if (!window.confirm(`Delete ${selectedForDelete.size} selected question(s)? This cannot be undone.`)) return;
+    setMsg("Deleting...");
+    for (const id of selectedForDelete) {
+      try {
+        await axios.delete(`${BASE_URL}/api/mba/admin/questions/${id}`, authHeader());
+      } catch (err) {
+        // continue even if one fails
+      }
+    }
+    setSelectedForDelete(new Set());
+    checkDuplicates();
+    loadQuestions();
+    setMsg("Selected questions deleted.");
   };
 
   return (
@@ -252,15 +279,27 @@ const QuestionsTab = () => {
 
             {msg && <p className="text-sm text-gray-700 mb-4">{msg}</p>}
 
-      {duplicateGroups.length > 0 && (
+           {duplicateGroups.length > 0 && (
         <div className="mb-6 space-y-3">
+          <button
+            onClick={deleteSelected}
+            disabled={!selectedForDelete.size}
+            className="bg-red-600 disabled:bg-gray-300 text-white rounded px-4 py-2 text-sm mb-2"
+          >
+            Delete Selected ({selectedForDelete.size})
+          </button>
           {duplicateGroups.map((g, i) => (
             <div key={i} className="border border-yellow-400 bg-yellow-50 rounded p-3">
               <p className="font-medium mb-2">"{g._id}" — appears {g.count} times:</p>
               <ul className="space-y-1">
                 {g.questions.map((q) => (
-                  <li key={q.id} className="flex justify-between items-center text-sm">
-                    <span>Q{q.questionNumber || "?"}</span>
+                  <li key={q.id} className="flex items-center gap-3 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={selectedForDelete.has(q.id)}
+                      onChange={() => toggleSelected(q.id)}
+                    />
+                    <span className="flex-1">Q{q.questionNumber || "?"}</span>
                     <button onClick={() => deleteFromDuplicates(q.id)} className="text-red-600 hover:underline">Delete this one</button>
                   </li>
                 ))}
@@ -269,7 +308,6 @@ const QuestionsTab = () => {
           ))}
         </div>
       )}
-
       <p className="font-semibold mb-2">{questions.length} question(s) in the bank</p>
       <div className="space-y-3 max-h-[600px] overflow-y-auto">
         {questions.map((q) => (
