@@ -10,6 +10,7 @@ import LandingPage from "./pages/LandingPage";
 import MbaLoginPage from "./pages/mba/MbaLoginPage";
 import MbaDashboard from "./pages/mba/MbaDashboard";
 import MbaTestPage from "./pages/mba/MbaTestPage";
+import MbaResultsPage from "./pages/mba/MbaResultsPage";
 import EnhancedFAQPage from "./pages/FAQ";
 import AdminDashboard from "./pages/AdminDashboard";
 import CFAPage from "./pages/CFAPage";
@@ -81,6 +82,14 @@ function App() {
             element={
               <MbaProtectedRoute>
                 <MbaTestPage />
+              </MbaProtectedRoute>
+            }
+          />
+            <Route
+            path="/mba-evaluation/results/:attemptId"
+            element={
+              <MbaProtectedRoute>
+                <MbaResultsPage />
               </MbaProtectedRoute>
             }
           />
