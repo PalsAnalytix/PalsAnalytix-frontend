@@ -121,7 +121,13 @@ const QuestionsTab = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [imageQNum, setImageQNum] = useState("");
   const [imageType, setImageType] = useState("Question");
-  const [imageLabel, setImageLabel] = useState("");
+    const [imageLabel, setImageLabel] = useState("");
+
+  // Batch image upload state
+  const [batchFiles, setBatchFiles] = useState([]);
+  const [batchRows, setBatchRows] = useState([]);
+  const [batchResults, setBatchResults] = useState([]);
+  const [batchUploading, setBatchUploading] = useState(false);
   const loadQuestions = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/api/mba/admin/questions`, authHeader());
@@ -166,8 +172,52 @@ const QuestionsTab = () => {
       setMsg("Failed: " + (err.response?.data?.error || err.message));
     }
   };
-  
+    const handleBatchFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    setBatchFiles(files);
+    setBatchRows(files.map((f, i) => ({ file: f, qNum: i + 1, qType: "Question", status: "Not uploaded" })));
+    setBatchResults([]);
+  };
+
+  const updateBatchRow = (i, field, value) => {
+    setBatchRows((prev) => {
+      const next = [...prev];
+      next[i] = { ...next[i], [field]: value };
+      return next;
+    });
+  };
+
+  const uploadBatch = async () => {
+    setBatchUploading(true);
+    const results = [];
+    for (let i = 0; i < batchRows.length; i++) {
+      const row = batchRows[i];
+      updateBatchRow(i, "status", "Uploading...");
+      const formData = new FormData();
+      formData.append("image", row.file);
+      try {
+        const res = await axios.post(`${BASE_URL}/api/mba/admin/upload/image`, formData, {
+          headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" },
+        });
+        updateBatchRow(i, "status", "Done");
+        results.push({ label: `Q${row.qNum} – ${row.qType}`, filename: row.file.name, url: res.data.url });
+      } catch (err) {
+        updateBatchRow(i, "status", "Failed");
+      }
+    }
+    setBatchResults(results);
+    setBatchUploading(false);
+  };
+
+  const copyBatchTable = () => {
+    const tsv = batchResults.map((r) => `${r.label}\t${r.url}`).join("\n");
+    navigator.clipboard.writeText(tsv).then(() => {
+      alert("Copied! Paste into a spare area of your spreadsheet (two columns: label, URL).");
+    });
+  };
+
   const deleteQuestion = async (id) => {
+  
     if (!window.confirm("Delete this question?")) return;
     try {
       await axios.delete(`${BASE_URL}/api/mba/admin/questions/${id}`, authHeader());
@@ -266,6 +316,75 @@ const QuestionsTab = () => {
           </div>
         )}
       </div>
+
+      
+      <div className="mb-6 border rounded p-4">
+        <h3 className="font-semibold mb-2">Batch Upload Images</h3>
+        <p className="text-xs text-gray-500 mb-2">Select multiple images at once, label each with its question number and type, then upload them all together.</p>
+        <input type="file" accept="image/*" multiple onChange={handleBatchFileSelect} className="mb-3" />
+
+        {batchRows.length > 0 && (
+          <div className="space-y-2 mb-3">
+            {batchRows.map((row, i) => (
+              <div key={i} className="flex flex-wrap items-center gap-2 text-sm border-b pb-2">
+                <span className="w-40 truncate">{row.file.name}</span>
+                <input
+                  type="number"
+                  value={row.qNum}
+                  onChange={(e) => updateBatchRow(i, "qNum", e.target.value)}
+                  className="border rounded px-2 py-1 w-20"
+                  placeholder="Q#"
+                />
+                <select
+                  value={row.qType}
+                  onChange={(e) => updateBatchRow(i, "qType", e.target.value)}
+                  className="border rounded px-2 py-1"
+                >
+                  <option value="Question">Question</option>
+                  <option value="Option A">Option A</option>
+                  <option value="Option B">Option B</option>
+                  <option value="Option C">Option C</option>
+                </select>
+                <span className="text-gray-500">{row.status}</span>
+              </div>
+            ))}
+            <button
+              onClick={uploadBatch}
+              disabled={batchUploading}
+              className="bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 text-white rounded px-4 py-2"
+            >
+              {batchUploading ? "Uploading..." : "Upload All Images"}
+            </button>
+          </div>
+        )}
+
+        {batchResults.length > 0 && (
+          <div>
+            <button onClick={copyBatchTable} className="bg-gray-200 rounded px-4 py-2 text-sm mb-2">Copy table</button>
+            <table className="min-w-full border text-sm">
+              <thead>
+                <tr>
+                  <th className="border px-2 py-1">Label</th>
+                  <th className="border px-2 py-1">File</th>
+                  <th className="border px-2 py-1">URL</th>
+                  <th className="border px-2 py-1">Preview</th>
+                </tr>
+              </thead>
+              <tbody>
+                {batchResults.map((r, i) => (
+                  <tr key={i}>
+                    <td className="border px-2 py-1">{r.label}</td>
+                    <td className="border px-2 py-1">{r.filename}</td>
+                    <td className="border px-2 py-1 break-all">{r.url}</td>
+                    <td className="border px-2 py-1"><img src={r.url} alt="" className="w-12 h-12 object-cover" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+      
       <div className="mb-6 border rounded p-4">
         <h3 className="font-semibold mb-2">Bulk Upload Questions (Excel/CSV)</h3>
         <input type="file" accept=".xlsx,.xls,.csv" onChange={(e) => setFile(e.target.files[0])} className="mb-2" />
