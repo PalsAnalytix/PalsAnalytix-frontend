@@ -7,6 +7,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
+import MbaLoginPage from "./pages/mba/MbaLoginPage";
 import EnhancedFAQPage from "./pages/FAQ";
 import AdminDashboard from "./pages/AdminDashboard";
 import CFAPage from "./pages/CFAPage";
@@ -26,6 +27,7 @@ function App() {
   const dispatch = useDispatch();
   const isAuthenticated = useAuth(); // Using the custom hook
   const { user } = useSelector((state) => state.auth);
+    const mbaAuthenticated = useSelector((state) => state.mbaAuth.isAuthenticated);
   const isAdmin = user?.email === import.meta.env.VITE_ADMIN_EMAIL;
 
   useEffect(() => {
@@ -50,11 +52,20 @@ function App() {
     return children;
   };
 
+    // MBA Student Route component
+  const MbaProtectedRoute = ({ children }) => {
+    if (!mbaAuthenticated) {
+      return <Navigate to="/mba-evaluation" />;
+    }
+    return children;
+  };
+  
   return (
     <Provider store={store}>
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/mba-evaluation" element={<MbaLoginPage />} />
           {/* Admin Route */}
           <Route
             path="/admin"
