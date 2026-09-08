@@ -187,14 +187,26 @@ const QuestionsTab = () => {
     }
   };
 
+    const [duplicateGroups, setDuplicateGroups] = useState([]);
+
   const checkDuplicates = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/api/mba/admin/questions/duplicates`, authHeader());
-      if (!res.data.length) { setMsg("No duplicates found!"); return; }
-      setMsg(`${res.data.length} duplicate group(s) found — check browser console (F12) for details`);
-      console.log(res.data);
+      setDuplicateGroups(res.data);
+      setMsg(res.data.length ? `${res.data.length} duplicate group(s) found — see below` : "No duplicates found!");
     } catch (err) {
       setMsg("Failed to check duplicates");
+    }
+  };
+
+  const deleteFromDuplicates = async (id) => {
+    if (!window.confirm("Delete this question?")) return;
+    try {
+      await axios.delete(`${BASE_URL}/api/mba/admin/questions/${id}`, authHeader());
+      checkDuplicates();
+      loadQuestions();
+    } catch (err) {
+      alert("Failed to delete");
     }
   };
 
@@ -238,7 +250,25 @@ const QuestionsTab = () => {
         <button onClick={checkDuplicates} className="bg-gray-200 rounded px-4 py-2 text-sm">Check Duplicates</button>
       </div>
 
-      {msg && <p className="text-sm text-gray-700 mb-4">{msg}</p>}
+            {msg && <p className="text-sm text-gray-700 mb-4">{msg}</p>}
+
+      {duplicateGroups.length > 0 && (
+        <div className="mb-6 space-y-3">
+          {duplicateGroups.map((g, i) => (
+            <div key={i} className="border border-yellow-400 bg-yellow-50 rounded p-3">
+              <p className="font-medium mb-2">"{g._id}" — appears {g.count} times:</p>
+              <ul className="space-y-1">
+                {g.questions.map((q) => (
+                  <li key={q.id} className="flex justify-between items-center text-sm">
+                    <span>Q{q.questionNumber || "?"}</span>
+                    <button onClick={() => deleteFromDuplicates(q.id)} className="text-red-600 hover:underline">Delete this one</button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
 
       <p className="font-semibold mb-2">{questions.length} question(s) in the bank</p>
       <div className="space-y-3 max-h-[600px] overflow-y-auto">
