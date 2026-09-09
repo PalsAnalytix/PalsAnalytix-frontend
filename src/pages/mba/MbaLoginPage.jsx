@@ -26,8 +26,9 @@ const MbaLoginPage = () => {
     <div className="min-h-screen bg-ink flex items-center justify-center px-4 font-sans">
       <div className="border border-line rounded-lg bg-white/[0.03] p-10 w-full max-w-md">
         <img src={mbaLogo} alt="PalsAnalytix" className="h-[252px] mx-auto mb-6" />
-        <div className="font-mono text-xs tracking-[.14em] uppercase text-accent-orange2 text-center mb-2">
+                <div className="font-mono text-base tracking-[.14em] uppercase text-accent-orange2 text-center mb-2">
           MBA Evaluation
+        </div>
         </div>
         <h1 className="font-sora text-2xl font-bold text-paper text-center mb-2 tracking-tight">
           Sign in to your account
