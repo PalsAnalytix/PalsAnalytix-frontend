@@ -12,10 +12,13 @@ const MbaResultsPage = () => {
   const navigate = useNavigate();
   const { token } = useSelector((state) => state.mbaAuth);
 
-  const [results, setResults] = useState(null);
+    const [results, setResults] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
+  const [fileToUpload, setFileToUpload] = useState(null);
+  const [uploadStatus, setUploadStatus] = useState("");
+  const [submittedFile, setSubmittedFile] = useState(null);
 
   useEffect(() => {
     const authHeader = { headers: { Authorization: `Bearer ${token}` } };
@@ -27,6 +30,7 @@ const MbaResultsPage = () => {
         ]);
         setResults(resultsRes.data);
         setHistory(historyRes.data);
+        setSubmittedFile(resultsRes.data.submittedFile || null);
       } catch (err) {
         setErrorMsg(err.response?.data?.error || "Could not load results.");
       } finally {
@@ -38,6 +42,25 @@ const MbaResultsPage = () => {
 
   if (loading) return <div className="min-h-screen bg-paper flex items-center justify-center text-sand-700 font-sans">Loading results...</div>;
   if (errorMsg) return <div className="min-h-screen bg-paper flex items-center justify-center text-red-600 font-sans">{errorMsg}</div>;
+
+  
+  const handleFileUpload = async () => {
+    if (!fileToUpload) return;
+    setUploadStatus("Uploading...");
+    const formData = new FormData();
+    formData.append("file", fileToUpload);
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/api/mba/student/tests/attempts/${attemptId}/submit-file`,
+        formData,
+        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
+      );
+      setSubmittedFile(res.data.submittedFile);
+      setUploadStatus("File submitted successfully!");
+    } catch (err) {
+      setUploadStatus("Failed: " + (err.response?.data?.error || err.message));
+    }
+  };
 
   const avgOfHistory = history.length
     ? Math.round(history.reduce((s, h) => s + h.score, 0) / history.length)
@@ -67,6 +90,37 @@ const MbaResultsPage = () => {
               <p className="text-sm text-sand-600 mt-1 italic">Auto-submitted when time ran out</p>
             )}
           </div>
+
+                    {results.requiresFileSubmission && (
+            <div className="bg-white border border-sand-200 rounded-xl p-6 mb-8">
+              <h2 className="font-sora text-lg font-semibold text-charcoal mb-1">Working File Submission</h2>
+              <p className="text-sm text-sand-600 mb-4">This assignment requires you to also upload your working file (Excel or Word).</p>
+              {submittedFile ? (
+                <div className="bg-accent-yellow/10 border border-accent-orange2/30 rounded-lg p-4">
+                  <p className="text-charcoal text-sm">
+                    ✅ Submitted: <a href={submittedFile.url} target="_blank" rel="noreferrer" className="text-accent-orange2 underline">{submittedFile.filename}</a>
+                  </p>
+                  <p className="text-xs text-sand-500 mt-1">Uploaded {new Date(submittedFile.uploadedAt).toLocaleString()}</p>
+                  <p className="text-xs text-sand-500 mt-2">Uploading a new file below will replace this one.</p>
+                </div>
+              ) : null}
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.docx,.doc"
+                  onChange={(e) => setFileToUpload(e.target.files[0])}
+                  className="text-sm"
+                />
+                <button
+                  onClick={handleFileUpload}
+                  className="bg-brand-gradient hover:opacity-90 text-charcoal font-semibold py-2 px-5 rounded"
+                >
+                  {submittedFile ? "Replace File" : "Upload File"}
+                </button>
+              </div>
+              {uploadStatus && <p className="text-sm text-sand-700 mt-2">{uploadStatus}</p>}
+            </div>
+          )}
 
           {history.length > 0 && (
             <div className="bg-white border border-sand-200 rounded-xl p-6 mb-8">
