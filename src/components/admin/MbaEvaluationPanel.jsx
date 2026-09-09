@@ -488,9 +488,25 @@ const TestsTab = () => {
     }
   };
 
-  const togglePublish = async (id, status) => {
+    const togglePublish = async (id, status) => {
     const action = status === "published" ? "unpublish" : "publish";
     await axios.patch(`${BASE_URL}/api/mba/admin/tests/${id}/${action}`, {}, authHeader());
+    loadTests();
+  };
+
+  const deleteTest = async (id, title) => {
+    if (!window.confirm(`Delete "${title}"? If students have already attempted it, it will be archived instead of removed, to keep their records safe.`)) return;
+    try {
+      const res = await axios.delete(`${BASE_URL}/api/mba/admin/tests/${id}`, authHeader());
+      alert(res.data.message);
+      loadTests();
+    } catch (err) {
+      alert("Failed: " + (err.response?.data?.error || err.message));
+    }
+  };
+
+  const unarchiveTest = async (id) => {
+    await axios.patch(`${BASE_URL}/api/mba/admin/tests/${id}/unarchive`, {}, authHeader());
     loadTests();
   };
 
@@ -545,8 +561,8 @@ const TestsTab = () => {
 
       {msg && <p className="text-sm text-gray-700 mb-4">{msg}</p>}
 
-            <div className="space-y-4">
-        {tests.map((test) => (
+                  <div className="space-y-4">
+        {tests.filter((t) => t.status !== "archived").map((test) => (
           <TestCard
             key={test._id}
             test={test}
@@ -554,9 +570,29 @@ const TestsTab = () => {
             onGrantAccess={grantAccess}
             onGrantRetake={grantRetake}
             onViewDashboard={() => setDashboardTestId(test._id)}
+            onDelete={() => deleteTest(test._id, test.title)}
           />
         ))}
       </div>
+
+      {tests.some((t) => t.status === "archived") && (
+        <div className="mt-8">
+          <h3 className="font-semibold mb-2 text-gray-600">Archived Tests</h3>
+          <div className="space-y-2">
+            {tests.filter((t) => t.status === "archived").map((test) => (
+              <div key={test._id} className="border rounded p-3 flex justify-between items-center bg-gray-50">
+                <div>
+                  <span className="font-medium">{test.title}</span>
+                  <span className="text-xs text-gray-500 ml-2">({test.type})</span>
+                </div>
+                <button onClick={() => unarchiveTest(test._id)} className="text-blue-600 hover:underline text-sm">
+                  Restore
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {dashboardTestId && (
         <TestDashboardModal testId={dashboardTestId} onClose={() => setDashboardTestId(null)} />
@@ -565,7 +601,7 @@ const TestsTab = () => {
   );
 };
 
-const TestCard = ({ test, onTogglePublish, onGrantAccess, onGrantRetake, onViewDashboard }) => {
+const TestCard = ({ test, onTogglePublish, onGrantAccess, onGrantRetake, onViewDashboard, onDelete }) => {
   const [accessInput, setAccessInput] = useState("");
   const [retakeInput, setRetakeInput] = useState("");
   const [note, setNote] = useState("");
@@ -585,12 +621,15 @@ const TestCard = ({ test, onTogglePublish, onGrantAccess, onGrantRetake, onViewD
           <p className="text-sm text-gray-600">{test.type} — {test.totalQuestions} questions — {test.timePerQuestionSeconds}s/question{test.requiresFileSubmission ? " — 📎 requires file submission" : ""}</p>
           <p className="text-xs text-gray-500 mt-1">Access: {students}</p>
         </div>
-                <div className="flex gap-2">
+                        <div className="flex gap-2">
           <button onClick={onViewDashboard} className="bg-blue-100 text-blue-700 rounded px-3 py-1 text-sm">
             View Dashboard
           </button>
           <button onClick={() => onTogglePublish(test._id, test.status)} className="bg-gray-200 rounded px-3 py-1 text-sm">
             {test.status === "published" ? "Unpublish" : "Publish"}
+          </button>
+          <button onClick={onDelete} className="bg-red-50 text-red-700 border border-red-200 rounded px-3 py-1 text-sm">
+            Delete
           </button>
         </div>
       </div>
