@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import MbaHeader from "../../components/mba/MbaHeader";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const OPTION_LETTERS = ["A", "B", "C"];
@@ -163,8 +164,8 @@ const MbaTestPage = () => {
     }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-600">Loading test...</div>;
-  if (errorMsg) return <div className="min-h-screen flex items-center justify-center text-red-600">{errorMsg}</div>;
+  if (loading) return <div className="min-h-screen bg-paper flex items-center justify-center text-sand-700 font-sans">Loading test...</div>;
+  if (errorMsg) return <div className="min-h-screen bg-paper flex items-center justify-center text-red-600 font-sans">{errorMsg}</div>;
 
   const q = questions[currentIndex];
   const mins = Math.floor(Math.max(0, displayTime) / 60);
@@ -172,22 +173,23 @@ const MbaTestPage = () => {
   const isLow = displayTime <= 60;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 px-4 py-6">
-      <div className="max-w-3xl mx-auto">
-        <div className="sticky top-0 bg-white z-10 border-b-2 border-gray-800 py-3 flex justify-between items-center mb-4">
-          <div className={`text-xl font-bold ${isLow ? "text-red-600" : "text-gray-900"}`}>
+    <div className="min-h-screen bg-paper font-sans">
+      <MbaHeader />
+      <div className="max-w-3xl mx-auto px-4 py-6">
+        <div className="sticky top-0 bg-paper z-10 border-b-2 border-charcoal py-3 flex justify-between items-center mb-4">
+          <div className={`font-sora text-xl font-bold ${isLow ? "text-red-600" : "text-charcoal"}`}>
             {mins}:{secs.toString().padStart(2, "0")}
           </div>
-          <div className="text-gray-600">{currentIndex + 1} of {questions.length}</div>
+          <div className="text-sand-700">{currentIndex + 1} of {questions.length}</div>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-4">
           {questions.map((question, i) => {
-            let style = "bg-white border-gray-400";
+            let style = "bg-white border-sand-400";
             if (question.markedForReview) style = "bg-yellow-100 border-yellow-600";
             else if (question.answerGiven !== null && question.answerGiven !== undefined) style = "bg-green-100 border-green-700";
-            else if (question.visited) style = "bg-gray-200 border-gray-400";
-            const ring = i === currentIndex ? "ring-2 ring-gray-900" : "";
+            else if (question.visited) style = "bg-sand-200 border-sand-400";
+            const ring = i === currentIndex ? "ring-2 ring-charcoal" : "";
             return (
               <button
                 key={question._id}
@@ -200,9 +202,9 @@ const MbaTestPage = () => {
           })}
         </div>
 
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <p className="font-semibold text-gray-900 mb-2">Question {currentIndex + 1}</p>
-          <p className="text-gray-800 mb-3">{q.text}</p>
+        <div className="bg-white border border-sand-200 rounded-lg p-6">
+          <p className="font-sora font-semibold text-charcoal mb-2">Question {currentIndex + 1}</p>
+          <p className="text-charcoal mb-3">{q.text}</p>
           {q.questionImage && <img src={q.questionImage} alt="" className="max-w-full rounded-lg mb-4" />}
 
           <div className="space-y-2">
@@ -215,7 +217,7 @@ const MbaTestPage = () => {
                   key={idx}
                   onClick={() => selectOption(idx)}
                   className={`border rounded-lg p-3 cursor-pointer ${
-                    selected ? "bg-blue-50 border-blue-600" : "border-gray-300 hover:bg-gray-50"
+                    selected ? "bg-accent-yellow/20 border-accent-orange2" : "border-sand-200 hover:bg-sand-100"
                   }`}
                 >
                   <span className="font-medium">{letter}.</span> {opt}
@@ -225,7 +227,7 @@ const MbaTestPage = () => {
             })}
           </div>
 
-          <label className="flex items-center gap-2 mt-4 text-sm text-gray-700">
+          <label className="flex items-center gap-2 mt-4 text-sm text-sand-700">
             <input type="checkbox" checked={!!q.markedForReview} onChange={toggleMarkForReview} />
             Mark this question for review
           </label>
@@ -235,20 +237,20 @@ const MbaTestPage = () => {
           <button
             onClick={() => currentIndex > 0 && jumpTo(currentIndex - 1)}
             disabled={currentIndex === 0}
-            className="px-5 py-2 rounded-lg border border-gray-300 disabled:opacity-40"
+            className="px-5 py-2 rounded border border-sand-300 disabled:opacity-40"
           >
             Previous
           </button>
           <button
             onClick={() => currentIndex < questions.length - 1 && jumpTo(currentIndex + 1)}
             disabled={currentIndex === questions.length - 1}
-            className="px-5 py-2 rounded-lg border border-gray-300 disabled:opacity-40"
+            className="px-5 py-2 rounded border border-sand-300 disabled:opacity-40"
           >
             Next
           </button>
           <button
             onClick={handleSubmit}
-            className="px-5 py-2 rounded-lg bg-red-50 border border-red-700 text-red-700 font-semibold ml-auto"
+            className="px-5 py-2 rounded bg-red-50 border border-red-700 text-red-700 font-semibold ml-auto"
           >
             Submit Test
           </button>
