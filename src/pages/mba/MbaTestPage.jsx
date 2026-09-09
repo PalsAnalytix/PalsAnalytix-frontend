@@ -2,10 +2,53 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { Clock } from "lucide-react";
 import MbaHeader from "../../components/mba/MbaHeader";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const OPTION_LETTERS = ["A", "B", "C"];
+const RING_RADIUS = 46;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+
+const getRingColor = (fraction) => {
+  if (fraction > 0.5) return "#ff8305"; // healthy — brand orange
+  if (fraction > 0.2) return "#ffb23a"; // caution — amber
+  return "#dc2626"; // urgent — red, intentionally breaks from brand for clarity
+};
+
+const TimerRing = ({ displayTime, totalTime }) => {
+  const fraction = totalTime > 0 ? Math.max(0, Math.min(1, displayTime / totalTime)) : 0;
+  const color = getRingColor(fraction);
+  const mins = Math.floor(Math.max(0, displayTime) / 60);
+  const secs = Math.max(0, displayTime) % 60;
+
+  return (
+    <div className="relative w-24 h-24 flex-shrink-0">
+      <svg width="96" height="96" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r={RING_RADIUS} stroke="#e6e2d9" strokeWidth="8" fill="none" />
+        <circle
+          cx="60"
+          cy="60"
+          r={RING_RADIUS}
+          stroke={color}
+          strokeWidth="8"
+          fill="none"
+          strokeLinecap="round"
+          strokeDasharray={RING_CIRCUMFERENCE}
+          strokeDashoffset={RING_CIRCUMFERENCE * (1 - fraction)}
+          transform="rotate(-90 60 60)"
+          style={{ transition: "stroke-dashoffset 1s linear, stroke 0.5s" }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <Clock size={16} className="text-charcoal mb-0.5" />
+        <span className={`font-sora text-sm font-bold ${fraction <= 0.2 ? "text-red-600" : "text-charcoal"}`}>
+          {mins}:{secs.toString().padStart(2, "0")}
+        </span>
+      </div>
+    </div>
+  );
+};
 
 const MbaTestPage = () => {
   const { testId } = useParams();
@@ -20,6 +63,7 @@ const MbaTestPage = () => {
 
   const attemptIdRef = useRef(null);
   const timeRemainingRef = useRef(0);
+  const totalTimeRef = useRef(0);
   const elapsedRef = useRef(0);
   const submittedRef = useRef(false);
   const intervalRef = useRef(null);
@@ -47,6 +91,7 @@ const MbaTestPage = () => {
         const data = response.data;
         attemptIdRef.current = data.attemptId;
         timeRemainingRef.current = data.timeRemainingSec;
+        totalTimeRef.current = data.timeRemainingSec; // baseline for the ring; accurate for a fresh start
         setDisplayTime(data.timeRemainingSec);
         setQuestions(data.questions);
         setLoading(false);
@@ -168,19 +213,17 @@ const MbaTestPage = () => {
   if (errorMsg) return <div className="min-h-screen bg-paper flex items-center justify-center text-red-600 font-sans">{errorMsg}</div>;
 
   const q = questions[currentIndex];
-  const mins = Math.floor(Math.max(0, displayTime) / 60);
-  const secs = Math.max(0, displayTime) % 60;
-  const isLow = displayTime <= 60;
 
   return (
-    <div className="min-h-screen bg-paper font-sans">
+    <div className="min-h-screen bg-gradient-to-b from-paper to-sand-100 font-sans">
       <MbaHeader />
       <div className="max-w-3xl mx-auto px-4 py-6">
-        <div className="sticky top-0 bg-paper z-10 border-b-2 border-charcoal py-3 flex justify-between items-center mb-4">
-          <div className={`font-sora text-xl font-bold ${isLow ? "text-red-600" : "text-charcoal"}`}>
-            {mins}:{secs.toString().padStart(2, "0")}
+        <div className="sticky top-0 bg-paper/95 backdrop-blur z-10 py-3 flex justify-between items-center mb-4 border-b border-sand-200">
+          <TimerRing displayTime={displayTime} totalTime={totalTimeRef.current} />
+          <div className="text-right">
+            <div className="font-mono text-xs uppercase tracking-wide text-sand-600">Question</div>
+            <div className="font-sora text-xl font-bold text-charcoal">{currentIndex + 1} <span className="text-sand-500 text-base font-normal">of {questions.length}</span></div>
           </div>
-          <div className="text-sand-700">{currentIndex + 1} of {questions.length}</div>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-4">
@@ -189,7 +232,7 @@ const MbaTestPage = () => {
             if (question.markedForReview) style = "bg-yellow-100 border-yellow-600";
             else if (question.answerGiven !== null && question.answerGiven !== undefined) style = "bg-green-100 border-green-700";
             else if (question.visited) style = "bg-sand-200 border-sand-400";
-            const ring = i === currentIndex ? "ring-2 ring-charcoal" : "";
+            const ring = i === currentIndex ? "ring-2 ring-accent-orange2" : "";
             return (
               <button
                 key={question._id}
@@ -202,55 +245,58 @@ const MbaTestPage = () => {
           })}
         </div>
 
-        <div className="bg-white border border-sand-200 rounded-lg p-6">
-          <p className="font-sora font-semibold text-charcoal mb-2">Question {currentIndex + 1}</p>
-          <p className="text-charcoal mb-3">{q.text}</p>
-          {q.questionImage && <img src={q.questionImage} alt="" className="max-w-full rounded-lg mb-4" />}
+        <div className="bg-white border border-sand-200 rounded-lg overflow-hidden">
+          <div className="h-1.5 bg-brand-gradient" />
+          <div className="p-6">
+            <p className="font-sora font-semibold text-charcoal mb-2">Question {currentIndex + 1}</p>
+            <p className="text-charcoal mb-3">{q.text}</p>
+            {q.questionImage && <img src={q.questionImage} alt="" className="max-w-full rounded-lg mb-4" />}
 
-          <div className="space-y-2">
-            {q.options.map((opt, idx) => {
-              const letter = OPTION_LETTERS[idx];
-              const img = q.optionImages && q.optionImages[letter];
-              const selected = q.answerGiven === idx;
-              return (
-                <div
-                  key={idx}
-                  onClick={() => selectOption(idx)}
-                  className={`border rounded-lg p-3 cursor-pointer ${
-                    selected ? "bg-accent-yellow/20 border-accent-orange2" : "border-sand-200 hover:bg-sand-100"
-                  }`}
-                >
-                  <span className="font-medium">{letter}.</span> {opt}
-                  {img && <img src={img} alt="" className="max-w-xs mt-2 rounded" />}
-                </div>
-              );
-            })}
+            <div className="space-y-2">
+              {q.options.map((opt, idx) => {
+                const letter = OPTION_LETTERS[idx];
+                const img = q.optionImages && q.optionImages[letter];
+                const selected = q.answerGiven === idx;
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => selectOption(idx)}
+                    className={`border rounded-lg p-3 cursor-pointer transition-colors ${
+                      selected ? "bg-accent-yellow/20 border-accent-orange2" : "border-sand-200 hover:bg-sand-100"
+                    }`}
+                  >
+                    <span className="font-medium">{letter}.</span> {opt}
+                    {img && <img src={img} alt="" className="max-w-xs mt-2 rounded" />}
+                  </div>
+                );
+              })}
+            </div>
+
+            <label className="flex items-center gap-2 mt-4 text-sm text-sand-700">
+              <input type="checkbox" checked={!!q.markedForReview} onChange={toggleMarkForReview} />
+              Mark this question for review
+            </label>
           </div>
-
-          <label className="flex items-center gap-2 mt-4 text-sm text-sand-700">
-            <input type="checkbox" checked={!!q.markedForReview} onChange={toggleMarkForReview} />
-            Mark this question for review
-          </label>
         </div>
 
         <div className="flex flex-wrap gap-3 mt-4">
           <button
             onClick={() => currentIndex > 0 && jumpTo(currentIndex - 1)}
             disabled={currentIndex === 0}
-            className="px-5 py-2 rounded border border-sand-300 disabled:opacity-40"
+            className="px-5 py-2 rounded border border-sand-300 bg-white disabled:opacity-40"
           >
             Previous
           </button>
           <button
             onClick={() => currentIndex < questions.length - 1 && jumpTo(currentIndex + 1)}
             disabled={currentIndex === questions.length - 1}
-            className="px-5 py-2 rounded border border-sand-300 disabled:opacity-40"
+            className="px-5 py-2 rounded border border-sand-300 bg-white disabled:opacity-40"
           >
             Next
           </button>
           <button
             onClick={handleSubmit}
-            className="px-5 py-2 rounded bg-red-50 border border-red-700 text-red-700 font-semibold ml-auto"
+            className="px-5 py-2 rounded bg-red-50 border border-red-700 text-red-700 font-semibold ml-auto hover:bg-red-100"
           >
             Submit Test
           </button>
