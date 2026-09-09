@@ -25,7 +25,7 @@ const MbaEvaluationPanel = () => {
           </button>
         ))}
       </div>
-      {{tab === "students" && <StudentsTab />}
+      {tab === "students" && <StudentsTab />}
       {tab === "questions" && <QuestionsTab />}
       {tab === "tests" && <TestsTab />}
       {tab === "performance" && <PerformanceTab />}
