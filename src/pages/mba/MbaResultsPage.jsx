@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import MbaHeader from "../../components/mba/MbaHeader";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const OPTION_LETTERS = ["A", "B", "C"];
@@ -35,8 +36,8 @@ const MbaResultsPage = () => {
     fetchAll();
   }, [attemptId, token]);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-600">Loading results...</div>;
-  if (errorMsg) return <div className="min-h-screen flex items-center justify-center text-red-600">{errorMsg}</div>;
+  if (loading) return <div className="min-h-screen bg-paper flex items-center justify-center text-sand-700 font-sans">Loading results...</div>;
+  if (errorMsg) return <div className="min-h-screen bg-paper flex items-center justify-center text-red-600 font-sans">{errorMsg}</div>;
 
   const avgOfHistory = history.length
     ? Math.round(history.reduce((s, h) => s + h.score, 0) / history.length)
@@ -54,22 +55,23 @@ const MbaResultsPage = () => {
       `}</style>
 
       {/* ---------- ON-SCREEN DASHBOARD ---------- */}
-      <div className="screen-only min-h-screen bg-gradient-to-b from-white to-blue-50 px-4 py-10">
-        <div className="max-w-3xl mx-auto">
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Score: {results.score}%</h1>
-            <p className="text-gray-700">
+      <div className="screen-only min-h-screen bg-paper font-sans">
+        <MbaHeader />
+        <div className="max-w-3xl mx-auto px-4 py-10">
+          <div className="bg-accent-yellow/10 border border-accent-orange2/30 rounded-xl p-6 mb-8">
+            <h1 className="font-sora text-2xl font-bold text-charcoal mb-1">Score: {results.score}%</h1>
+            <p className="text-sand-700">
               {results.totalCorrect} correct out of {results.totalQuestions}
             </p>
             {results.autoSubmitted && (
-              <p className="text-sm text-gray-500 mt-1 italic">Auto-submitted when time ran out</p>
+              <p className="text-sm text-sand-600 mt-1 italic">Auto-submitted when time ran out</p>
             )}
           </div>
 
           {history.length > 0 && (
-            <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-1">Your Recent Performance</h2>
-              <p className="text-sm text-gray-500 mb-4">
+            <div className="bg-white border border-sand-200 rounded-xl p-6 mb-8">
+              <h2 className="font-sora text-lg font-semibold text-charcoal mb-1">Your Recent Performance</h2>
+              <p className="text-sm text-sand-500 mb-4">
                 Last {history.length} assignment{history.length > 1 ? "s" : ""}/exam{history.length > 1 ? "s" : ""}
                 {avgOfHistory !== null && ` — average: ${avgOfHistory}%`}
               </p>
@@ -78,16 +80,16 @@ const MbaResultsPage = () => {
                   const isCurrent = h.attemptId === attemptId;
                   return (
                     <div key={h.attemptId} className="flex items-center gap-3">
-                      <span className={`w-40 truncate text-sm ${isCurrent ? "font-bold text-blue-700" : "text-gray-700"}`}>
+                      <span className={`w-40 truncate text-sm ${isCurrent ? "font-bold text-accent-orange2" : "text-sand-700"}`}>
                         {h.testTitle} {isCurrent && "(this one)"}
                       </span>
-                      <div className="flex-1 bg-gray-100 rounded h-5 overflow-hidden">
+                      <div className="flex-1 bg-sand-200 rounded h-5 overflow-hidden">
                         <div
-                          className={`h-5 ${isCurrent ? "bg-blue-600" : "bg-gray-400"}`}
+                          className={`h-5 ${isCurrent ? "bg-brand-gradient" : "bg-sand-400"}`}
                           style={{ width: `${(h.score / maxScoreForBars) * 100}%` }}
                         />
                       </div>
-                      <span className="w-12 text-right text-sm font-medium">{h.score}%</span>
+                      <span className="w-12 text-right text-sm font-medium text-charcoal">{h.score}%</span>
                     </div>
                   );
                 })}
@@ -98,13 +100,13 @@ const MbaResultsPage = () => {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => window.print()}
-              className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-semibold py-3 px-6 rounded-lg"
+              className="bg-white border border-sand-300 hover:bg-sand-100 text-charcoal font-semibold py-3 px-6 rounded-lg"
             >
               Print / Save Answers as PDF
             </button>
             <button
               onClick={() => navigate("/mba-evaluation/dashboard")}
-              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-lg"
+              className="bg-brand-gradient hover:opacity-90 text-charcoal font-semibold py-3 px-8 rounded-lg"
             >
               Back to Dashboard
             </button>
