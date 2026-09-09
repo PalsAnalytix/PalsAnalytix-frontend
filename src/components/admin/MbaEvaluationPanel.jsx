@@ -8,12 +8,12 @@ const authHeader = () => ({
 });
 
 const MbaEvaluationPanel = () => {
-  const [tab, setTab] = useState("students");
+    const [tab, setTab] = useState("students");
 
   return (
     <div className="bg-white rounded shadow p-4 sm:p-6">
       <div className="flex gap-2 mb-6">
-        {["students", "questions", "tests"].map((t) => (
+        {["students", "questions", "tests", "performance"].map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -25,9 +25,10 @@ const MbaEvaluationPanel = () => {
           </button>
         ))}
       </div>
-      {tab === "students" && <StudentsTab />}
+      {{tab === "students" && <StudentsTab />}
       {tab === "questions" && <QuestionsTab />}
       {tab === "tests" && <TestsTab />}
+      {tab === "performance" && <PerformanceTab />}
     </div>
   );
 };
@@ -590,6 +591,116 @@ const TestCard = ({ test, onTogglePublish, onGrantAccess, onGrantRetake }) => {
         </button>
       </div>
       {note && <p className="text-xs text-gray-600 mt-2">{note}</p>}
+    </div>
+  );
+};
+
+// ---------------- PERFORMANCE ----------------
+const PerformanceTab = () => {
+  const [attempts, setAttempts] = useState([]);
+  const [msg, setMsg] = useState("");
+  const [studentFilter, setStudentFilter] = useState("");
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/api/mba/admin/performance`, authHeader());
+        setAttempts(res.data);
+      } catch (err) {
+        setMsg("Failed to load performance data");
+      }
+    };
+    load();
+  }, []);
+
+  const summary = {};
+  attempts.forEach((a) => {
+    const key = a.studentUsername;
+    if (!summary[key]) {
+      summary[key] = { fullName: a.studentFullName, username: a.studentUsername, count: 0, totalScore: 0 };
+    }
+    summary[key].count += 1;
+    summary[key].totalScore += a.score;
+  });
+  const summaryRows = Object.values(summary).map((s) => ({
+    ...s,
+    avgScore: Math.round(s.totalScore / s.count),
+  }));
+
+  const filteredAttempts = studentFilter
+    ? attempts.filter((a) => a.studentUsername === studentFilter)
+    : attempts;
+
+  return (
+    <div>
+      {msg && <p className="text-sm text-red-600 mb-4">{msg}</p>}
+
+      <h3 className="font-semibold mb-2">By Student</h3>
+      <table className="min-w-full bg-white border text-sm mb-8">
+        <thead>
+          <tr>
+            <th className="border px-2 py-1">Student</th>
+            <th className="border px-2 py-1">Username</th>
+            <th className="border px-2 py-1">Tests Taken</th>
+            <th className="border px-2 py-1">Average Score</th>
+            <th className="border px-2 py-1">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {summaryRows.map((s) => (
+            <tr key={s.username}>
+              <td className="border px-2 py-1">{s.fullName}</td>
+              <td className="border px-2 py-1">{s.username}</td>
+              <td className="border px-2 py-1 text-center">{s.count}</td>
+              <td className="border px-2 py-1 text-center">{s.avgScore}%</td>
+              <td className="border px-2 py-1">
+                <button onClick={() => setStudentFilter(s.username)} className="text-blue-600 hover:underline">
+                  View history
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="font-semibold">
+          {studentFilter ? `History for ${studentFilter}` : "All Attempts"}
+        </h3>
+        {studentFilter && (
+          <button onClick={() => setStudentFilter("")} className="text-sm text-gray-600 hover:underline">
+            Clear filter
+          </button>
+        )}
+      </div>
+      <table className="min-w-full bg-white border text-sm">
+        <thead>
+          <tr>
+            <th className="border px-2 py-1">Student</th>
+            <th className="border px-2 py-1">Test</th>
+            <th className="border px-2 py-1">Type</th>
+            <th className="border px-2 py-1">Score</th>
+            <th className="border px-2 py-1">Correct</th>
+            <th className="border px-2 py-1">Attempt #</th>
+            <th className="border px-2 py-1">Date</th>
+            <th className="border px-2 py-1">Auto-submitted?</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredAttempts.map((a) => (
+            <tr key={a.attemptId}>
+              <td className="border px-2 py-1">{a.studentFullName} ({a.studentUsername})</td>
+              <td className="border px-2 py-1">{a.testTitle}</td>
+              <td className="border px-2 py-1 capitalize">{a.testType}</td>
+              <td className="border px-2 py-1 text-center">{a.score}%</td>
+              <td className="border px-2 py-1 text-center">{a.totalCorrect}/{a.totalQuestions}</td>
+              <td className="border px-2 py-1 text-center">{a.attemptNumber}</td>
+              <td className="border px-2 py-1">{new Date(a.submittedAt).toLocaleString()}</td>
+              <td className="border px-2 py-1 text-center">{a.autoSubmitted ? "Yes" : "No"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
