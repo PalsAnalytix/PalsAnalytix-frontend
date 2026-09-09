@@ -29,7 +29,7 @@ const MbaLoginPage = () => {
                 <div className="font-mono text-base tracking-[.14em] uppercase text-accent-orange2 text-center mb-2">
           MBA Evaluation
         </div>
-        </div>
+      
         <h1 className="font-sora text-2xl font-bold text-paper text-center mb-2 tracking-tight">
           Sign in to your account
         </h1>
@@ -45,7 +45,7 @@ const MbaLoginPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-xs font-mono uppercase tracking-wide text-sand-600 mb-2">Username</label>
+                        <label className="block text-sm font-mono font-bold uppercase tracking-wide text-sand-600 mb-2">Username</label>
             <input
               type="text"
               value={username}
@@ -55,7 +55,7 @@ const MbaLoginPage = () => {
             />
           </div>
           <div>
-            <label className="block text-xs font-mono uppercase tracking-wide text-sand-600 mb-2">Password</label>
+            <label className="block text-sm font-mono font-bold uppercase tracking-wide text-sand-600 mb-2">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
