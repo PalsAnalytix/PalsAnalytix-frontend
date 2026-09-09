@@ -63,11 +63,11 @@ const MbaDashboard = () => {
 
   return (
     <div className="min-h-screen bg-paper font-sans">
-      <MbaHeader>
-        <span className="text-sm text-paper">Welcome, {fullName}</span>
+            <MbaHeader>
+        <span className="text-base text-paper">Welcome, {fullName}</span>
         <button
           onClick={handleLogout}
-          className="text-sm text-paper border border-line-light rounded px-4 py-2 hover:bg-white/10"
+          className="text-base text-paper border border-line-light rounded px-6 py-3 hover:bg-white/10"
         >
           Log Out
         </button>
