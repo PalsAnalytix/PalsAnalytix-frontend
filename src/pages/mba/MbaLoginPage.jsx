@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Eye, EyeOff } from "lucide-react";
 import { loginMbaStudent, clearMbaError } from "../../redux/slices/mbaAuthSlice";
+import mbaLogo from "../../assets/mba-logo.png";
 
 const MbaLoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.mbaAuth);
@@ -23,38 +23,50 @@ const MbaLoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1 text-center">MBA Evaluation</h1>
-        <p className="text-gray-600 text-center mb-6">Sign in to access your assignments and exams</p>
+    <div className="min-h-screen bg-ink flex items-center justify-center px-4 font-sans">
+      <div className="border border-line rounded-lg bg-white/[0.03] p-10 w-full max-w-md">
+        <img src={mbaLogo} alt="PalsAnalytix" className="h-14 mx-auto mb-6" />
+        <div className="font-mono text-xs tracking-[.14em] uppercase text-accent-orange2 text-center mb-2">
+          MBA Evaluation
+        </div>
+        <h1 className="font-sora text-2xl font-bold text-paper text-center mb-2 tracking-tight">
+          Sign in to your account
+        </h1>
+        <p className="text-sand-600 text-center mb-8 text-sm">
+          Access your assignments and exams
+        </p>
+
         {error && (
-          <div className="bg-red-50 text-red-700 text-sm rounded-lg px-4 py-2 mb-4">{error}</div>
+          <div className="bg-accent-orange/10 border border-accent-orange/30 text-accent-amber text-sm rounded px-4 py-2 mb-4">
+            {error}
+          </div>
         )}
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+            <label className="block text-xs font-mono uppercase tracking-wide text-sand-600 mb-2">Username</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-transparent border border-line-light rounded px-4 py-3 text-paper focus:outline-none focus:border-accent-orange2"
               required
             />
           </div>
-                    <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <div>
+            <label className="block text-xs font-mono uppercase tracking-wide text-sand-600 mb-2">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-transparent border border-line-light rounded px-4 py-3 pr-10 text-paper focus:outline-none focus:border-accent-orange2"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-sand-600 hover:text-paper"
                 tabIndex={-1}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -64,7 +76,7 @@ const MbaLoginPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 rounded-lg transition duration-300 disabled:opacity-60"
+            className="w-full bg-brand-gradient hover:opacity-90 text-charcoal font-semibold py-3 rounded transition duration-300 disabled:opacity-60"
           >
             {loading ? "Logging in..." : "Log In"}
           </button>
