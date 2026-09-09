@@ -453,6 +453,7 @@ const TestsTab = () => {
   const [difficulty, setDifficulty] = useState("");
     const [mode, setMode] = useState("random");
   const [passingScore, setPassingScore] = useState(50);
+  const [requiresFileSubmission, setRequiresFileSubmission] = useState(false);
   const [msg, setMsg] = useState("");
   const [dashboardTestId, setDashboardTestId] = useState(null);
 
@@ -471,12 +472,13 @@ const TestsTab = () => {
     e.preventDefault();
     setMsg("Creating...");
     try {
-            await axios.post(`${BASE_URL}/api/mba/admin/tests`, {
+        await axios.post(`${BASE_URL}/api/mba/admin/tests`, {
         title, type,
         totalQuestions: Number(totalQuestions),
         timePerQuestionSeconds: Number(timePerQuestion),
         tags, difficulty, questionSelectionMode: mode,
         passingScore: Number(passingScore),
+        requiresFileSubmission,
       }, authHeader());
       setMsg("Test created as a draft!");
       setTitle("");
@@ -533,7 +535,11 @@ const TestsTab = () => {
           <option value="random">Random draw per student</option>
           <option value="fixed">Same fixed set for everyone</option>
         </select>
-        <input type="number" placeholder="Passing score % (default 50)" value={passingScore} onChange={(e) => setPassingScore(e.target.value)} className="border rounded px-3 py-2 sm:col-span-2" />
+                <input type="number" placeholder="Passing score % (default 50)" value={passingScore} onChange={(e) => setPassingScore(e.target.value)} className="border rounded px-3 py-2 sm:col-span-2" />
+        <label className="flex items-center gap-2 sm:col-span-2 text-sm">
+          <input type="checkbox" checked={requiresFileSubmission} onChange={(e) => setRequiresFileSubmission(e.target.checked)} />
+          Requires a working file submission (Excel/Word) after the MCQs
+        </label>
         <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white rounded px-4 py-2 sm:col-span-2">Create Test (Draft)</button>
       </form>
 
@@ -576,7 +582,7 @@ const TestCard = ({ test, onTogglePublish, onGrantAccess, onGrantRetake, onViewD
               {test.status}
             </span>
           </h4>
-          <p className="text-sm text-gray-600">{test.type} — {test.totalQuestions} questions — {test.timePerQuestionSeconds}s/question</p>
+          <p className="text-sm text-gray-600">{test.type} — {test.totalQuestions} questions — {test.timePerQuestionSeconds}s/question{test.requiresFileSubmission ? " — 📎 requires file submission" : ""}</p>
           <p className="text-xs text-gray-500 mt-1">Access: {students}</p>
         </div>
                 <div className="flex gap-2">
@@ -861,7 +867,7 @@ const TestDashboardModal = ({ testId, onClose }) => {
               <h3 className="font-semibold mb-3">Student Roster</h3>
               <table className="min-w-full text-sm">
                 <thead>
-                  <tr>
+                   <tr>
                     {[
                       ["fullName", "Student"],
                       ["score", "Score"],
@@ -874,6 +880,7 @@ const TestDashboardModal = ({ testId, onClose }) => {
                         {label} {sortKey === key ? (sortDir === "asc" ? "▲" : "▼") : ""}
                       </th>
                     ))}
+                    {data.requiresFileSubmission && <th className="border px-2 py-1">Working File</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -886,7 +893,18 @@ const TestDashboardModal = ({ testId, onClose }) => {
                         <span className={r.passed ? "text-green-700" : "text-red-700"}>{r.passed ? "Pass" : "Fail"}</span>
                       </td>
                       <td className="border px-2 py-1 text-center">{r.attemptNumber}{r.autoSubmitted ? " (auto)" : ""}</td>
-                      <td className="border px-2 py-1">{new Date(r.submittedAt).toLocaleString()}</td>
+                                            <td className="border px-2 py-1">{new Date(r.submittedAt).toLocaleString()}</td>
+                      {data.requiresFileSubmission && (
+                        <td className="border px-2 py-1">
+                          {r.submittedFile ? (
+                            <a href={r.submittedFile.url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+                              {r.submittedFile.filename}
+                            </a>
+                          ) : (
+                            <span className="text-red-500 text-xs">Not submitted</span>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
