@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { Clock } from "lucide-react";
+import { Clock, ChevronLeft, ChevronRight, Send, BookOpen, Target } from "lucide-react";
 import MbaHeader from "../../components/mba/MbaHeader";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -11,9 +11,9 @@ const RING_RADIUS = 46;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
 const getRingColor = (fraction) => {
-  if (fraction > 0.5) return "#ff8305"; // healthy — brand orange
-  if (fraction > 0.2) return "#ffb23a"; // caution — amber
-  return "#dc2626"; // urgent — red, intentionally breaks from brand for clarity
+  if (fraction > 0.5) return "#ff8305";
+  if (fraction > 0.2) return "#ffb23a";
+  return "#dc2626";
 };
 
 const TimerRing = ({ displayTime, totalTime }) => {
@@ -50,10 +50,21 @@ const TimerRing = ({ displayTime, totalTime }) => {
   );
 };
 
+const LEGEND_ITEMS = [
+  { label: "Answered", classes: "bg-green-100 border-green-700" },
+  { label: "Marked for review", classes: "bg-yellow-100 border-yellow-600" },
+  { label: "Skipped", classes: "bg-sand-200 border-sand-400" },
+  { label: "Not visited", classes: "bg-white border-sand-400" },
+];
+
 const MbaTestPage = () => {
   const { testId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { token } = useSelector((state) => state.mbaAuth);
+  const testTitle = location.state?.testTitle;
+  const testType = location.state?.testType;
+  const TypeIcon = testType === "exam" ? Target : BookOpen;
 
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -91,7 +102,7 @@ const MbaTestPage = () => {
         const data = response.data;
         attemptIdRef.current = data.attemptId;
         timeRemainingRef.current = data.timeRemainingSec;
-        totalTimeRef.current = data.timeRemainingSec; // baseline for the ring; accurate for a fresh start
+        totalTimeRef.current = data.timeRemainingSec;
         setDisplayTime(data.timeRemainingSec);
         setQuestions(data.questions);
         setLoading(false);
@@ -215,10 +226,30 @@ const MbaTestPage = () => {
   const q = questions[currentIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-paper to-sand-100 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-paper via-white to-accent-yellow/5 font-sans">
       <MbaHeader />
+
+      {/* Hero band with test title */}
+      <div className="bg-ink px-6 py-6">
+        <div className="max-w-3xl mx-auto flex items-center gap-3">
+          {testTitle && (
+            <div className="w-10 h-10 rounded-full bg-brand-gradient flex items-center justify-center flex-shrink-0">
+              <TypeIcon size={18} className="text-charcoal" />
+            </div>
+          )}
+          <div>
+            <div className="font-mono text-xs tracking-[.14em] uppercase text-accent-orange2 mb-1">
+              {testType || "MBA Evaluation"}
+            </div>
+            <h1 className="font-sora text-xl sm:text-2xl font-bold text-paper tracking-tight">
+              {testTitle || "In Progress"}
+            </h1>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-3xl mx-auto px-4 py-6">
-        <div className="sticky top-0 bg-paper/95 backdrop-blur z-10 py-3 flex justify-between items-center mb-4 border-b border-sand-200">
+        <div className="sticky top-0 bg-paper/95 backdrop-blur z-10 py-3 flex justify-between items-center mb-2 border-b border-sand-200">
           <TimerRing displayTime={displayTime} totalTime={totalTimeRef.current} />
           <div className="text-right">
             <div className="font-mono text-xs uppercase tracking-wide text-sand-600">Question</div>
@@ -226,7 +257,7 @@ const MbaTestPage = () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-2">
           {questions.map((question, i) => {
             let style = "bg-white border-sand-400";
             if (question.markedForReview) style = "bg-yellow-100 border-yellow-600";
@@ -243,6 +274,15 @@ const MbaTestPage = () => {
               </button>
             );
           })}
+        </div>
+
+        <div className="flex flex-wrap gap-x-4 gap-y-1 mb-4 text-xs text-sand-600">
+          {LEGEND_ITEMS.map((item) => (
+            <div key={item.label} className="flex items-center gap-1.5">
+              <span className={`w-3 h-3 rounded border ${item.classes}`} />
+              {item.label}
+            </div>
+          ))}
         </div>
 
         <div className="bg-white border border-sand-200 rounded-lg overflow-hidden">
@@ -283,22 +323,22 @@ const MbaTestPage = () => {
           <button
             onClick={() => currentIndex > 0 && jumpTo(currentIndex - 1)}
             disabled={currentIndex === 0}
-            className="px-5 py-2 rounded border border-sand-300 bg-white disabled:opacity-40"
+            className="flex items-center gap-1.5 px-5 py-2 rounded border border-sand-300 bg-white disabled:opacity-40"
           >
-            Previous
+            <ChevronLeft size={16} /> Previous
           </button>
           <button
             onClick={() => currentIndex < questions.length - 1 && jumpTo(currentIndex + 1)}
             disabled={currentIndex === questions.length - 1}
-            className="px-5 py-2 rounded border border-sand-300 bg-white disabled:opacity-40"
+            className="flex items-center gap-1.5 px-5 py-2 rounded border border-sand-300 bg-white disabled:opacity-40"
           >
-            Next
+            Next <ChevronRight size={16} />
           </button>
           <button
             onClick={handleSubmit}
-            className="px-5 py-2 rounded bg-red-50 border border-red-700 text-red-700 font-semibold ml-auto hover:bg-red-100"
+            className="flex items-center gap-1.5 px-5 py-2 rounded bg-red-50 border border-red-700 text-red-700 font-semibold ml-auto hover:bg-red-100"
           >
-            Submit Test
+            <Send size={16} /> Submit Test
           </button>
         </div>
       </div>
