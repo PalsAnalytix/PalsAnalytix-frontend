@@ -182,7 +182,7 @@ const MbaDashboard = () => {
                     </div>
                     <button
                       disabled={!test.canStart}
-                      onClick={() => navigate(`/mba-evaluation/test/${test._id}`)}
+                      onClick={() => navigate(`/mba-evaluation/test/${test._id}`, { state: { testTitle: test.title, testType: test.type } })}
                       className={`font-semibold py-2 px-6 rounded ${
                         test.canStart
                           ? "bg-brand-gradient hover:opacity-90 text-charcoal"
