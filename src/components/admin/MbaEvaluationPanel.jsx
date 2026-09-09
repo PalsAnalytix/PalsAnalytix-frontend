@@ -451,8 +451,10 @@ const TestsTab = () => {
   const [timePerQuestion, setTimePerQuestion] = useState(60);
   const [tags, setTags] = useState("");
   const [difficulty, setDifficulty] = useState("");
-  const [mode, setMode] = useState("random");
+    const [mode, setMode] = useState("random");
+  const [passingScore, setPassingScore] = useState(50);
   const [msg, setMsg] = useState("");
+  const [dashboardTestId, setDashboardTestId] = useState(null);
 
   const loadTests = async () => {
     try {
@@ -469,11 +471,12 @@ const TestsTab = () => {
     e.preventDefault();
     setMsg("Creating...");
     try {
-      await axios.post(`${BASE_URL}/api/mba/admin/tests`, {
+            await axios.post(`${BASE_URL}/api/mba/admin/tests`, {
         title, type,
         totalQuestions: Number(totalQuestions),
         timePerQuestionSeconds: Number(timePerQuestion),
         tags, difficulty, questionSelectionMode: mode,
+        passingScore: Number(passingScore),
       }, authHeader());
       setMsg("Test created as a draft!");
       setTitle("");
@@ -526,25 +529,37 @@ const TestsTab = () => {
           <option value="medium">Medium</option>
           <option value="hard">Hard</option>
         </select>
-        <select value={mode} onChange={(e) => setMode(e.target.value)} className="border rounded px-3 py-2 sm:col-span-2">
+                <select value={mode} onChange={(e) => setMode(e.target.value)} className="border rounded px-3 py-2 sm:col-span-2">
           <option value="random">Random draw per student</option>
           <option value="fixed">Same fixed set for everyone</option>
         </select>
+        <input type="number" placeholder="Passing score % (default 50)" value={passingScore} onChange={(e) => setPassingScore(e.target.value)} className="border rounded px-3 py-2 sm:col-span-2" />
         <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white rounded px-4 py-2 sm:col-span-2">Create Test (Draft)</button>
       </form>
 
       {msg && <p className="text-sm text-gray-700 mb-4">{msg}</p>}
 
-      <div className="space-y-4">
+            <div className="space-y-4">
         {tests.map((test) => (
-          <TestCard key={test._id} test={test} onTogglePublish={togglePublish} onGrantAccess={grantAccess} onGrantRetake={grantRetake} />
+          <TestCard
+            key={test._id}
+            test={test}
+            onTogglePublish={togglePublish}
+            onGrantAccess={grantAccess}
+            onGrantRetake={grantRetake}
+            onViewDashboard={() => setDashboardTestId(test._id)}
+          />
         ))}
       </div>
+
+      {dashboardTestId && (
+        <TestDashboardModal testId={dashboardTestId} onClose={() => setDashboardTestId(null)} />
+      )}
     </div>
   );
 };
 
-const TestCard = ({ test, onTogglePublish, onGrantAccess, onGrantRetake }) => {
+const TestCard = ({ test, onTogglePublish, onGrantAccess, onGrantRetake, onViewDashboard }) => {
   const [accessInput, setAccessInput] = useState("");
   const [retakeInput, setRetakeInput] = useState("");
   const [note, setNote] = useState("");
@@ -564,9 +579,14 @@ const TestCard = ({ test, onTogglePublish, onGrantAccess, onGrantRetake }) => {
           <p className="text-sm text-gray-600">{test.type} — {test.totalQuestions} questions — {test.timePerQuestionSeconds}s/question</p>
           <p className="text-xs text-gray-500 mt-1">Access: {students}</p>
         </div>
-        <button onClick={() => onTogglePublish(test._id, test.status)} className="bg-gray-200 rounded px-3 py-1 text-sm">
-          {test.status === "published" ? "Unpublish" : "Publish"}
-        </button>
+                <div className="flex gap-2">
+          <button onClick={onViewDashboard} className="bg-blue-100 text-blue-700 rounded px-3 py-1 text-sm">
+            View Dashboard
+          </button>
+          <button onClick={() => onTogglePublish(test._id, test.status)} className="bg-gray-200 rounded px-3 py-1 text-sm">
+            {test.status === "published" ? "Unpublish" : "Publish"}
+          </button>
+        </div>
       </div>
       <div className="flex flex-wrap gap-2 mt-3">
         <input placeholder="Usernames, comma-separated" value={accessInput} onChange={(e) => setAccessInput(e.target.value)} className="border rounded px-2 py-1 text-sm flex-1 min-w-[160px]" />
@@ -704,5 +724,187 @@ const PerformanceTab = () => {
     </div>
   );
 };
+
+// ---------------- TEST DASHBOARD ----------------
+const GRADE_COLORS = { A: "#036b26", B: "#2b6cb0", C: "#a67c00", D: "#c05621", F: "#8a1c1c" };
+
+const TestDashboardModal = ({ testId, onClose }) => {
+  const [data, setData] = useState(null);
+  const [msg, setMsg] = useState("");
+  const [sortKey, setSortKey] = useState("score");
+  const [sortDir, setSortDir] = useState("desc");
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/api/mba/admin/tests/${testId}/dashboard`, authHeader());
+        setData(res.data);
+      } catch (err) {
+        setMsg("Failed to load dashboard: " + (err.response?.data?.error || err.message));
+      }
+    };
+    load();
+  }, [testId]);
+
+  const sortedRoster = data
+    ? [...data.roster].sort((a, b) => {
+        const dir = sortDir === "asc" ? 1 : -1;
+        if (a[sortKey] < b[sortKey]) return -1 * dir;
+        if (a[sortKey] > b[sortKey]) return 1 * dir;
+        return 0;
+      })
+    : [];
+
+  const handleSort = (key) => {
+    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSortKey(key); setSortDir("desc"); }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto p-6">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-xl font-bold">{data ? data.testTitle : "Loading..."} — Class Performance</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
+        </div>
+
+        {msg && <p className="text-red-600 text-sm mb-4">{msg}</p>}
+
+        {data && (
+          <>
+            {/* KPI Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+              <KpiCard label="Pass Rate" value={`${data.passRate}%`} sub={`≥ ${data.passingScore}% to pass`} />
+              <KpiCard label="Average Score" value={`${data.average}%`} sub={`Median: ${data.median}%`} />
+              <KpiCard label="Highest / Lowest" value={`${data.highest}% / ${data.lowest}%`} />
+              <KpiCard label="Participation" value={`${data.participated}/${data.enrolled}`} sub="Sat exam / enrolled" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              {/* Score Distribution */}
+              <div className="border rounded p-4">
+                <h3 className="font-semibold mb-3">Score Distribution</h3>
+                {Object.entries(data.distribution).map(([range, count]) => {
+                  const max = Math.max(...Object.values(data.distribution), 1);
+                  return (
+                    <div key={range} className="flex items-center gap-2 mb-2 text-sm">
+                      <span className="w-16 text-gray-600">{range}%</span>
+                      <div className="flex-1 bg-gray-100 rounded h-5 overflow-hidden">
+                        <div className="bg-blue-500 h-5" style={{ width: `${(count / max) * 100}%` }} />
+                      </div>
+                      <span className="w-8 text-right">{count}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Grade Breakdown */}
+              <div className="border rounded p-4">
+                <h3 className="font-semibold mb-3">Grade Breakdown</h3>
+                <div className="flex h-6 rounded overflow-hidden mb-3">
+                  {Object.entries(data.gradeCounts).map(([grade, count]) => {
+                    const total = Object.values(data.gradeCounts).reduce((a, b) => a + b, 0) || 1;
+                    const pct = (count / total) * 100;
+                    if (!pct) return null;
+                    return <div key={grade} style={{ width: `${pct}%`, backgroundColor: GRADE_COLORS[grade] }} title={`${grade}: ${count}`} />;
+                  })}
+                </div>
+                <div className="grid grid-cols-5 gap-2 text-sm text-center">
+                  {Object.entries(data.gradeCounts).map(([grade, count]) => (
+                    <div key={grade}>
+                      <div className="font-bold" style={{ color: GRADE_COLORS[grade] }}>{grade}</div>
+                      <div>{count}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Topic Mastery */}
+            {data.topicMastery.length > 0 && (
+              <div className="border rounded p-4 mb-6">
+                <h3 className="font-semibold mb-3">Topic Mastery</h3>
+                {data.topicMastery.map((t) => (
+                  <div key={t.tag} className="flex items-center gap-2 mb-2 text-sm">
+                    <span className="w-32 text-gray-600 truncate">{t.tag}</span>
+                    <div className="flex-1 bg-gray-100 rounded h-5 overflow-hidden">
+                      <div
+                        className="h-5"
+                        style={{ width: `${t.accuracy}%`, backgroundColor: t.accuracy >= 70 ? "#036b26" : t.accuracy >= 50 ? "#a67c00" : "#8a1c1c" }}
+                      />
+                    </div>
+                    <span className="w-10 text-right">{t.accuracy}%</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Question Difficulty Heatmap */}
+            <div className="border rounded p-4 mb-6">
+              <h3 className="font-semibold mb-3">Question Difficulty (lowest accuracy first)</h3>
+              <div className="space-y-1">
+                {data.questionHeatmap.map((q, i) => {
+                  const color = q.accuracy >= 70 ? "#e6ffed" : q.accuracy >= 50 ? "#fff3cd" : "#ffe6e6";
+                  const textColor = q.accuracy >= 70 ? "#036b26" : q.accuracy >= 50 ? "#856404" : "#8a1c1c";
+                  return (
+                    <div key={i} className="flex justify-between items-center text-sm p-2 rounded" style={{ backgroundColor: color }}>
+                      <span className="flex-1 truncate mr-2">Q{q.questionNumber || i + 1}: {q.text}</span>
+                      <span className="font-semibold" style={{ color: textColor }}>{q.accuracy}% ({q.totalAnswered} answered)</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Student Roster */}
+            <div className="border rounded p-4">
+              <h3 className="font-semibold mb-3">Student Roster</h3>
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr>
+                    {[
+                      ["fullName", "Student"],
+                      ["score", "Score"],
+                      ["grade", "Grade"],
+                      ["passed", "Status"],
+                      ["attemptNumber", "Attempt #"],
+                      ["submittedAt", "Submitted"],
+                    ].map(([key, label]) => (
+                      <th key={key} onClick={() => handleSort(key)} className="border px-2 py-1 cursor-pointer hover:bg-gray-50 select-none">
+                        {label} {sortKey === key ? (sortDir === "asc" ? "▲" : "▼") : ""}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedRoster.map((r) => (
+                    <tr key={r.studentId}>
+                      <td className="border px-2 py-1">{r.fullName} ({r.username})</td>
+                      <td className="border px-2 py-1 text-center">{r.score}% ({r.totalCorrect}/{r.totalQuestions})</td>
+                      <td className="border px-2 py-1 text-center font-semibold" style={{ color: GRADE_COLORS[r.grade] }}>{r.grade}</td>
+                      <td className="border px-2 py-1 text-center">
+                        <span className={r.passed ? "text-green-700" : "text-red-700"}>{r.passed ? "Pass" : "Fail"}</span>
+                      </td>
+                      <td className="border px-2 py-1 text-center">{r.attemptNumber}{r.autoSubmitted ? " (auto)" : ""}</td>
+                      <td className="border px-2 py-1">{new Date(r.submittedAt).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const KpiCard = ({ label, value, sub }) => (
+  <div className="border rounded p-4 text-center">
+    <div className="text-2xl font-bold">{value}</div>
+    <div className="text-sm text-gray-600">{label}</div>
+    {sub && <div className="text-xs text-gray-400 mt-1">{sub}</div>}
+  </div>
+);
 
 export default MbaEvaluationPanel;
