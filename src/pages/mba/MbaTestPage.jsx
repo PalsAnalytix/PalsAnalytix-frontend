@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { Clock, ChevronLeft, ChevronRight, Send, BookOpen, Target } from "lucide-react";
+import { Clock, ChevronLeft, ChevronRight, Send, BookOpen, Target, Upload } from "lucide-react";
 import MbaHeader from "../../components/mba/MbaHeader";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -53,8 +53,7 @@ const TimerRing = ({ displayTime, totalTime }) => {
 const LEGEND_ITEMS = [
   { label: "Answered", classes: "bg-green-100 border-green-700" },
   { label: "Marked for review", classes: "bg-yellow-100 border-yellow-600" },
-  { label: "Skipped", classes: "bg-sand-200 border-sand-400" },
-  { label: "Not visited", classes: "bg-white border-sand-400" },
+  { label: "Not answered", classes: "bg-white border-sand-400" },
 ];
 
 const MbaTestPage = () => {
@@ -71,6 +70,10 @@ const MbaTestPage = () => {
   const [displayTime, setDisplayTime] = useState(0);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
+  const [requiresFileSubmission, setRequiresFileSubmission] = useState(false);
+  const [submittedFile, setSubmittedFile] = useState(null);
+  const [fileToUpload, setFileToUpload] = useState(null);
+  const [uploadStatus, setUploadStatus] = useState("");
 
   const attemptIdRef = useRef(null);
   const timeRemainingRef = useRef(0);
@@ -105,6 +108,8 @@ const MbaTestPage = () => {
         totalTimeRef.current = data.timeRemainingSec;
         setDisplayTime(data.timeRemainingSec);
         setQuestions(data.questions);
+        setRequiresFileSubmission(!!data.requiresFileSubmission);
+        setSubmittedFile(data.submittedFile || null);
         setLoading(false);
         startTimer();
       } catch (err) {
@@ -202,6 +207,24 @@ const MbaTestPage = () => {
     setCurrentIndex(i);
   };
 
+  const handleFileUpload = async () => {
+    if (!fileToUpload) return;
+    setUploadStatus("Uploading...");
+    const formData = new FormData();
+    formData.append("file", fileToUpload);
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/api/mba/student/tests/attempts/${attemptIdRef.current}/submit-file`,
+        formData,
+        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
+      );
+      setSubmittedFile(res.data.submittedFile);
+      setUploadStatus("File saved!");
+    } catch (err) {
+      setUploadStatus("Failed: " + (err.response?.data?.error || err.message));
+    }
+  };
+
   const handleSubmit = async () => {
     if (!window.confirm("Submit your test now? You won't be able to change answers after this.")) return;
     await saveAnswer({ ...questionsRef.current[currentIndexRef.current], visited: true });
@@ -224,12 +247,12 @@ const MbaTestPage = () => {
   if (errorMsg) return <div className="min-h-screen bg-paper flex items-center justify-center text-red-600 font-sans">{errorMsg}</div>;
 
   const q = questions[currentIndex];
+  const isLastQuestion = currentIndex === questions.length - 1;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-paper via-white to-accent-yellow/5 font-sans">
       <MbaHeader />
 
-      {/* Hero band with test title */}
       <div className="bg-ink px-6 py-6">
         <div className="max-w-3xl mx-auto flex items-center gap-3">
           {testTitle && (
@@ -262,7 +285,6 @@ const MbaTestPage = () => {
             let style = "bg-white border-sand-400";
             if (question.markedForReview) style = "bg-yellow-100 border-yellow-600";
             else if (question.answerGiven !== null && question.answerGiven !== undefined) style = "bg-green-100 border-green-700";
-            else if (question.visited) style = "bg-sand-200 border-sand-400";
             const ring = i === currentIndex ? "ring-2 ring-accent-orange2" : "";
             return (
               <button
@@ -318,6 +340,48 @@ const MbaTestPage = () => {
             </label>
           </div>
         </div>
+
+        {isLastQuestion && requiresFileSubmission && (
+          <div className="bg-white border border-sand-200 rounded-lg overflow-hidden mt-4">
+            <div className="h-1.5 bg-brand-gradient" />
+            <div className="p-6">
+              <h3 className="font-sora font-semibold text-charcoal mb-1">Working File Submission</h3>
+              <p className="text-sm text-sand-600 mb-4">This assignment requires you to also upload your working file (Excel or Word) before submitting.</p>
+
+              {submittedFile && (
+                <div className="bg-accent-yellow/10 border border-accent-orange2/30 rounded-lg p-4 mb-4">
+                  <p className="text-charcoal text-sm">
+                    ✅ Current file: <a href={submittedFile.url} target="_blank" rel="noreferrer" className="text-accent-orange2 underline">{submittedFile.filename}</a>
+                  </p>
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center gap-3">
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.docx,.doc"
+                  onChange={(e) => setFileToUpload(e.target.files[0])}
+                  className="text-sm"
+                />
+                <button
+                  onClick={handleFileUpload}
+                  className="flex items-center gap-1.5 bg-brand-gradient hover:opacity-90 text-charcoal font-semibold py-2 px-5 rounded"
+                >
+                  <Upload size={16} /> Upload File
+                </button>
+                {submittedFile && (
+                  <button
+                    onClick={handleFileUpload}
+                    className="flex items-center gap-1.5 bg-white border border-sand-300 hover:bg-sand-100 text-charcoal font-semibold py-2 px-5 rounded"
+                  >
+                    <Upload size={16} /> Replace File
+                  </button>
+                )}
+              </div>
+              {uploadStatus && <p className="text-sm text-sand-700 mt-2">{uploadStatus}</p>}
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-3 mt-4">
           <button
