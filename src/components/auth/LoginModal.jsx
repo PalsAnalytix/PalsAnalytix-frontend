@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 
-const LoginModal = ({ onSuccess, onSignupClick, onClose }) => {
+const LoginModal = ({ onSuccess, onSignupClick, onClose, onForgotClick }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
@@ -94,12 +94,12 @@ const LoginModal = ({ onSuccess, onSignupClick, onClose }) => {
             >
               Register
             </button>
-            <button
-              onClick={() => alert('Forgot Password functionality')}
+                       <button
+              onClick={() => (onForgotClick ? onForgotClick() : alert('Forgot Password functionality'))}
               className="text-accent-orange2 hover:text-accent-amber font-semibold text-base py-2 transition-colors"
             >
               Forgot Password?
-            </button>
+            </button>          
           </div>
         </div>
       </div>
