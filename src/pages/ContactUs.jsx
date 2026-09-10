@@ -154,7 +154,7 @@ const ContactPage = () => {
                   <div className="ml-4">
                     <p className="text-lg font-medium">Email</p>
                     <p className="mt-1 text-sand-400">
-                      palsanalytix.dev@gmail.com
+                      palsanalytix@gmail.com
                     </p>
                   </div>
                 </div>
@@ -178,9 +178,9 @@ const ContactPage = () => {
                   <div className="ml-4">
                     <p className="text-lg font-medium">Support Hours</p>
                     <p className="mt-1 text-sand-400">
-                      Monday - Friday: 9AM - 6PM EST
+                      Monday - Friday: 9AM - 6PM EIT
                     </p>
-                    <p className="text-sand-400">Weekend: 10AM - 2PM EST</p>
+                    <p className="text-sand-400">Weekend: 10AM - 2PM IST</p>
                   </div>
                 </div>
               </div>
