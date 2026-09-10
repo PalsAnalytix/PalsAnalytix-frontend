@@ -397,14 +397,17 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-                  .addCase(fetchUserProfile.fulfilled, (state, action) => {
+                        .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.authChecked = true;
 
         // If it's an admin, mark as authenticated AND restore the email
-        // so the isAdmin check in App.jsx passes correctly after a refresh
+        // so the isAdmin check in App.jsx passes correctly after a refresh.
+        // Also set state.isAdmin directly — AdminDashboard.jsx reads this
+        // separate top-level field for its own internal check.
         if (action.payload.isAdmin) {
           state.isAuthenticated = true;
+          state.isAdmin = true;
           state.user = { email: action.payload.email, isAdmin: true };
           return;
         }
