@@ -7,21 +7,27 @@ const authHeader = () => ({
   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
 });
 
+const TAB_LABELS = { students: "Students", questions: "Questions", tests: "Tests", performance: "Performance" };
+
 const MbaEvaluationPanel = () => {
-    const [tab, setTab] = useState("students");
+  const [tab, setTab] = useState("students");
 
   return (
-    <div className="bg-white rounded shadow p-4 sm:p-6">
-      <div className="flex gap-2 mb-6">
+    <div className="bg-white rounded-lg shadow p-4 sm:p-6 font-sans">
+      <div className="font-mono text-xs tracking-[.14em] uppercase text-accent-orange2 mb-1">MBA Evaluation</div>
+      <h2 className="font-sora text-2xl font-bold text-charcoal mb-1">Admin Control Center</h2>
+      <div className="h-1 w-16 bg-brand-gradient rounded-full mb-6" />
+
+      <div className="flex gap-2 mb-6 flex-wrap">
         {["students", "questions", "tests", "performance"].map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded capitalize text-sm sm:text-base ${
-              tab === t ? "bg-blue-500 text-white" : "bg-gray-200"
+            className={`px-4 py-2 rounded font-medium text-sm sm:text-base ${
+              tab === t ? "bg-brand-gradient text-charcoal" : "bg-sand-200 text-sand-900"
             }`}
           >
-            {t}
+            {TAB_LABELS[t]}
           </button>
         ))}
       </div>
@@ -68,28 +74,28 @@ const StudentsTab = () => {
   return (
     <div>
       <form onSubmit={createStudent} className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-        <input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} className="border rounded px-3 py-2" required />
-        <input placeholder="Full name" value={fullName} onChange={(e) => setFullName(e.target.value)} className="border rounded px-3 py-2" required />
-        <input placeholder="Temporary password" value={password} onChange={(e) => setPassword(e.target.value)} className="border rounded px-3 py-2" required />
-        <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white rounded px-4 py-2 sm:col-span-3">Create Student</button>
+        <input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} className="border border-sand-300 rounded px-3 py-2 focus:outline-none focus:border-accent-orange2" required />
+        <input placeholder="Full name" value={fullName} onChange={(e) => setFullName(e.target.value)} className="border border-sand-300 rounded px-3 py-2 focus:outline-none focus:border-accent-orange2" required />
+        <input placeholder="Temporary password" value={password} onChange={(e) => setPassword(e.target.value)} className="border border-sand-300 rounded px-3 py-2 focus:outline-none focus:border-accent-orange2" required />
+        <button type="submit" className="bg-brand-gradient hover:opacity-90 text-charcoal font-semibold rounded px-4 py-2 sm:col-span-3">Create Student</button>
       </form>
-      {msg && <p className="text-sm text-gray-700 mb-4">{msg}</p>}
-            <table className="min-w-full bg-white border text-sm">
+      {msg && <p className="text-sm text-sand-700 mb-4">{msg}</p>}
+      <table className="min-w-full bg-white border border-sand-200 text-sm rounded overflow-hidden">
         <thead>
-          <tr>
-            <th className="border px-2 py-1">Username</th>
-            <th className="border px-2 py-1">Full Name</th>
-            <th className="border px-2 py-1">Status</th>
-            <th className="border px-2 py-1">Actions</th>
+          <tr className="bg-sand-100">
+            <th className="border border-sand-200 px-2 py-1 text-left">Username</th>
+            <th className="border border-sand-200 px-2 py-1 text-left">Full Name</th>
+            <th className="border border-sand-200 px-2 py-1 text-left">Status</th>
+            <th className="border border-sand-200 px-2 py-1 text-left">Actions</th>
           </tr>
         </thead>
         <tbody>
           {students.map((s) => (
             <tr key={s._id}>
-              <td className="border px-2 py-1">{s.username}</td>
-              <td className="border px-2 py-1">{s.fullName}</td>
-              <td className="border px-2 py-1">{s.status}</td>
-              <td className="border px-2 py-1">
+              <td className="border border-sand-200 px-2 py-1">{s.username}</td>
+              <td className="border border-sand-200 px-2 py-1">{s.fullName}</td>
+              <td className="border border-sand-200 px-2 py-1">{s.status}</td>
+              <td className="border border-sand-200 px-2 py-1">
                 <button
                   onClick={async () => {
                     if (!window.confirm(`Delete student "${s.username}"? This cannot be undone.`)) return;
@@ -117,18 +123,18 @@ const StudentsTab = () => {
 const QuestionsTab = () => {
   const [questions, setQuestions] = useState([]);
   const [msg, setMsg] = useState("");
-    const [file, setFile] = useState(null);
+  const [file, setFile] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
   const [imageQNum, setImageQNum] = useState("");
   const [imageType, setImageType] = useState("Question");
-    const [imageLabel, setImageLabel] = useState("");
+  const [imageLabel, setImageLabel] = useState("");
 
-  // Batch image upload state
   const [batchFiles, setBatchFiles] = useState([]);
   const [batchRows, setBatchRows] = useState([]);
   const [batchResults, setBatchResults] = useState([]);
   const [batchUploading, setBatchUploading] = useState(false);
+
   const loadQuestions = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/api/mba/admin/questions`, authHeader());
@@ -156,7 +162,7 @@ const QuestionsTab = () => {
     }
   };
 
-    const uploadImage = async () => {
+  const uploadImage = async () => {
     if (!imageFile) return;
     if (!imageQNum) { setMsg("Please enter a question number first."); return; }
     setMsg("Uploading image...");
@@ -173,7 +179,8 @@ const QuestionsTab = () => {
       setMsg("Failed: " + (err.response?.data?.error || err.message));
     }
   };
-    const handleBatchFileSelect = (e) => {
+
+  const handleBatchFileSelect = (e) => {
     const files = Array.from(e.target.files);
     setBatchFiles(files);
     setBatchRows(files.map((f, i) => ({ file: f, qNum: i + 1, qType: "Question", status: "Not uploaded" })));
@@ -218,7 +225,6 @@ const QuestionsTab = () => {
   };
 
   const deleteQuestion = async (id) => {
-  
     if (!window.confirm("Delete this question?")) return;
     try {
       await axios.delete(`${BASE_URL}/api/mba/admin/questions/${id}`, authHeader());
@@ -238,7 +244,7 @@ const QuestionsTab = () => {
     }
   };
 
-      const [duplicateGroups, setDuplicateGroups] = useState([]);
+  const [duplicateGroups, setDuplicateGroups] = useState([]);
   const [selectedForDelete, setSelectedForDelete] = useState(new Set());
 
   const checkDuplicates = async () => {
@@ -251,7 +257,7 @@ const QuestionsTab = () => {
     }
   };
 
-    const deleteFromDuplicates = async (id) => {
+  const deleteFromDuplicates = async (id) => {
     if (!window.confirm("Delete this question?")) return;
     try {
       await axios.delete(`${BASE_URL}/api/mba/admin/questions/${id}`, authHeader());
@@ -290,17 +296,17 @@ const QuestionsTab = () => {
 
   return (
     <div>
-            <div className="mb-6 border rounded p-4">
-        <h3 className="font-semibold mb-2">Upload an Image (for a question or option)</h3>
+      <div className="mb-6 border border-sand-200 rounded-lg p-4 bg-white">
+        <h3 className="font-sora font-semibold text-charcoal mb-2">Upload an Image (for a question or option)</h3>
         <div className="flex flex-wrap gap-2 mb-2">
           <input
             type="number"
             placeholder="Question #"
             value={imageQNum}
             onChange={(e) => setImageQNum(e.target.value)}
-            className="border rounded px-3 py-2 w-32"
+            className="border border-sand-300 rounded px-3 py-2 w-32"
           />
-          <select value={imageType} onChange={(e) => setImageType(e.target.value)} className="border rounded px-3 py-2">
+          <select value={imageType} onChange={(e) => setImageType(e.target.value)} className="border border-sand-300 rounded px-3 py-2">
             <option value="Question">Question image</option>
             <option value="Option A">Option A image</option>
             <option value="Option B">Option B image</option>
@@ -308,51 +314,50 @@ const QuestionsTab = () => {
           </select>
         </div>
         <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} className="mb-2" />
-        <button onClick={uploadImage} className="bg-blue-500 hover:bg-blue-700 text-white rounded px-4 py-2 block mb-2">Upload Image</button>
+        <button onClick={uploadImage} className="bg-brand-gradient hover:opacity-90 text-charcoal font-semibold rounded px-4 py-2 block mb-2">Upload Image</button>
         {imageUrl && (
           <div>
-            <p className="text-sm font-semibold">{imageLabel}</p>
-            <p className="text-sm break-all">{imageUrl}</p>
-            <img src={imageUrl} alt="" className="max-w-xs mt-2" />
+            <p className="text-sm font-semibold text-charcoal">{imageLabel}</p>
+            <p className="text-sm break-all text-sand-700">{imageUrl}</p>
+            <img src={imageUrl} alt="" className="max-w-xs mt-2 rounded" />
           </div>
         )}
       </div>
 
-      
-      <div className="mb-6 border rounded p-4">
-        <h3 className="font-semibold mb-2">Batch Upload Images</h3>
-        <p className="text-xs text-gray-500 mb-2">Select multiple images at once, label each with its question number and type, then upload them all together.</p>
+      <div className="mb-6 border border-sand-200 rounded-lg p-4 bg-white">
+        <h3 className="font-sora font-semibold text-charcoal mb-2">Batch Upload Images</h3>
+        <p className="text-xs text-sand-600 mb-2">Select multiple images at once, label each with its question number and type, then upload them all together.</p>
         <input type="file" accept="image/*" multiple onChange={handleBatchFileSelect} className="mb-3" />
 
         {batchRows.length > 0 && (
           <div className="space-y-2 mb-3">
             {batchRows.map((row, i) => (
-              <div key={i} className="flex flex-wrap items-center gap-2 text-sm border-b pb-2">
+              <div key={i} className="flex flex-wrap items-center gap-2 text-sm border-b border-sand-200 pb-2">
                 <span className="w-40 truncate">{row.file.name}</span>
                 <input
                   type="number"
                   value={row.qNum}
                   onChange={(e) => updateBatchRow(i, "qNum", e.target.value)}
-                  className="border rounded px-2 py-1 w-20"
+                  className="border border-sand-300 rounded px-2 py-1 w-20"
                   placeholder="Q#"
                 />
                 <select
                   value={row.qType}
                   onChange={(e) => updateBatchRow(i, "qType", e.target.value)}
-                  className="border rounded px-2 py-1"
+                  className="border border-sand-300 rounded px-2 py-1"
                 >
                   <option value="Question">Question</option>
                   <option value="Option A">Option A</option>
                   <option value="Option B">Option B</option>
                   <option value="Option C">Option C</option>
                 </select>
-                <span className="text-gray-500">{row.status}</span>
+                <span className="text-sand-600">{row.status}</span>
               </div>
             ))}
             <button
               onClick={uploadBatch}
               disabled={batchUploading}
-              className="bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 text-white rounded px-4 py-2"
+              className="bg-brand-gradient hover:opacity-90 disabled:opacity-50 text-charcoal font-semibold rounded px-4 py-2"
             >
               {batchUploading ? "Uploading..." : "Upload All Images"}
             </button>
@@ -361,23 +366,23 @@ const QuestionsTab = () => {
 
         {batchResults.length > 0 && (
           <div>
-            <button onClick={copyBatchTable} className="bg-gray-200 rounded px-4 py-2 text-sm mb-2">Copy table</button>
-            <table className="min-w-full border text-sm">
+            <button onClick={copyBatchTable} className="bg-sand-200 text-sand-900 rounded px-4 py-2 text-sm mb-2">Copy table</button>
+            <table className="min-w-full border border-sand-200 text-sm">
               <thead>
-                <tr>
-                  <th className="border px-2 py-1">Label</th>
-                  <th className="border px-2 py-1">File</th>
-                  <th className="border px-2 py-1">URL</th>
-                  <th className="border px-2 py-1">Preview</th>
+                <tr className="bg-sand-100">
+                  <th className="border border-sand-200 px-2 py-1">Label</th>
+                  <th className="border border-sand-200 px-2 py-1">File</th>
+                  <th className="border border-sand-200 px-2 py-1">URL</th>
+                  <th className="border border-sand-200 px-2 py-1">Preview</th>
                 </tr>
               </thead>
               <tbody>
                 {batchResults.map((r, i) => (
                   <tr key={i}>
-                    <td className="border px-2 py-1">{r.label}</td>
-                    <td className="border px-2 py-1">{r.filename}</td>
-                    <td className="border px-2 py-1 break-all">{r.url}</td>
-                    <td className="border px-2 py-1"><img src={r.url} alt="" className="w-12 h-12 object-cover" /></td>
+                    <td className="border border-sand-200 px-2 py-1">{r.label}</td>
+                    <td className="border border-sand-200 px-2 py-1">{r.filename}</td>
+                    <td className="border border-sand-200 px-2 py-1 break-all">{r.url}</td>
+                    <td className="border border-sand-200 px-2 py-1"><img src={r.url} alt="" className="w-12 h-12 object-cover rounded" /></td>
                   </tr>
                 ))}
               </tbody>
@@ -385,32 +390,32 @@ const QuestionsTab = () => {
           </div>
         )}
       </div>
-      
-      <div className="mb-6 border rounded p-4">
-        <h3 className="font-semibold mb-2">Bulk Upload Questions (Excel/CSV)</h3>
+
+      <div className="mb-6 border border-sand-200 rounded-lg p-4 bg-white">
+        <h3 className="font-sora font-semibold text-charcoal mb-2">Bulk Upload Questions (Excel/CSV)</h3>
         <input type="file" accept=".xlsx,.xls,.csv" onChange={(e) => setFile(e.target.files[0])} className="mb-2" />
-        <button onClick={uploadFile} className="bg-blue-500 hover:bg-blue-700 text-white rounded px-4 py-2">Upload Questions</button>
+        <button onClick={uploadFile} className="bg-brand-gradient hover:opacity-90 text-charcoal font-semibold rounded px-4 py-2">Upload Questions</button>
       </div>
 
       <div className="flex gap-2 mb-4">
-        <button onClick={renumberAll} className="bg-gray-200 rounded px-4 py-2 text-sm">Renumber All</button>
-        <button onClick={checkDuplicates} className="bg-gray-200 rounded px-4 py-2 text-sm">Check Duplicates</button>
+        <button onClick={renumberAll} className="bg-sand-200 text-sand-900 rounded px-4 py-2 text-sm">Renumber All</button>
+        <button onClick={checkDuplicates} className="bg-sand-200 text-sand-900 rounded px-4 py-2 text-sm">Check Duplicates</button>
       </div>
 
-            {msg && <p className="text-sm text-gray-700 mb-4">{msg}</p>}
+      {msg && <p className="text-sm text-sand-700 mb-4">{msg}</p>}
 
-           {duplicateGroups.length > 0 && (
+      {duplicateGroups.length > 0 && (
         <div className="mb-6 space-y-3">
           <button
             onClick={deleteSelected}
             disabled={!selectedForDelete.size}
-            className="bg-red-600 disabled:bg-gray-300 text-white rounded px-4 py-2 text-sm mb-2"
+            className="bg-red-600 disabled:bg-sand-300 text-white rounded px-4 py-2 text-sm mb-2"
           >
             Delete Selected ({selectedForDelete.size})
           </button>
           {duplicateGroups.map((g, i) => (
-            <div key={i} className="border border-yellow-400 bg-yellow-50 rounded p-3">
-              <p className="font-medium mb-2">"{g._id}" — appears {g.count} times:</p>
+            <div key={i} className="border border-accent-amber bg-accent-yellow/10 rounded-lg p-3">
+              <p className="font-medium mb-2 text-charcoal">"{g._id}" — appears {g.count} times:</p>
               <ul className="space-y-1">
                 {g.questions.map((q) => (
                   <li key={q.id} className="flex items-center gap-3 text-sm">
@@ -428,12 +433,12 @@ const QuestionsTab = () => {
           ))}
         </div>
       )}
-      <p className="font-semibold mb-2">{questions.length} question(s) in the bank</p>
+      <p className="font-sora font-semibold text-charcoal mb-2">{questions.length} question(s) in the bank</p>
       <div className="space-y-3 max-h-[600px] overflow-y-auto">
         {questions.map((q) => (
-          <div key={q._id} className="border rounded p-3">
-            <p className="font-medium">{q.questionNumber ? `Q${q.questionNumber}: ` : ""}{q.text}</p>
-            <p className="text-xs text-gray-500">Tags: {(q.tags || []).join(", ") || "none"} — Difficulty: {q.difficulty}</p>
+          <div key={q._id} className="border border-sand-200 rounded-lg p-3 bg-white">
+            <p className="font-medium text-charcoal">{q.questionNumber ? `Q${q.questionNumber}: ` : ""}{q.text}</p>
+            <p className="text-xs text-sand-600">Tags: {(q.tags || []).join(", ") || "none"} — Difficulty: {q.difficulty}</p>
             <button onClick={() => deleteQuestion(q._id)} className="text-red-600 text-sm mt-1">Delete</button>
           </div>
         ))}
@@ -451,7 +456,7 @@ const TestsTab = () => {
   const [timePerQuestion, setTimePerQuestion] = useState(60);
   const [tags, setTags] = useState("");
   const [difficulty, setDifficulty] = useState("");
-    const [mode, setMode] = useState("random");
+  const [mode, setMode] = useState("random");
   const [passingScore, setPassingScore] = useState(50);
   const [requiresFileSubmission, setRequiresFileSubmission] = useState(false);
   const [msg, setMsg] = useState("");
@@ -472,7 +477,7 @@ const TestsTab = () => {
     e.preventDefault();
     setMsg("Creating...");
     try {
-        await axios.post(`${BASE_URL}/api/mba/admin/tests`, {
+      await axios.post(`${BASE_URL}/api/mba/admin/tests`, {
         title, type,
         totalQuestions: Number(totalQuestions),
         timePerQuestionSeconds: Number(timePerQuestion),
@@ -488,7 +493,7 @@ const TestsTab = () => {
     }
   };
 
-    const togglePublish = async (id, status) => {
+  const togglePublish = async (id, status) => {
     const action = status === "published" ? "unpublish" : "publish";
     await axios.patch(`${BASE_URL}/api/mba/admin/tests/${id}/${action}`, {}, authHeader());
     loadTests();
@@ -532,36 +537,36 @@ const TestsTab = () => {
 
   return (
     <div>
-      <form onSubmit={createTest} className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 border rounded p-4">
-        <input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} className="border rounded px-3 py-2" required />
-        <select value={type} onChange={(e) => setType(e.target.value)} className="border rounded px-3 py-2">
+      <form onSubmit={createTest} className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 border border-sand-200 rounded-lg p-4 bg-white">
+        <input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} className="border border-sand-300 rounded px-3 py-2" required />
+        <select value={type} onChange={(e) => setType(e.target.value)} className="border border-sand-300 rounded px-3 py-2">
           <option value="assignment">Assignment</option>
           <option value="exam">Exam</option>
         </select>
-        <input type="number" placeholder="Total questions" value={totalQuestions} onChange={(e) => setTotalQuestions(e.target.value)} className="border rounded px-3 py-2" />
-        <input type="number" placeholder="Time per question (sec)" value={timePerQuestion} onChange={(e) => setTimePerQuestion(e.target.value)} className="border rounded px-3 py-2" />
-        <input placeholder="Tags (optional, comma-separated)" value={tags} onChange={(e) => setTags(e.target.value)} className="border rounded px-3 py-2" />
-        <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} className="border rounded px-3 py-2">
+        <input type="number" placeholder="Total questions" value={totalQuestions} onChange={(e) => setTotalQuestions(e.target.value)} className="border border-sand-300 rounded px-3 py-2" />
+        <input type="number" placeholder="Time per question (sec)" value={timePerQuestion} onChange={(e) => setTimePerQuestion(e.target.value)} className="border border-sand-300 rounded px-3 py-2" />
+        <input placeholder="Tags (optional, comma-separated)" value={tags} onChange={(e) => setTags(e.target.value)} className="border border-sand-300 rounded px-3 py-2" />
+        <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} className="border border-sand-300 rounded px-3 py-2">
           <option value="">Any difficulty</option>
           <option value="easy">Easy</option>
           <option value="medium">Medium</option>
           <option value="hard">Hard</option>
         </select>
-                <select value={mode} onChange={(e) => setMode(e.target.value)} className="border rounded px-3 py-2 sm:col-span-2">
+        <select value={mode} onChange={(e) => setMode(e.target.value)} className="border border-sand-300 rounded px-3 py-2 sm:col-span-2">
           <option value="random">Random draw per student</option>
           <option value="fixed">Same fixed set for everyone</option>
         </select>
-                <input type="number" placeholder="Passing score % (default 50)" value={passingScore} onChange={(e) => setPassingScore(e.target.value)} className="border rounded px-3 py-2 sm:col-span-2" />
+        <input type="number" placeholder="Passing score % (default 50)" value={passingScore} onChange={(e) => setPassingScore(e.target.value)} className="border border-sand-300 rounded px-3 py-2 sm:col-span-2" />
         <label className="flex items-center gap-2 sm:col-span-2 text-sm">
           <input type="checkbox" checked={requiresFileSubmission} onChange={(e) => setRequiresFileSubmission(e.target.checked)} />
           Requires a working file submission (Excel/Word) after the MCQs
         </label>
-        <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white rounded px-4 py-2 sm:col-span-2">Create Test (Draft)</button>
+        <button type="submit" className="bg-brand-gradient hover:opacity-90 text-charcoal font-semibold rounded px-4 py-2 sm:col-span-2">Create Test (Draft)</button>
       </form>
 
-      {msg && <p className="text-sm text-gray-700 mb-4">{msg}</p>}
+      {msg && <p className="text-sm text-sand-700 mb-4">{msg}</p>}
 
-                  <div className="space-y-4">
+      <div className="space-y-4">
         {tests.filter((t) => t.status !== "archived").map((test) => (
           <TestCard
             key={test._id}
@@ -577,15 +582,15 @@ const TestsTab = () => {
 
       {tests.some((t) => t.status === "archived") && (
         <div className="mt-8">
-          <h3 className="font-semibold mb-2 text-gray-600">Archived Tests</h3>
+          <h3 className="font-sora font-semibold mb-2 text-sand-700">Archived Tests</h3>
           <div className="space-y-2">
             {tests.filter((t) => t.status === "archived").map((test) => (
-              <div key={test._id} className="border rounded p-3 flex justify-between items-center bg-gray-50">
+              <div key={test._id} className="border border-sand-200 rounded-lg p-3 flex justify-between items-center bg-sand-100">
                 <div>
-                  <span className="font-medium">{test.title}</span>
-                  <span className="text-xs text-gray-500 ml-2">({test.type})</span>
+                  <span className="font-medium text-charcoal">{test.title}</span>
+                  <span className="text-xs text-sand-600 ml-2">({test.type})</span>
                 </div>
-                <button onClick={() => unarchiveTest(test._id)} className="text-blue-600 hover:underline text-sm">
+                <button onClick={() => unarchiveTest(test._id)} className="text-accent-orange2 hover:underline text-sm">
                   Restore
                 </button>
               </div>
@@ -609,53 +614,56 @@ const TestCard = ({ test, onTogglePublish, onGrantAccess, onGrantRetake, onViewD
   const students = (test.allowedStudentIds || []).map((s) => `${s.fullName} (${s.username})`).join(", ") || "None yet";
 
   return (
-    <div className="border rounded p-4">
-      <div className="flex justify-between items-start flex-wrap gap-2">
-        <div>
-          <h4 className="font-semibold">
-            {test.title}{" "}
-            <span className={`text-xs rounded-full px-2 py-0.5 ml-2 ${test.status === "published" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
-              {test.status}
-            </span>
-          </h4>
-          <p className="text-sm text-gray-600">{test.type} — {test.totalQuestions} questions — {test.timePerQuestionSeconds}s/question{test.requiresFileSubmission ? " — 📎 requires file submission" : ""}</p>
-          <p className="text-xs text-gray-500 mt-1">Access: {students}</p>
+    <div className="border border-sand-200 rounded-lg overflow-hidden bg-white">
+      <div className="h-1 bg-brand-gradient" />
+      <div className="p-4">
+        <div className="flex justify-between items-start flex-wrap gap-2">
+          <div>
+            <h4 className="font-sora font-semibold text-charcoal">
+              {test.title}{" "}
+              <span className={`text-xs rounded-full px-2 py-0.5 ml-2 ${test.status === "published" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                {test.status}
+              </span>
+            </h4>
+            <p className="text-sm text-sand-600">{test.type} — {test.totalQuestions} questions — {test.timePerQuestionSeconds}s/question{test.requiresFileSubmission ? " — 📎 requires file submission" : ""}</p>
+            <p className="text-xs text-sand-500 mt-1">Access: {students}</p>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={onViewDashboard} className="bg-accent-yellow/20 text-accent-orange2 border border-accent-orange2/30 rounded px-3 py-1 text-sm">
+              View Dashboard
+            </button>
+            <button onClick={() => onTogglePublish(test._id, test.status)} className="bg-sand-200 text-sand-900 rounded px-3 py-1 text-sm">
+              {test.status === "published" ? "Unpublish" : "Publish"}
+            </button>
+            <button onClick={onDelete} className="bg-red-50 text-red-700 border border-red-200 rounded px-3 py-1 text-sm">
+              Delete
+            </button>
+          </div>
         </div>
-                        <div className="flex gap-2">
-          <button onClick={onViewDashboard} className="bg-blue-100 text-blue-700 rounded px-3 py-1 text-sm">
-            View Dashboard
-          </button>
-          <button onClick={() => onTogglePublish(test._id, test.status)} className="bg-gray-200 rounded px-3 py-1 text-sm">
-            {test.status === "published" ? "Unpublish" : "Publish"}
-          </button>
-          <button onClick={onDelete} className="bg-red-50 text-red-700 border border-red-200 rounded px-3 py-1 text-sm">
-            Delete
+        <div className="flex flex-wrap gap-2 mt-3">
+          <input placeholder="Usernames, comma-separated" value={accessInput} onChange={(e) => setAccessInput(e.target.value)} className="border border-sand-300 rounded px-2 py-1 text-sm flex-1 min-w-[160px]" />
+          <button
+            onClick={async () => {
+              const notFound = await onGrantAccess(test._id, accessInput);
+              setNote(notFound && notFound.length ? `Not found: ${notFound.join(", ")}` : "Access granted!");
+              setAccessInput("");
+            }}
+            className="bg-brand-gradient hover:opacity-90 text-charcoal font-semibold rounded px-3 py-1 text-sm"
+          >
+            Grant Access
           </button>
         </div>
+        <div className="flex flex-wrap gap-2 mt-2">
+          <input placeholder="Username for retake" value={retakeInput} onChange={(e) => setRetakeInput(e.target.value)} className="border border-sand-300 rounded px-2 py-1 text-sm flex-1 min-w-[160px]" />
+          <button
+            onClick={() => { onGrantRetake(test._id, retakeInput); setRetakeInput(""); }}
+            className="bg-sand-200 text-sand-900 rounded px-3 py-1 text-sm"
+          >
+            Grant Retake
+          </button>
+        </div>
+        {note && <p className="text-xs text-sand-600 mt-2">{note}</p>}
       </div>
-      <div className="flex flex-wrap gap-2 mt-3">
-        <input placeholder="Usernames, comma-separated" value={accessInput} onChange={(e) => setAccessInput(e.target.value)} className="border rounded px-2 py-1 text-sm flex-1 min-w-[160px]" />
-        <button
-          onClick={async () => {
-            const notFound = await onGrantAccess(test._id, accessInput);
-            setNote(notFound && notFound.length ? `Not found: ${notFound.join(", ")}` : "Access granted!");
-            setAccessInput("");
-          }}
-          className="bg-blue-500 hover:bg-blue-700 text-white rounded px-3 py-1 text-sm"
-        >
-          Grant Access
-        </button>
-      </div>
-      <div className="flex flex-wrap gap-2 mt-2">
-        <input placeholder="Username for retake" value={retakeInput} onChange={(e) => setRetakeInput(e.target.value)} className="border rounded px-2 py-1 text-sm flex-1 min-w-[160px]" />
-        <button
-          onClick={() => { onGrantRetake(test._id, retakeInput); setRetakeInput(""); }}
-          className="bg-gray-200 rounded px-3 py-1 text-sm"
-        >
-          Grant Retake
-        </button>
-      </div>
-      {note && <p className="text-xs text-gray-600 mt-2">{note}</p>}
     </div>
   );
 };
@@ -700,26 +708,26 @@ const PerformanceTab = () => {
     <div>
       {msg && <p className="text-sm text-red-600 mb-4">{msg}</p>}
 
-      <h3 className="font-semibold mb-2">By Student</h3>
-      <table className="min-w-full bg-white border text-sm mb-8">
+      <h3 className="font-sora font-semibold text-charcoal mb-2">By Student</h3>
+      <table className="min-w-full bg-white border border-sand-200 text-sm mb-8">
         <thead>
-          <tr>
-            <th className="border px-2 py-1">Student</th>
-            <th className="border px-2 py-1">Username</th>
-            <th className="border px-2 py-1">Tests Taken</th>
-            <th className="border px-2 py-1">Average Score</th>
-            <th className="border px-2 py-1">Actions</th>
+          <tr className="bg-sand-100">
+            <th className="border border-sand-200 px-2 py-1">Student</th>
+            <th className="border border-sand-200 px-2 py-1">Username</th>
+            <th className="border border-sand-200 px-2 py-1">Tests Taken</th>
+            <th className="border border-sand-200 px-2 py-1">Average Score</th>
+            <th className="border border-sand-200 px-2 py-1">Actions</th>
           </tr>
         </thead>
         <tbody>
           {summaryRows.map((s) => (
             <tr key={s.username}>
-              <td className="border px-2 py-1">{s.fullName}</td>
-              <td className="border px-2 py-1">{s.username}</td>
-              <td className="border px-2 py-1 text-center">{s.count}</td>
-              <td className="border px-2 py-1 text-center">{s.avgScore}%</td>
-              <td className="border px-2 py-1">
-                <button onClick={() => setStudentFilter(s.username)} className="text-blue-600 hover:underline">
+              <td className="border border-sand-200 px-2 py-1">{s.fullName}</td>
+              <td className="border border-sand-200 px-2 py-1">{s.username}</td>
+              <td className="border border-sand-200 px-2 py-1 text-center">{s.count}</td>
+              <td className="border border-sand-200 px-2 py-1 text-center">{s.avgScore}%</td>
+              <td className="border border-sand-200 px-2 py-1">
+                <button onClick={() => setStudentFilter(s.username)} className="text-accent-orange2 hover:underline">
                   View history
                 </button>
               </td>
@@ -729,39 +737,39 @@ const PerformanceTab = () => {
       </table>
 
       <div className="flex justify-between items-center mb-2">
-        <h3 className="font-semibold">
+        <h3 className="font-sora font-semibold text-charcoal">
           {studentFilter ? `History for ${studentFilter}` : "All Attempts"}
         </h3>
         {studentFilter && (
-          <button onClick={() => setStudentFilter("")} className="text-sm text-gray-600 hover:underline">
+          <button onClick={() => setStudentFilter("")} className="text-sm text-sand-600 hover:underline">
             Clear filter
           </button>
         )}
       </div>
-      <table className="min-w-full bg-white border text-sm">
+      <table className="min-w-full bg-white border border-sand-200 text-sm">
         <thead>
-          <tr>
-            <th className="border px-2 py-1">Student</th>
-            <th className="border px-2 py-1">Test</th>
-            <th className="border px-2 py-1">Type</th>
-            <th className="border px-2 py-1">Score</th>
-            <th className="border px-2 py-1">Correct</th>
-            <th className="border px-2 py-1">Attempt #</th>
-            <th className="border px-2 py-1">Date</th>
-            <th className="border px-2 py-1">Auto-submitted?</th>
+          <tr className="bg-sand-100">
+            <th className="border border-sand-200 px-2 py-1">Student</th>
+            <th className="border border-sand-200 px-2 py-1">Test</th>
+            <th className="border border-sand-200 px-2 py-1">Type</th>
+            <th className="border border-sand-200 px-2 py-1">Score</th>
+            <th className="border border-sand-200 px-2 py-1">Correct</th>
+            <th className="border border-sand-200 px-2 py-1">Attempt #</th>
+            <th className="border border-sand-200 px-2 py-1">Date</th>
+            <th className="border border-sand-200 px-2 py-1">Auto-submitted?</th>
           </tr>
         </thead>
         <tbody>
           {filteredAttempts.map((a) => (
             <tr key={a.attemptId}>
-              <td className="border px-2 py-1">{a.studentFullName} ({a.studentUsername})</td>
-              <td className="border px-2 py-1">{a.testTitle}</td>
-              <td className="border px-2 py-1 capitalize">{a.testType}</td>
-              <td className="border px-2 py-1 text-center">{a.score}%</td>
-              <td className="border px-2 py-1 text-center">{a.totalCorrect}/{a.totalQuestions}</td>
-              <td className="border px-2 py-1 text-center">{a.attemptNumber}</td>
-              <td className="border px-2 py-1">{new Date(a.submittedAt).toLocaleString()}</td>
-              <td className="border px-2 py-1 text-center">{a.autoSubmitted ? "Yes" : "No"}</td>
+              <td className="border border-sand-200 px-2 py-1">{a.studentFullName} ({a.studentUsername})</td>
+              <td className="border border-sand-200 px-2 py-1">{a.testTitle}</td>
+              <td className="border border-sand-200 px-2 py-1 capitalize">{a.testType}</td>
+              <td className="border border-sand-200 px-2 py-1 text-center">{a.score}%</td>
+              <td className="border border-sand-200 px-2 py-1 text-center">{a.totalCorrect}/{a.totalQuestions}</td>
+              <td className="border border-sand-200 px-2 py-1 text-center">{a.attemptNumber}</td>
+              <td className="border border-sand-200 px-2 py-1">{new Date(a.submittedAt).toLocaleString()}</td>
+              <td className="border border-sand-200 px-2 py-1 text-center">{a.autoSubmitted ? "Yes" : "No"}</td>
             </tr>
           ))}
         </tbody>
@@ -805,7 +813,7 @@ const TestDashboardModal = ({ testId, onClose }) => {
     else { setSortKey(key); setSortDir("desc"); }
   };
 
-    const downloadCSV = () => {
+  const downloadCSV = () => {
     const headers = ["Name", "Username", "Score (%)", "Grade", "Pass/Fail"];
     const rows = data.roster.map((r) => [r.fullName, r.username, r.score, r.grade, r.passed ? "Pass" : "Fail"]);
     const csvContent = [headers, ...rows]
@@ -833,7 +841,7 @@ const TestDashboardModal = ({ testId, onClose }) => {
         a.download = r.submittedFile.filename;
         a.target = "_blank";
         a.click();
-      }, i * 400); // stagger downloads so the browser doesn't block them
+      }, i * 400);
     });
   };
 
@@ -851,175 +859,181 @@ const TestDashboardModal = ({ testId, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto p-6">
-        <div className="flex justify-between items-start mb-4">
-          <h2 className="text-xl font-bold">{data ? data.testTitle : "Loading..."} — Class Performance</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
-        </div>
-
-                {msg && <p className="text-red-600 text-sm mb-4">{msg}</p>}
-
-        {data && (
-          <>
-            <div className="flex flex-wrap gap-2 mb-4">
-              <button onClick={downloadCSV} className="bg-blue-100 text-blue-700 rounded px-3 py-2 text-sm">
-                Download Class Performance (CSV)
-              </button>
-              {data.requiresFileSubmission && (
-                <>
-                  <button onClick={downloadAllFiles} className="bg-green-100 text-green-700 rounded px-3 py-2 text-sm">
-                    Download All Submitted Files
-                  </button>
-                  <button onClick={deleteAllFiles} className="bg-red-50 text-red-700 border border-red-200 rounded px-3 py-2 text-sm">
-                    Delete All Submitted Files
-                  </button>
-                </>
-              )}
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+        <div className="h-1.5 bg-brand-gradient sticky top-0" />
+        <div className="p-6">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <div className="font-mono text-xs tracking-[.14em] uppercase text-accent-orange2 mb-1">Class Performance</div>
+              <h2 className="font-sora text-xl font-bold text-charcoal">{data ? data.testTitle : "Loading..."}</h2>
             </div>
-            {/* KPI Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-              <KpiCard label="Pass Rate" value={`${data.passRate}%`} sub={`≥ ${data.passingScore}% to pass`} />
-              <KpiCard label="Average Score" value={`${data.average}%`} sub={`Median: ${data.median}%`} />
-              <KpiCard label="Highest / Lowest" value={`${data.highest}% / ${data.lowest}%`} />
-              <KpiCard label="Participation" value={`${data.participated}/${data.enrolled}`} sub="Sat exam / enrolled" />
-            </div>
+            <button onClick={onClose} className="text-sand-500 hover:text-charcoal text-2xl leading-none">&times;</button>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              {/* Score Distribution */}
-              <div className="border rounded p-4">
-                <h3 className="font-semibold mb-3">Score Distribution</h3>
-                {Object.entries(data.distribution).map(([range, count]) => {
-                  const max = Math.max(...Object.values(data.distribution), 1);
-                  return (
-                    <div key={range} className="flex items-center gap-2 mb-2 text-sm">
-                      <span className="w-16 text-gray-600">{range}%</span>
-                      <div className="flex-1 bg-gray-100 rounded h-5 overflow-hidden">
-                        <div className="bg-blue-500 h-5" style={{ width: `${(count / max) * 100}%` }} />
-                      </div>
-                      <span className="w-8 text-right">{count}</span>
-                    </div>
-                  );
-                })}
+          {msg && <p className="text-red-600 text-sm mb-4">{msg}</p>}
+
+          {data && (
+            <>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <button onClick={downloadCSV} className="bg-accent-yellow/20 text-accent-orange2 border border-accent-orange2/30 rounded px-3 py-2 text-sm">
+                  Download Class Performance (CSV)
+                </button>
+                {data.requiresFileSubmission && (
+                  <>
+                    <button onClick={downloadAllFiles} className="bg-green-100 text-green-700 rounded px-3 py-2 text-sm">
+                      Download All Submitted Files
+                    </button>
+                    <button onClick={deleteAllFiles} className="bg-red-50 text-red-700 border border-red-200 rounded px-3 py-2 text-sm">
+                      Delete All Submitted Files
+                    </button>
+                  </>
+                )}
+              </div>
+              {/* KPI Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                <KpiCard label="Pass Rate" value={`${data.passRate}%`} sub={`≥ ${data.passingScore}% to pass`} />
+                <KpiCard label="Average Score" value={`${data.average}%`} sub={`Median: ${data.median}%`} />
+                <KpiCard label="Highest / Lowest" value={`${data.highest}% / ${data.lowest}%`} />
+                <KpiCard label="Participation" value={`${data.participated}/${data.enrolled}`} sub="Sat exam / enrolled" />
               </div>
 
-              {/* Grade Breakdown */}
-              <div className="border rounded p-4">
-                <h3 className="font-semibold mb-3">Grade Breakdown</h3>
-                <div className="flex h-6 rounded overflow-hidden mb-3">
-                  {Object.entries(data.gradeCounts).map(([grade, count]) => {
-                    const total = Object.values(data.gradeCounts).reduce((a, b) => a + b, 0) || 1;
-                    const pct = (count / total) * 100;
-                    if (!pct) return null;
-                    return <div key={grade} style={{ width: `${pct}%`, backgroundColor: GRADE_COLORS[grade] }} title={`${grade}: ${count}`} />;
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                {/* Score Distribution */}
+                <div className="border border-sand-200 rounded-lg p-4">
+                  <h3 className="font-sora font-semibold text-charcoal mb-3">Score Distribution</h3>
+                  {Object.entries(data.distribution).map(([range, count]) => {
+                    const max = Math.max(...Object.values(data.distribution), 1);
+                    return (
+                      <div key={range} className="flex items-center gap-2 mb-2 text-sm">
+                        <span className="w-16 text-sand-600">{range}%</span>
+                        <div className="flex-1 bg-sand-100 rounded h-5 overflow-hidden">
+                          <div className="h-5 bg-brand-gradient" style={{ width: `${(count / max) * 100}%` }} />
+                        </div>
+                        <span className="w-8 text-right">{count}</span>
+                      </div>
+                    );
                   })}
                 </div>
-                <div className="grid grid-cols-5 gap-2 text-sm text-center">
-                  {Object.entries(data.gradeCounts).map(([grade, count]) => (
-                    <div key={grade}>
-                      <div className="font-bold" style={{ color: GRADE_COLORS[grade] }}>{grade}</div>
-                      <div>{count}</div>
+
+                {/* Grade Breakdown */}
+                <div className="border border-sand-200 rounded-lg p-4">
+                  <h3 className="font-sora font-semibold text-charcoal mb-3">Grade Breakdown</h3>
+                  <div className="flex h-6 rounded overflow-hidden mb-3">
+                    {Object.entries(data.gradeCounts).map(([grade, count]) => {
+                      const total = Object.values(data.gradeCounts).reduce((a, b) => a + b, 0) || 1;
+                      const pct = (count / total) * 100;
+                      if (!pct) return null;
+                      return <div key={grade} style={{ width: `${pct}%`, backgroundColor: GRADE_COLORS[grade] }} title={`${grade}: ${count}`} />;
+                    })}
+                  </div>
+                  <div className="grid grid-cols-5 gap-2 text-sm text-center">
+                    {Object.entries(data.gradeCounts).map(([grade, count]) => (
+                      <div key={grade}>
+                        <div className="font-bold" style={{ color: GRADE_COLORS[grade] }}>{grade}</div>
+                        <div>{count}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Topic Mastery */}
+              {data.topicMastery.length > 0 && (
+                <div className="border border-sand-200 rounded-lg p-4 mb-6">
+                  <h3 className="font-sora font-semibold text-charcoal mb-3">Topic Mastery</h3>
+                  {data.topicMastery.map((t) => (
+                    <div key={t.tag} className="flex items-center gap-2 mb-2 text-sm">
+                      <span className="w-32 text-sand-600 truncate">{t.tag}</span>
+                      <div className="flex-1 bg-sand-100 rounded h-5 overflow-hidden">
+                        <div
+                          className="h-5"
+                          style={{ width: `${t.accuracy}%`, backgroundColor: t.accuracy >= 70 ? "#036b26" : t.accuracy >= 50 ? "#a67c00" : "#8a1c1c" }}
+                        />
+                      </div>
+                      <span className="w-10 text-right">{t.accuracy}%</span>
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
+              )}
 
-            {/* Topic Mastery */}
-            {data.topicMastery.length > 0 && (
-              <div className="border rounded p-4 mb-6">
-                <h3 className="font-semibold mb-3">Topic Mastery</h3>
-                {data.topicMastery.map((t) => (
-                  <div key={t.tag} className="flex items-center gap-2 mb-2 text-sm">
-                    <span className="w-32 text-gray-600 truncate">{t.tag}</span>
-                    <div className="flex-1 bg-gray-100 rounded h-5 overflow-hidden">
-                      <div
-                        className="h-5"
-                        style={{ width: `${t.accuracy}%`, backgroundColor: t.accuracy >= 70 ? "#036b26" : t.accuracy >= 50 ? "#a67c00" : "#8a1c1c" }}
-                      />
-                    </div>
-                    <span className="w-10 text-right">{t.accuracy}%</span>
-                  </div>
-                ))}
+              {/* Question Difficulty Heatmap */}
+              <div className="border border-sand-200 rounded-lg p-4 mb-6">
+                <h3 className="font-sora font-semibold text-charcoal mb-3">Question Difficulty (lowest accuracy first)</h3>
+                <div className="space-y-1">
+                  {data.questionHeatmap.map((q, i) => {
+                    const color = q.accuracy >= 70 ? "#e6ffed" : q.accuracy >= 50 ? "#fff3cd" : "#ffe6e6";
+                    const textColor = q.accuracy >= 70 ? "#036b26" : q.accuracy >= 50 ? "#856404" : "#8a1c1c";
+                    return (
+                      <div key={i} className="flex justify-between items-center text-sm p-2 rounded" style={{ backgroundColor: color }}>
+                        <span className="flex-1 truncate mr-2">Q{q.questionNumber || i + 1}: {q.text}</span>
+                        <span className="font-semibold" style={{ color: textColor }}>{q.accuracy}% ({q.totalAnswered} answered)</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            )}
 
-            {/* Question Difficulty Heatmap */}
-            <div className="border rounded p-4 mb-6">
-              <h3 className="font-semibold mb-3">Question Difficulty (lowest accuracy first)</h3>
-              <div className="space-y-1">
-                {data.questionHeatmap.map((q, i) => {
-                  const color = q.accuracy >= 70 ? "#e6ffed" : q.accuracy >= 50 ? "#fff3cd" : "#ffe6e6";
-                  const textColor = q.accuracy >= 70 ? "#036b26" : q.accuracy >= 50 ? "#856404" : "#8a1c1c";
-                  return (
-                    <div key={i} className="flex justify-between items-center text-sm p-2 rounded" style={{ backgroundColor: color }}>
-                      <span className="flex-1 truncate mr-2">Q{q.questionNumber || i + 1}: {q.text}</span>
-                      <span className="font-semibold" style={{ color: textColor }}>{q.accuracy}% ({q.totalAnswered} answered)</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Student Roster */}
-            <div className="border rounded p-4">
-              <h3 className="font-semibold mb-3">Student Roster</h3>
-              <table className="min-w-full text-sm">
-                <thead>
-                   <tr>
-                    {[
-                      ["fullName", "Student"],
-                      ["score", "Score"],
-                      ["grade", "Grade"],
-                      ["passed", "Status"],
-                      ["attemptNumber", "Attempt #"],
-                      ["submittedAt", "Submitted"],
-                    ].map(([key, label]) => (
-                      <th key={key} onClick={() => handleSort(key)} className="border px-2 py-1 cursor-pointer hover:bg-gray-50 select-none">
-                        {label} {sortKey === key ? (sortDir === "asc" ? "▲" : "▼") : ""}
-                      </th>
-                    ))}
-                    {data.requiresFileSubmission && <th className="border px-2 py-1">Working File</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedRoster.map((r) => (
-                    <tr key={r.studentId}>
-                      <td className="border px-2 py-1">{r.fullName} ({r.username})</td>
-                      <td className="border px-2 py-1 text-center">{r.score}% ({r.totalCorrect}/{r.totalQuestions})</td>
-                      <td className="border px-2 py-1 text-center font-semibold" style={{ color: GRADE_COLORS[r.grade] }}>{r.grade}</td>
-                      <td className="border px-2 py-1 text-center">
-                        <span className={r.passed ? "text-green-700" : "text-red-700"}>{r.passed ? "Pass" : "Fail"}</span>
-                      </td>
-                      <td className="border px-2 py-1 text-center">{r.attemptNumber}{r.autoSubmitted ? " (auto)" : ""}</td>
-                                            <td className="border px-2 py-1">{new Date(r.submittedAt).toLocaleString()}</td>
-                      {data.requiresFileSubmission && (
-                        <td className="border px-2 py-1">
-                          {r.submittedFile ? (
-                            <a href={r.submittedFile.url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
-                              {r.submittedFile.filename}
-                            </a>
-                          ) : (
-                            <span className="text-red-500 text-xs">Not submitted</span>
-                          )}
-                        </td>
-                      )}
+              {/* Student Roster */}
+              <div className="border border-sand-200 rounded-lg p-4">
+                <h3 className="font-sora font-semibold text-charcoal mb-3">Student Roster</h3>
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="bg-sand-100">
+                      {[
+                        ["fullName", "Student"],
+                        ["score", "Score"],
+                        ["grade", "Grade"],
+                        ["passed", "Status"],
+                        ["attemptNumber", "Attempt #"],
+                        ["submittedAt", "Submitted"],
+                      ].map(([key, label]) => (
+                        <th key={key} onClick={() => handleSort(key)} className="border border-sand-200 px-2 py-1 cursor-pointer hover:bg-sand-200 select-none">
+                          {label} {sortKey === key ? (sortDir === "asc" ? "▲" : "▼") : ""}
+                        </th>
+                      ))}
+                      {data.requiresFileSubmission && <th className="border border-sand-200 px-2 py-1">Working File</th>}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
+                  </thead>
+                  <tbody>
+                    {sortedRoster.map((r) => (
+                      <tr key={r.studentId}>
+                        <td className="border border-sand-200 px-2 py-1">{r.fullName} ({r.username})</td>
+                        <td className="border border-sand-200 px-2 py-1 text-center">{r.score}% ({r.totalCorrect}/{r.totalQuestions})</td>
+                        <td className="border border-sand-200 px-2 py-1 text-center font-semibold" style={{ color: GRADE_COLORS[r.grade] }}>{r.grade}</td>
+                        <td className="border border-sand-200 px-2 py-1 text-center">
+                          <span className={r.passed ? "text-green-700" : "text-red-700"}>{r.passed ? "Pass" : "Fail"}</span>
+                        </td>
+                        <td className="border border-sand-200 px-2 py-1 text-center">{r.attemptNumber}{r.autoSubmitted ? " (auto)" : ""}</td>
+                        <td className="border border-sand-200 px-2 py-1">{new Date(r.submittedAt).toLocaleString()}</td>
+                        {data.requiresFileSubmission && (
+                          <td className="border border-sand-200 px-2 py-1">
+                            {r.submittedFile ? (
+                              <a href={r.submittedFile.url} target="_blank" rel="noreferrer" className="text-accent-orange2 hover:underline">
+                                {r.submittedFile.filename}
+                              </a>
+                            ) : (
+                              <span className="text-red-500 text-xs">Not submitted</span>
+                            )}
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
 const KpiCard = ({ label, value, sub }) => (
-  <div className="border rounded p-4 text-center">
-    <div className="text-2xl font-bold">{value}</div>
-    <div className="text-sm text-gray-600">{label}</div>
-    {sub && <div className="text-xs text-gray-400 mt-1">{sub}</div>}
+  <div className="border border-sand-200 rounded-lg p-4 text-center bg-white">
+    <div className="font-sora text-2xl font-bold text-charcoal">{value}</div>
+    <div className="text-sm text-sand-600">{label}</div>
+    {sub && <div className="text-xs text-sand-500 mt-1">{sub}</div>}
   </div>
 );
 
