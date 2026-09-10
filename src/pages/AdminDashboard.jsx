@@ -161,7 +161,7 @@ const AdminDashboard = () => {
       <Navbar />
 
             <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
-        <div className="flex gap-2 mb-6">
+                <div className="flex gap-2 mb-6">
           <button
             onClick={() => setActiveSection("main")}
             className={`px-4 py-2 rounded font-medium ${activeSection === "main" ? "bg-blue-500 text-white" : "bg-white text-gray-700 border"}`}
@@ -170,7 +170,7 @@ const AdminDashboard = () => {
           </button>
           <button
             onClick={() => setActiveSection("mba")}
-            className={`px-4 py-2 rounded font-medium ${activeSection === "mba" ? "bg-blue-500 text-white" : "bg-white text-gray-700 border"}`}
+            className={`px-4 py-2 rounded font-medium ${activeSection === "mba" ? "bg-brand-gradient text-charcoal" : "bg-white text-sand-700 border border-sand-300"}`}
           >
             MBA Evaluation
           </button>
