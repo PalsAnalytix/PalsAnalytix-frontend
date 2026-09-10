@@ -103,12 +103,13 @@ const Navbar = () => {
       >
         Pricing
       </button>
-      <button
+            <button
         onClick={() => handleNavigation("/faq")}
         className={`${className} hover:text-blue-500`}
       >
         FAQ
-            <button
+      </button>
+      <button
         onClick={() => handleNavigation("/contact")}
         className={`${className} hover:text-blue-500`}
       >
@@ -122,7 +123,6 @@ const Navbar = () => {
       </button>
     </>
   );
-
   const AccountSection = ({ isMobile = false }) => (
     <div className={`relative ${isMobile ? "w-full" : ""}`} ref={dropdownRef}>
       <button
