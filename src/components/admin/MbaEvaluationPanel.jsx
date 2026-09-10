@@ -805,6 +805,50 @@ const TestDashboardModal = ({ testId, onClose }) => {
     else { setSortKey(key); setSortDir("desc"); }
   };
 
+    const downloadCSV = () => {
+    const headers = ["Name", "Username", "Score (%)", "Grade", "Pass/Fail"];
+    const rows = data.roster.map((r) => [r.fullName, r.username, r.score, r.grade, r.passed ? "Pass" : "Fail"]);
+    const csvContent = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${data.testTitle.replace(/[^a-z0-9]/gi, "_")}_performance.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadAllFiles = () => {
+    const filesToDownload = data.roster.filter((r) => r.submittedFile);
+    if (!filesToDownload.length) {
+      alert("No submitted files to download.");
+      return;
+    }
+    filesToDownload.forEach((r, i) => {
+      setTimeout(() => {
+        const a = document.createElement("a");
+        a.href = r.submittedFile.url;
+        a.download = r.submittedFile.filename;
+        a.target = "_blank";
+        a.click();
+      }, i * 400); // stagger downloads so the browser doesn't block them
+    });
+  };
+
+  const deleteAllFiles = async () => {
+    if (!window.confirm("Delete ALL submitted working files for this test? This cannot be undone.")) return;
+    try {
+      const res = await axios.delete(`${BASE_URL}/api/mba/admin/tests/${testId}/submitted-files`, authHeader());
+      alert(res.data.message);
+      const refreshed = await axios.get(`${BASE_URL}/api/mba/admin/tests/${testId}/dashboard`, authHeader());
+      setData(refreshed.data);
+    } catch (err) {
+      alert("Failed: " + (err.response?.data?.error || err.message));
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto p-6">
@@ -813,10 +857,25 @@ const TestDashboardModal = ({ testId, onClose }) => {
           <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
         </div>
 
-        {msg && <p className="text-red-600 text-sm mb-4">{msg}</p>}
+                {msg && <p className="text-red-600 text-sm mb-4">{msg}</p>}
 
         {data && (
           <>
+            <div className="flex flex-wrap gap-2 mb-4">
+              <button onClick={downloadCSV} className="bg-blue-100 text-blue-700 rounded px-3 py-2 text-sm">
+                Download Class Performance (CSV)
+              </button>
+              {data.requiresFileSubmission && (
+                <>
+                  <button onClick={downloadAllFiles} className="bg-green-100 text-green-700 rounded px-3 py-2 text-sm">
+                    Download All Submitted Files
+                  </button>
+                  <button onClick={deleteAllFiles} className="bg-red-50 text-red-700 border border-red-200 rounded px-3 py-2 text-sm">
+                    Delete All Submitted Files
+                  </button>
+                </>
+              )}
+            </div>
             {/* KPI Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
               <KpiCard label="Pass Rate" value={`${data.passRate}%`} sub={`≥ ${data.passingScore}% to pass`} />
