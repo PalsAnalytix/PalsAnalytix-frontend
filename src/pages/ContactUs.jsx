@@ -5,12 +5,11 @@ import {
   AlertCircle,
   Mail,
   MapPin,
-  Phone,
   Clock,
   Loader,
 } from "lucide-react";
 import Navbar from "../components/common/Navbar";
-import emailjs from '@emailjs/browser'; // Import EmailJS
+import emailjs from '@emailjs/browser';
 import Footer from "../components/common/Footer";
 
 const emailJsUserId = import.meta.env.VITE_EMAIL_JS_USER_ID;
@@ -27,10 +26,9 @@ const ContactPage = () => {
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', null
+  const [submitStatus, setSubmitStatus] = useState(null);
   const formRef = useRef(null);
 
-  // Initialize EmailJS once when component mounts
   useEffect(() => {
     emailjs.init(emailJsUserId);
   }, []);
@@ -69,7 +67,6 @@ const ContactPage = () => {
       [name]: value,
     });
 
-    // Clear error for this field when user types
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -87,36 +84,32 @@ const ContactPage = () => {
 
     setIsSubmitting(true);
 
-    // Prepare EmailJS parameters
     const params = {
       from_name: formData.name,
       to_name: "PalsAnalytix",
       message: formData.message,
       from_email: formData.email,
-      subject: formData.subject, // Include subject in the email
+      subject: formData.subject,
     };
 
     try {
-      // Send email using EmailJS
       emailjs.init(emailJsUserId);
-      
+
       const response = await emailjs.send(
         EmailjsServiceId,
         EmailjsTemplateId,
         params
       );
-      
+
       setSubmitStatus("success");
-      
-      // Reset form after successful submission
+
       setFormData({
         name: "",
         email: "",
         subject: "",
         message: "",
       });
-      
-      // Reset success message after 5 seconds
+
       setTimeout(() => {
         setSubmitStatus(null);
       }, 5000);
@@ -128,25 +121,28 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 ">
+    <div className="min-h-screen bg-paper font-sans">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 ">
-        <div className="text-center mb-16 ">
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-16">
+          <div className="font-mono text-xs uppercase tracking-[0.14em] text-accent-orange2 mb-2">
+            Get in touch
+          </div>
+          <h1 className="font-sora text-4xl font-bold text-charcoal tracking-tight sm:text-5xl">
             Contact Us
           </h1>
-          <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-500">
+          <p className="mt-4 max-w-2xl mx-auto text-xl text-sand-900">
             Have questions about our platform? Get in touch with the
             PalsAnalytix team.
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-xl overflow-hidden">
+        <div className="bg-white rounded-lg border border-sand-200 overflow-hidden">
           <div className="grid md:grid-cols-5">
             {/* Contact Information Side */}
-            <div className="bg-blue-700 text-white p-8 md:p-12 md:col-span-2">
-              <h2 className="text-2xl font-bold mb-6">Get in Touch</h2>
-              <p className="mb-8 opacity-90">
+            <div className="bg-ink text-paper p-8 md:p-12 md:col-span-2">
+              <h2 className="font-sora text-2xl font-bold mb-6">Get in Touch</h2>
+              <p className="mb-8 text-sand-400">
                 We're here to help you succeed in your certification journey.
                 Feel free to reach out with any questions about our platform.
               </p>
@@ -154,11 +150,11 @@ const ContactPage = () => {
               <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0 mt-1">
-                    <Mail className="h-6 w-6 text-blue-200" />
+                    <Mail className="h-6 w-6 text-accent-orange2" />
                   </div>
                   <div className="ml-4">
                     <p className="text-lg font-medium">Email</p>
-                    <p className="mt-1 opacity-90">
+                    <p className="mt-1 text-sand-400">
                       palsanalytix.dev@gmail.com
                     </p>
                   </div>
@@ -166,11 +162,11 @@ const ContactPage = () => {
 
                 <div className="flex items-start">
                   <div className="flex-shrink-0 mt-1">
-                    <MapPin className="h-6 w-6 text-blue-200" />
+                    <MapPin className="h-6 w-6 text-accent-orange2" />
                   </div>
                   <div className="ml-4">
                     <p className="text-lg font-medium">Location</p>
-                    <p className="mt-1 opacity-90">
+                    <p className="mt-1 text-sand-400">
                       Virtual platform serving students worldwide
                     </p>
                   </div>
@@ -178,24 +174,24 @@ const ContactPage = () => {
 
                 <div className="flex items-start">
                   <div className="flex-shrink-0 mt-1">
-                    <Clock className="h-6 w-6 text-blue-200" />
+                    <Clock className="h-6 w-6 text-accent-orange2" />
                   </div>
                   <div className="ml-4">
                     <p className="text-lg font-medium">Support Hours</p>
-                    <p className="mt-1 opacity-90">
+                    <p className="mt-1 text-sand-400">
                       Monday - Friday: 9AM - 6PM EST
                     </p>
-                    <p className="opacity-90">Weekend: 10AM - 2PM EST</p>
+                    <p className="text-sand-400">Weekend: 10AM - 2PM EST</p>
                   </div>
                 </div>
               </div>
 
               <div className="mt-12">
-                <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
+                <h3 className="font-sora text-xl font-semibold mb-4">Follow Us</h3>
                 <div className="flex space-x-4">
-                  <a
+                  
                     href="#"
-                    className="bg-blue-800 p-3 rounded-full hover:bg-blue-600 transition-colors"
+                    className="bg-white/10 border border-line-light p-3 rounded-full hover:bg-accent-orange2 hover:text-charcoal transition-colors"
                   >
                     <svg
                       className="h-5 w-5"
@@ -205,9 +201,9 @@ const ContactPage = () => {
                       <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z" />
                     </svg>
                   </a>
-                  <a
+                  
                     href="#"
-                    className="bg-blue-800 p-3 rounded-full hover:bg-blue-600 transition-colors"
+                    className="bg-white/10 border border-line-light p-3 rounded-full hover:bg-accent-orange2 hover:text-charcoal transition-colors"
                   >
                     <svg
                       className="h-5 w-5"
@@ -217,9 +213,9 @@ const ContactPage = () => {
                       <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.054 10.054 0 01-3.127 1.195 4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.937 4.937 0 004.604 3.417 9.868 9.868 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.054 0 13.999-7.496 13.999-13.986 0-.209 0-.42-.015-.63a9.936 9.936 0 002.46-2.548l-.047-.02z" />
                     </svg>
                   </a>
-                  <a
+                  
                     href="#"
-                    className="bg-blue-800 p-3 rounded-full hover:bg-blue-600 transition-colors"
+                    className="bg-white/10 border border-line-light p-3 rounded-full hover:bg-accent-orange2 hover:text-charcoal transition-colors"
                   >
                     <svg
                       className="h-5 w-5"
@@ -235,13 +231,13 @@ const ContactPage = () => {
 
             {/* Contact Form Side */}
             <div className="p-8 md:p-12 md:col-span-3">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              <h2 className="font-sora text-2xl font-bold text-charcoal mb-6">
                 Send Us a Message
               </h2>
 
               {submitStatus === "success" && (
                 <div className="mb-8 bg-green-50 border border-green-200 rounded-lg p-4 flex items-start">
-                  <Check className="h-5 w-5 text-green-500 mt-0.5" />
+                  <Check className="h-5 w-5 text-green-600 mt-0.5" />
                   <div className="ml-3">
                     <h3 className="text-sm font-medium text-green-800">
                       Message sent successfully!
@@ -256,7 +252,7 @@ const ContactPage = () => {
 
               {submitStatus === "error" && (
                 <div className="mb-8 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start">
-                  <AlertCircle className="h-5 w-5 text-red-500 mt-0.5" />
+                  <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
                   <div className="ml-3">
                     <h3 className="text-sm font-medium text-red-800">
                       Error sending message
@@ -274,7 +270,7 @@ const ContactPage = () => {
                   <div>
                     <label
                       htmlFor="name"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-xs font-mono uppercase tracking-wide text-sand-800"
                     >
                       Full Name
                     </label>
@@ -285,11 +281,11 @@ const ContactPage = () => {
                         id="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className={`block w-full rounded-md shadow-sm py-3 px-4 border ${
+                        className={`block w-full rounded py-3 px-4 border bg-transparent text-charcoal ${
                           errors.name
                             ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                            : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        }`}
+                            : "border-sand-300 focus:border-accent-orange2 focus:ring-accent-orange2"
+                        } focus:outline-none focus:ring-1`}
                       />
                       {errors.name && (
                         <p className="mt-1 text-sm text-red-600">
@@ -302,7 +298,7 @@ const ContactPage = () => {
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-xs font-mono uppercase tracking-wide text-sand-800"
                     >
                       Email Address
                     </label>
@@ -313,11 +309,11 @@ const ContactPage = () => {
                         id="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className={`block w-full rounded-md shadow-sm py-3 px-4 border ${
+                        className={`block w-full rounded py-3 px-4 border bg-transparent text-charcoal ${
                           errors.email
                             ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                            : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        }`}
+                            : "border-sand-300 focus:border-accent-orange2 focus:ring-accent-orange2"
+                        } focus:outline-none focus:ring-1`}
                       />
                       {errors.email && (
                         <p className="mt-1 text-sm text-red-600">
@@ -331,7 +327,7 @@ const ContactPage = () => {
                 <div>
                   <label
                     htmlFor="subject"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-xs font-mono uppercase tracking-wide text-sand-800"
                   >
                     Subject
                   </label>
@@ -342,11 +338,11 @@ const ContactPage = () => {
                       id="subject"
                       value={formData.subject}
                       onChange={handleChange}
-                      className={`block w-full rounded-md shadow-sm py-3 px-4 border ${
+                      className={`block w-full rounded py-3 px-4 border bg-transparent text-charcoal ${
                         errors.subject
                           ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                          : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      }`}
+                          : "border-sand-300 focus:border-accent-orange2 focus:ring-accent-orange2"
+                      } focus:outline-none focus:ring-1`}
                     />
                     {errors.subject && (
                       <p className="mt-1 text-sm text-red-600">
@@ -359,7 +355,7 @@ const ContactPage = () => {
                 <div>
                   <label
                     htmlFor="message"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-xs font-mono uppercase tracking-wide text-sand-800"
                   >
                     Message
                   </label>
@@ -370,11 +366,11 @@ const ContactPage = () => {
                       rows={6}
                       value={formData.message}
                       onChange={handleChange}
-                      className={`block w-full rounded-md shadow-sm py-3 px-4 border ${
+                      className={`block w-full rounded py-3 px-4 border bg-transparent text-charcoal ${
                         errors.message
                           ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                          : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      }`}
+                          : "border-sand-300 focus:border-accent-orange2 focus:ring-accent-orange2"
+                      } focus:outline-none focus:ring-1`}
                     ></textarea>
                     {errors.message && (
                       <p className="mt-1 text-sm text-red-600">
@@ -388,7 +384,7 @@ const ContactPage = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-75 disabled:cursor-not-allowed transition-colors"
+                    className="w-full inline-flex justify-center items-center px-6 py-3 rounded-[3px] text-base font-semibold text-charcoal bg-brand-gradient-alt hover:brightness-105 disabled:opacity-60 disabled:cursor-not-allowed transition"
                   >
                     {isSubmitting ? (
                       <>
@@ -408,47 +404,47 @@ const ContactPage = () => {
           </div>
         </div>
 
-        <div className="mt-16 bg-white rounded-xl shadow-xl overflow-hidden">
+        <div className="mt-16 bg-white rounded-lg border border-sand-200 overflow-hidden">
           <div className="p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            <h2 className="font-sora text-2xl font-bold text-charcoal mb-6">
               Frequently Asked Questions
             </h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="font-semibold text-lg text-gray-900">
+                <h3 className="font-sora font-semibold text-lg text-charcoal">
                   What type of questions can I expect?
                 </h3>
-                <p className="mt-2 text-gray-600">
+                <p className="mt-2 text-sand-900">
                   Our platform provides a wide range of questions that mirror
                   the actual CFA, SCR, and FRM exams, including multiple-choice,
                   case studies, and calculation-based questions.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg text-gray-900">
+                <h3 className="font-sora font-semibold text-lg text-charcoal">
                   When should I start using PalsAnalytix?
                 </h3>
-                <p className="mt-2 text-gray-600">
+                <p className="mt-2 text-sand-900">
                   Ideally, begin using our platform at least 3-6 months before
                   your exam. However, our focused approach can also help with
                   last-minute preparation.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg text-gray-900">
+                <h3 className="font-sora font-semibold text-lg text-charcoal">
                   Do you offer group discounts?
                 </h3>
-                <p className="mt-2 text-gray-600">
+                <p className="mt-2 text-sand-900">
                   Yes, we offer special group rates for study groups and
                   organizations. Please contact our sales team for custom
                   packages.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg text-gray-900">
+                <h3 className="font-sora font-semibold text-lg text-charcoal">
                   How often is content updated?
                 </h3>
-                <p className="mt-2 text-gray-600">
+                <p className="mt-2 text-sand-900">
                   Our content is updated regularly to reflect the latest
                   curriculum changes and exam patterns announced by the
                   respective certification bodies.
@@ -456,9 +452,9 @@ const ContactPage = () => {
               </div>
             </div>
             <div className="mt-6 text-center">
-              <a
+              
                 href="/faq"
-                className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+                className="inline-flex items-center text-accent-orange2 hover:text-accent-amber font-semibold transition-colors"
               >
                 View all frequently asked questions
                 <svg
