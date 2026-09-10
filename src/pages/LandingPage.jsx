@@ -6,6 +6,7 @@ import { clearError } from "../redux/slices/authSlice";
 import LoginModal from "../components/auth/LoginModal";
 import SignupModal from "../components/auth/SignupModal";
 import ForgotPasswordModal from "../components/auth/ForgotPasswordModal";
+import Footer from "../components/common/Footer";
 import LandingPageImage from "../assets/landing_page_image.jpg";
 import PalsAnalytixLogo from "../assets/palsanalytix-logo.png";
 import PalsAnalytixWordmark from "../assets/palsanalytix-wordmark.png";
@@ -369,7 +370,7 @@ const LandingPage = () => {
         onLoginClick={() => { setShowForgotModal(false); setShowAuthModal(true); setAuthMode("login"); }}
       />
 
-      <SiteFooter />
+      <Footer />
     </div>
   );
 };
