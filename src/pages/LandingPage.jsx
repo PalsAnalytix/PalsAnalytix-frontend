@@ -37,11 +37,10 @@ const SEOMetadata = () => (
 
 const NAV_LINKS = [
   { label: "Courses", href: "#courses" },
-  { label: "Why us", href: "#why" },
+  { label: "Evaluation", to: "/mba-evaluation" },
   { label: "Pricing", to: "/pricing" },
-  { label: "FAQ", to: "/FAQ" },
-  { label: "Contact", to: "/contact" },
-  { label: "MBA Evaluation", to: "/mba-evaluation" },
+  { label: "Contact Us", to: "/contact" },
+  { label: "Resources", to: "/resources" },
 ];
 
 const Nav = ({ isAuthenticated, isAdmin, onLoginClick }) => {
