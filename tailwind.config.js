@@ -10,6 +10,7 @@ export default {
         ink: '#0a0a0a',
         paper: '#faf9f6',
         charcoal: '#141311',
+        ink700: '#3a2f1e',
         sand: {
           100: '#faf9f6',
           200: '#e6e2d9',
@@ -24,6 +25,7 @@ export default {
         line: {
           DEFAULT: '#232220',
           light: '#3a3733',
+          tag: '#3a2c14',
         },
         accent: {
           orange: '#ff7f00',
