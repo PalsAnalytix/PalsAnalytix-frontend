@@ -1,27 +1,13 @@
 import React, { useState } from "react";
-import {
-  ArrowRight,
-  Book,
-  BarChart2,
-  Users,
-  Shield,
-  Brain,
-  Target,
-  Check,
-  Award,
-  FileText,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { Helmet } from "react-helmet";
 import { clearError } from "../redux/slices/authSlice";
-import Navbar from "../components/common/Navbar";
 import LoginModal from "../components/auth/LoginModal";
 import SignupModal from "../components/auth/SignupModal";
-import { Helmet } from "react-helmet";
-import Footer from "../components/common/Footer";
 import LandingPageImage from "../assets/landing_page_image.jpg";
+import PalsAnalytixLogo from "../assets/palsanalytix-logo.png";
 
-// SEO-optimized metadata component
 const SEOMetadata = () => (
   <Helmet>
     <title>
@@ -47,442 +33,338 @@ const SEOMetadata = () => (
   </Helmet>
 );
 
-const FeatureCard = ({ icon: Icon, title, description }) => (
-  <div className="bg-white rounded-xl p-6 shadow-lg transform hover:scale-105 transition-transform duration-300">
-    <div className="flex items-center space-x-4 mb-4">
-      <div className="bg-blue-100 p-3 rounded-lg">
-        <Icon className="w-6 h-6 text-blue-600" />
-      </div>
-      <h3 className="text-xl font-bold text-gray-900">{title}</h3>
-    </div>
-    <p className="text-gray-600 leading-relaxed mb-4">{description}</p>
-    <ul className="space-y-2">
-      {title === "Comprehensive Content" && (
-        <>
-          <li className="flex items-start">
-            <Check className="w-5 h-5 text-green-500 mr-2 mt-0.5" />
-            <span className="text-gray-700">
-              10,000+ practice questions aligned with exam curriculum
-            </span>
-          </li>
-          <li className="flex items-start">
-            <Check className="w-5 h-5 text-green-500 mr-2 mt-0.5" />
-            <span className="text-gray-700">
-              Expert-curated study materials updated for 2025
-            </span>
-          </li>
-        </>
-      )}
-      {title === "Performance Analytics" && (
-        <>
-          <li className="flex items-start">
-            <Check className="w-5 h-5 text-green-500 mr-2 mt-0.5" />
-            <span className="text-gray-700">
-              Personalized weakness identification algorithms
-            </span>
-          </li>
-          <li className="flex items-start">
-            <Check className="w-5 h-5 text-green-500 mr-2 mt-0.5" />
-            <span className="text-gray-700">
-              Custom study plans based on performance data
-            </span>
-          </li>
-        </>
-      )}
-      {title === "Community Support" && (
-        <>
-          <li className="flex items-start">
-            <Check className="w-5 h-5 text-green-500 mr-2 mt-0.5" />
-            <span className="text-gray-700">
-              Direct access to certified CFA/FRM/SCR instructors
-            </span>
-          </li>
-          <li className="flex items-start">
-            <Check className="w-5 h-5 text-green-500 mr-2 mt-0.5" />
-            <span className="text-gray-700">
-              Weekly live Q&A sessions with industry experts
-            </span>
-          </li>
-        </>
-      )}
-    </ul>
-  </div>
-);
+const NAV_LINKS = [
+  { label: "Courses", href: "#courses" },
+  { label: "Why us", href: "#why" },
+  { label: "Pricing", to: "/pricing" },
+  { label: "FAQ", to: "/FAQ" },
+  { label: "Contact", to: "/contact" },
+];
 
-const CourseCard = ({ title, description, link, onClick }) => (
-  <div className="bg-white rounded-xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
-    <div className="bg-gradient-to-r from-blue-600 to-blue-800 h-2" />
-    <div className="p-6">
-      <div className="bg-blue-50 text-blue-700 text-sm font-semibold px-3 py-1 rounded-full w-fit mb-3">
-        95%+ Pass Rate
-      </div>
-      <h3 className="text-xl font-bold text-gray-900 mb-4">{title}</h3>
-      <p className="text-gray-600 mb-6 leading-relaxed">{description}</p>
-      <div className="mb-6 space-y-2">
-        {title === "CFA® Program" && (
-          <>
-            <div className="flex items-start">
-              <Check className="w-5 h-5 text-green-500 mr-2 mt-0.5" />
-              <span className="text-gray-700 text-sm">
-                Comprehensive Level 1, 2 & 3 materials
-              </span>
-            </div>
-            <div className="flex items-start">
-              <Check className="w-5 h-5 text-green-500 mr-2 mt-0.5" />
-              <span className="text-gray-700 text-sm">
-                3,500+ CFA practice questions
-              </span>
-            </div>
-          </>
-        )}
-        {title === "FRM® Certification" && (
-          <>
-            <div className="flex items-start">
-              <Check className="w-5 h-5 text-green-500 mr-2 mt-0.5" />
-              <span className="text-gray-700 text-sm">
-                Part I & II comprehensive coverage
-              </span>
-            </div>
-            <div className="flex items-start">
-              <Check className="w-5 h-5 text-green-500 mr-2 mt-0.5" />
-              <span className="text-gray-700 text-sm">
-                3,000+ FRM practice questions
-              </span>
-            </div>
-          </>
-        )}
-        {title === "SCR® Certificate" && (
-          <>
-            <div className="flex items-start">
-              <Check className="w-5 h-5 text-green-500 mr-2 mt-0.5" />
-              <span className="text-gray-700 text-sm">
-                ESG integration frameworks
-              </span>
-            </div>
-            <div className="flex items-start">
-              <Check className="w-5 h-5 text-green-500 mr-2 mt-0.5" />
-              <span className="text-gray-700 text-sm">
-                2,500+ SCR practice questions
-              </span>
-            </div>
-          </>
-        )}
-      </div>
-      <button
-        onClick={onClick}
-        className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 font-semibold py-3 px-6 rounded-lg hover:from-yellow-500 hover:to-yellow-600 transition duration-300 ease-in-out flex items-center justify-center"
-      >
-        Explore Curriculum
-        <ArrowRight className="ml-2 w-5 h-5" />
-      </button>
-    </div>
-  </div>
-);
-
-const HeroSection = ({ onGetStarted }) => {
-  const { isAuthenticated } = useSelector((state) => state.auth);
+const Nav = ({ isAuthenticated, isAdmin, onLoginClick }) => {
   const navigate = useNavigate();
-
   return (
-    <div className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-green-50 to-blue-50 opacity-70" />
-      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-      <section className="relative py-20 lg:py-32 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-            <div className="lg:w-[60%] space-y-8">
-              <div className="inline-block bg-blue-100 text-blue-700 rounded-full px-4 py-1 text-sm font-semibold tracking-wide mb-4">
-                Trusted by 25,000+ finance professionals worldwide
-              </div>
-              <div className="space-y-4">
-                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                  Master Your Financial Future with{" "}
-                  <span className="text-blue-600">PalsAnalytix</span>
-                </h1>
-                <h2 className="text-2xl lg:text-3xl font-semibold text-gray-700">
-                  Premier CFA® | FRM® | SCR® Examination Excellence
-                </h2>
-              </div>
-              <p className="text-lg text-gray-600 leading-relaxed max-w-2xl">
-                Join thousands of successful finance professionals who've
-                transformed their careers through our innovative exam
-                preparation platform. Our comprehensive study materials,
-                extensive practice question banks, and mock exams are designed
-                to maximize your chances of passing these prestigious
-                certifications on your first attempt.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                {[
-                  { icon: Shield, text: "24/7 Expert Support" },
-                  { icon: Brain, text: "Adaptive Learning" },
-                  { icon: BarChart2, text: "Real-Time Analytics" },
-                  { icon: Award, text: "95% Pass Rate" },
-                ].map((feature, index) => (
-                  <span
-                    key={index}
-                    className="bg-white px-4 py-2 rounded-full shadow-md text-gray-700 font-medium hover:bg-blue-50 transition-colors duration-300 flex items-center"
-                  >
-                    <feature.icon className="w-5 h-5 mr-2 text-blue-600" />
-                    {feature.text}
-                  </span>
-                ))}
-              </div>
-              <div className="pt-2">
-                <p className="text-gray-700 mb-2 font-medium">
-                  Used by professionals from:
-                </p>
-                <div className="flex flex-wrap gap-4 items-center opacity-80">
-                  {[
-                    "Goldman Sachs",
-                    "JP Morgan",
-                    "Morgan Stanley",
-                    "BlackRock",
-                    "Deloitte",
-                  ].map((company) => (
-                    <span key={company} className="text-gray-600 font-medium">
-                      {company}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="lg:w-[40%] w-full max-w-md">
-              <div className="bg-white rounded-2xl shadow-2xl p-8 backdrop-blur-lg bg-opacity-90">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                  {isAuthenticated
-                    ? "Welcome Back!"
-                    : "Start Your Certification Journey Today"}
-                </h3>
-                <div className="space-y-6">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <Shield className="w-5 h-5 text-green-500" />
-                      <span>Industry-recognized certifications</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <Brain className="w-5 h-5 text-blue-500" />
-                      <span>Personalized learning paths</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <Target className="w-5 h-5 text-red-500" />
-                      <span>Targeted exam preparation</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <FileText className="w-5 h-5 text-yellow-500" />
-                      <span>10,000+ practice questions</span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={
-                      isAuthenticated
-                        ? () => navigate("/dashboard")
-                        : onGetStarted
-                    }
-                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-8 rounded-xl text-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center"
-                  >
-                    {isAuthenticated
-                      ? "Go to Dashboard"
-                      : "Start Free Trial Today"}
-                    <ArrowRight className="ml-2" />
-                  </button>
-                  <p className="text-sm text-gray-500 text-center">
-                    No credit card required. 7-day free access to all materials.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+    <nav className="sticky top-0 z-20 flex items-center justify-between gap-8 border-b border-line bg-ink px-6 py-4 sm:px-12">
+      <Link to="/" className="flex items-center gap-2.5 shrink-0">
+        <img src={PalsAnalytixLogo} alt="PalsAnalytix" className="block h-10 w-auto" />
+        <span className="font-sora text-xl font-semibold tracking-tight text-paper">
+          palsanalytix
+        </span>
+      </Link>
+
+      <div className="hidden lg:flex items-center gap-9">
+        {NAV_LINKS.map((link) =>
+          link.to ? (
+            <Link key={link.label} to={link.to} className="text-[15px] text-sand-300 hover:text-paper transition-colors">
+              {link.label}
+            </Link>
+          ) : (
+            <a key={link.label} href={link.href} className="text-[15px] text-sand-300 hover:text-paper transition-colors">
+              {link.label}
+            </a>
+          )
+        )}
+      </div>
+
+      <div className="flex items-center gap-5 shrink-0">
+        {isAuthenticated ? (
+          <button
+            onClick={() => navigate(isAdmin ? "/admin" : "/dashboard")}
+            className="text-[15px] text-sand-300 hover:text-paper transition-colors"
+          >
+            Dashboard
+          </button>
+        ) : (
+          <button onClick={onLoginClick} className="text-[15px] text-sand-300 hover:text-paper transition-colors">
+            Login
+          </button>
+        )}
+        <button
+          onClick={() =>
+            isAuthenticated ? navigate(isAdmin ? "/admin" : "/dashboard") : onLoginClick()
+          }
+          className="rounded-[3px] bg-brand-gradient-alt px-[22px] py-[11px] text-sm font-semibold text-charcoal hover:brightness-105 transition"
+        >
+          Book a free class
+        </button>
+      </div>
+    </nav>
   );
 };
 
+const HeroSection = ({ onGetStarted }) => (
+  <section className="bg-ink px-6 py-16 sm:px-12 sm:py-24 lg:grid lg:grid-cols-[1.1fr_1fr] lg:gap-14 lg:items-center lg:py-[96px]">
+    <div className="flex max-w-[620px] flex-col gap-6">
+      <div className="flex gap-2.5">
+        {["CFA", "FRM", "SCR"].map((tag) => (
+          <span
+            key={tag}
+            className="rounded-[2px] border border-line-tag px-3 py-1.5 font-mono text-xs uppercase tracking-[0.14em] text-accent-orange2"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+      <h1 className="font-sora text-[40px] font-bold leading-[1.08] tracking-[-0.02em] text-paper sm:text-[56px] sm:leading-[1.06] text-balance">
+        Structured prep for CFA, FRM and SCR candidates.
+      </h1>
+      <p className="max-w-2xl text-lg leading-relaxed text-sand-400">
+        Video lectures, a full practice question bank and mentor support in one program, built around the exam blueprint rather than the textbook.
+      </p>
+      <div className="flex flex-wrap items-center gap-4 pt-2">
+        <button
+          onClick={onGetStarted}
+          className="rounded-[3px] bg-brand-gradient-alt px-7 py-[15px] text-base font-semibold text-charcoal hover:brightness-105 transition"
+        >
+          Book a free class
+        </button>
+        <a href="#courses" className="border-b border-line-light py-[15px] text-base font-medium text-paper">
+          View courses
+        </a>
+      </div>
+      <div className="mt-2.5 flex flex-col gap-1.5 border-t border-line pt-7">
+        <div className="font-mono text-sm tracking-wide text-sand-600">
+          विद्याधनं सर्वधनप्रधानम् ॥
+        </div>
+        <div className="text-[13px] text-sand-800">
+          Knowledge is wealth, foremost among all forms of wealth.
+        </div>
+      </div>
+    </div>
+    <div className="mt-12 overflow-hidden rounded-lg border border-white/[.14] bg-white/[.04] lg:mt-0">
+      <img
+        src={LandingPageImage}
+        alt="A PalsAnalytix candidate studying"
+        className="h-[320px] w-full object-cover sm:h-[420px] lg:h-[520px]"
+      />
+    </div>
+  </section>
+);
+
+const COURSES = [
+  {
+    tag: "CFA",
+    iconGradient: "linear-gradient(135deg, #ff7f00, #ffda55)",
+    description:
+      "Levels I–III, covering the full curriculum with topic-wise video lectures and timed practice sets.",
+    path: "/cfa",
+  },
+  {
+    tag: "FRM",
+    iconGradient: "linear-gradient(135deg, #ff8305, #fff560)",
+    description:
+      "Parts I and II, focused on the quantitative and risk-management topics candidates struggle with most.",
+    path: "/frm",
+  },
+  {
+    tag: "SCR",
+    iconGradient: "linear-gradient(135deg, #ffb23a, #fff560)",
+    description:
+      "GARP's Sustainability and Climate Risk certificate, prepared with a single compact course.",
+    path: "/scr",
+  },
+];
+
+const CoursesSection = () => {
+  const navigate = useNavigate();
+  return (
+    <section id="courses" className="flex flex-col gap-11 bg-paper px-6 py-16 sm:px-12 sm:py-[88px]">
+      <div className="flex max-w-[600px] flex-col gap-2.5">
+        <div className="font-mono text-xs uppercase tracking-[0.14em] text-accent-orange2">Programs</div>
+        <h2 className="font-sora text-3xl font-bold tracking-[-0.01em] text-charcoal sm:text-[36px]">
+          Three certifications, one method
+        </h2>
+      </div>
+      <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+        {COURSES.map((course) => (
+          <div
+            key={course.tag}
+            className="flex flex-col gap-[18px] rounded-[4px] border border-sand-200 bg-white p-8"
+          >
+            <div
+              className="h-11 w-11"
+              style={{
+                clipPath: "polygon(50% 0, 100% 100%, 0 100%)",
+                background: course.iconGradient,
+              }}
+            />
+            <h3 className="font-sora text-[22px] font-semibold text-charcoal">{course.tag}</h3>
+            <p className="text-[15px] leading-relaxed text-sand-900">{course.description}</p>
+            <button
+              onClick={() => navigate(course.path)}
+              className="pt-1.5 text-left text-sm font-semibold text-charcoal hover:text-accent-orange2 transition-colors"
+            >
+              View syllabus →
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const WHY_US = [
+  { title: "Video lectures", description: "Topic-by-topic, mapped to the current exam blueprint." },
+  { title: "Question bank", description: "Practice questions at the difficulty level of the real exam." },
+  { title: "Mock exams", description: "Full-length, timed mocks with a section-wise score breakdown." },
+  { title: "Mentor support", description: "Doubt-clearing sessions with instructors who hold the charter." },
+];
+
+const WhyUsSection = () => (
+  <section id="why" className="flex flex-col gap-11 bg-ink px-6 py-16 sm:px-12 sm:py-[88px]">
+    <div className="flex max-w-[600px] flex-col gap-2.5">
+      <div className="font-mono text-xs uppercase tracking-[0.14em] text-accent-orange2">How it works</div>
+      <h2 className="font-sora text-3xl font-bold tracking-[-0.01em] text-paper sm:text-[36px]">
+        What&rsquo;s included in every program
+      </h2>
+    </div>
+    <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
+      {WHY_US.map((item) => (
+        <div key={item.title} className="flex flex-col gap-3">
+          <div className="h-2 w-2 rounded-full bg-accent-orange2" />
+          <h4 className="font-sora text-[17px] font-semibold text-paper">{item.title}</h4>
+          <p className="text-sm leading-relaxed text-sand-500">{item.description}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+);
+
+const CTABand = ({ isAuthenticated, onCta }) => (
+  <section className="flex flex-wrap items-center justify-between gap-8 bg-brand-gradient px-6 py-12 sm:px-12 sm:py-16">
+    <div className="flex max-w-[560px] flex-col gap-2">
+      <h2 className="font-sora text-[26px] font-bold text-charcoal sm:text-[30px]">
+        Start with a free class
+      </h2>
+      <p className="text-[15px] text-ink700">
+        No commitment — sit in on a live session before you choose a program.
+      </p>
+    </div>
+    <button
+      onClick={onCta}
+      className="rounded-[3px] bg-ink px-8 py-4 text-base font-semibold text-accent-amber hover:brightness-125 transition"
+    >
+      {isAuthenticated ? "View pricing" : "Reserve your seat"}
+    </button>
+  </section>
+);
+
+const FOOTER_PROGRAMS = [
+  { name: "CFA", path: "/cfa" },
+  { name: "FRM", path: "/frm" },
+  { name: "SCR", path: "/scr" },
+];
+
+const FOOTER_COMPANY = [
+  { name: "Why us", href: "#why" },
+  { name: "FAQ", to: "/FAQ" },
+  { name: "Contact", to: "/contact" },
+];
+
+const SiteFooter = () => (
+  <footer className="flex flex-col gap-8 bg-ink px-6 py-12 sm:px-12 sm:pb-8 sm:pt-12">
+    <div className="flex flex-wrap justify-between gap-8">
+      <div className="flex max-w-[320px] flex-col gap-3">
+        <Link to="/" className="flex items-center gap-2.5">
+          <img src={PalsAnalytixLogo} alt="PalsAnalytix" className="block h-[68px] w-auto" />
+          <span className="font-sora text-lg font-semibold text-paper">palsanalytix</span>
+        </Link>
+        <p className="text-[13px] leading-relaxed text-sand-700">
+          CFA, FRM and SCR exam preparation.
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-14">
+        <div className="flex flex-col gap-2.5">
+          <div className="text-[13px] font-semibold text-paper">Programs</div>
+          {FOOTER_PROGRAMS.map((item) => (
+            <Link key={item.name} to={item.path} className="text-[13px] text-sand-500 hover:text-paper transition-colors">
+              {item.name}
+            </Link>
+          ))}
+        </div>
+        <div className="flex flex-col gap-2.5">
+          <div className="text-[13px] font-semibold text-paper">Company</div>
+          {FOOTER_COMPANY.map((item) =>
+            item.to ? (
+              <Link key={item.name} to={item.to} className="text-[13px] text-sand-500 hover:text-paper transition-colors">
+                {item.name}
+              </Link>
+            ) : (
+              <a key={item.name} href={item.href} className="text-[13px] text-sand-500 hover:text-paper transition-colors">
+                {item.name}
+              </a>
+            )
+          )}
+        </div>
+      </div>
+    </div>
+    <div className="flex flex-col gap-3 border-t border-line pt-5 text-xs text-sand-800 sm:flex-row sm:items-center sm:justify-between">
+      <span>© {new Date().getFullYear()} Palsanalytix</span>
+      <span className="font-mono">विद्याधनं सर्वधनप्रधानम् ॥</span>
+    </div>
+    <p className="max-w-3xl text-[11px] leading-relaxed text-sand-800">
+      CFA® and Chartered Financial Analyst® are registered trademarks owned by CFA Institute. FRM® is a registered trademark of the Global Association of Risk Professionals.
+    </p>
+  </footer>
+);
+
 const LandingPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const isAdmin = user?.email === import.meta.env.VITE_ADMIN_EMAIL;
+
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("login");
-  const dispatch = useDispatch();
 
-  const features = [
-    {
-      icon: Book,
-      title: "Comprehensive Content",
-      description:
-        "Access our extensive library of study materials, practice questions, and mock exams designed by industry experts with decades of experience in financial certification training.",
-    },
-    {
-      icon: BarChart2,
-      title: "Performance Analytics",
-      description:
-        "Track your progress with sophisticated analytics and insights, helping you identify and focus on areas that need improvement while optimizing your study time for maximum efficiency.",
-    },
-    {
-      icon: Users,
-      title: "Community Support",
-      description:
-        "Join a global community of driven finance professionals and get support from peers and certified mentors throughout your certification journey, available 24/7 via our platform.",
-    },
-  ];
+  const closeModal = () => {
+    setShowAuthModal(false);
+    setAuthMode("login");
+    dispatch(clearError());
+  };
+  const openLogin = () => {
+    setAuthMode("login");
+    setShowAuthModal(true);
+  };
+  const switchToRegister = () => {
+    setAuthMode("register");
+    dispatch(clearError());
+  };
+  const switchToLogin = () => {
+    setAuthMode("login");
+    dispatch(clearError());
+  };
 
-  const courses = [
-    {
-      title: "CFA® Program",
-      description:
-        "Master investment analysis and portfolio management with our comprehensive CFA® preparation program covering all three levels of the certification process.",
-      link: "/cfa",
-    },
-    {
-      title: "FRM® Certification",
-      description:
-        "Develop expertise in financial risk management with our specialized FRM® certification preparation covering both Part I and Part II examination requirements.",
-      link: "/frm",
-    },
-    {
-      title: "SCR® Certificate",
-      description:
-        "Lead the way in sustainable finance with our cutting-edge SCR® certificate program that prepares you for the growing field of climate risk and responsible investing.",
-      link: "/scr",
-    },
-  ];
-
-  const handleModalControls = {
-    close: () => {
-      setShowAuthModal(false);
-      setAuthMode("login");
-      dispatch(clearError());
-    },
-    switchToRegister: () => {
-      setAuthMode("register");
-      dispatch(clearError());
-    },
-    switchToLogin: () => {
-      setAuthMode("login");
-      dispatch(clearError());
-    },
-    handleGetStarted: () => setShowAuthModal(true),
+  const handlePrimaryCta = () => {
+    if (isAuthenticated) {
+      navigate("/pricing");
+    } else {
+      openLogin();
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
+    <div className="min-h-screen bg-paper font-sans text-charcoal">
       <SEOMetadata />
-      <Navbar />
-      <HeroSection onGetStarted={handleModalControls.handleGetStarted} />
-
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto space-y-16">
-          <div className="text-center space-y-4">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
-              Why Financial Professionals Choose PalsAnalytix
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Experience a revolutionary approach to financial certification
-              exam preparation that combines cutting-edge technology with expert
-              guidance from industry professionals.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <FeatureCard key={index} {...feature} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-50 to-white">
-        <div className="max-w-7xl mx-auto space-y-16">
-          <div className="text-center space-y-4">
-            <div className="inline-flex items-center justify-center px-4 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium mb-4">
-              INDUSTRY-RECOGNIZED CERTIFICATIONS
-            </div>
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
-              Accelerate Your Finance Career with Premier Certifications
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Choose from our selection of industry-leading certification
-              programs designed to elevate your expertise and advance your
-              career in the competitive financial sector.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {courses.map((course, index) => (
-              <CourseCard
-                key={index}
-                {...course}
-                onClick={() => navigate(course.link)}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl font-bold">
-                Ready to Accelerate Your Finance Career?
-              </h2>
-              <p className="text-xl opacity-90">
-                Join over 25,000 finance professionals who have achieved
-                certification success with PalsAnalytix.
-              </p>
-              <button
-                onClick={
-                  isAuthenticated
-                    ? () => navigate("/pricing")
-                    : handleModalControls.handleGetStarted
-                }
-                className="bg-white text-blue-700 hover:bg-blue-50 font-semibold py-4 px-8 rounded-xl text-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center"
-              >
-                {isAuthenticated ? "View Pricing" : "Start Free Trial"}
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </button>
-            </div>
-            <div className="bg-white/10 rounded-xl p-6 backdrop-blur-sm">
-              <h3 className="text-xl font-bold mb-4">What You'll Get:</h3>
-              <ul className="space-y-3">
-                {[
-                  "Full access to all study materials for 7 days",
-                  "Practice question banks for your target certification",
-                  "Performance analytics and progress tracking",
-                  "Mock exam with detailed performance report",
-                  "No credit card required for trial",
-                ].map((item, index) => (
-                  <li key={index} className="flex items-start">
-                    <Check className="w-5 h-5 text-yellow-400 mr-2 mt-0.5" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Nav isAuthenticated={isAuthenticated} isAdmin={isAdmin} onLoginClick={openLogin} />
+      <HeroSection onGetStarted={openLogin} />
+      <CoursesSection />
+      <WhyUsSection />
+      <CTABand isAuthenticated={isAuthenticated} onCta={handlePrimaryCta} />
 
       {showAuthModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl bg-white shadow-xl">
             {authMode === "login" ? (
-              <LoginModal
-                onSuccess={handleModalControls.close}
-                onClose={handleModalControls.close}
-                onSignupClick={handleModalControls.switchToRegister}
-              />
+              <LoginModal onSuccess={closeModal} onClose={closeModal} onSignupClick={switchToRegister} />
             ) : (
-              <SignupModal
-                onSuccess={handleModalControls.switchToLogin}
-                onClose={handleModalControls.close}
-                onLoginClick={handleModalControls.switchToLogin}
-              />
+              <SignupModal onSuccess={switchToLogin} onClose={closeModal} onLoginClick={switchToLogin} />
             )}
           </div>
         </div>
       )}
 
-      <Footer />
+      <SiteFooter />
     </div>
   );
 };
