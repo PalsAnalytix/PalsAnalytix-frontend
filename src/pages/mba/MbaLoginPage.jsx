@@ -25,7 +25,10 @@ const MbaLoginPage = () => {
   return (
     <div className="min-h-screen bg-ink flex items-center justify-center px-4 font-sans">
       <div className="border border-line rounded-lg bg-white/[0.03] p-10 w-full max-w-md">
-        <img src={mbaLogo} alt="PalsAnalytix" className="h-[252px] mx-auto mb-6" />
+                <img src={mbaLogo} alt="PalsAnalytix" className="h-[252px] mx-auto mb-2" />
+        <p className="text-sand-500 text-sm italic text-center mb-6">
+          (The wealth of knowledge is the supreme wealth of all)
+        </p>
                 <div className="font-mono text-base tracking-[.14em] uppercase text-accent-orange2 text-center mb-2">
           MBA Evaluation
         </div>
