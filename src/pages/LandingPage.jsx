@@ -72,11 +72,11 @@ const Nav = ({ isAuthenticated, isAdmin, onLoginClick }) => {
       </div>
 
       <div className="flex items-center gap-5 shrink-0">
-        <button
+                <button
           onClick={() =>
             isAuthenticated ? navigate(isAdmin ? "/admin" : "/dashboard") : onLoginClick()
           }
-          className="rounded-[3px] bg-brand-gradient-alt px-[22px] py-[11px] text-sm font-semibold text-charcoal hover:brightness-105 transition"
+          className="rounded-[3px] bg-brand-gradient-alt px-8 py-3 text-base font-semibold text-charcoal hover:brightness-105 transition"
         >
           {isAuthenticated ? "Dashboard" : "Login"}
         </button>
