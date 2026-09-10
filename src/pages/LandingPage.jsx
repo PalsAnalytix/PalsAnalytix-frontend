@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet";
 import { clearError } from "../redux/slices/authSlice";
 import LoginModal from "../components/auth/LoginModal";
 import SignupModal from "../components/auth/SignupModal";
+import ForgotPasswordModal from "../components/auth/ForgotPasswordModal";
 import LandingPageImage from "../assets/landing_page_image.jpg";
 import PalsAnalytixLogo from "../assets/palsanalytix-logo.png";
 import PalsAnalytixWordmark from "../assets/palsanalytix-wordmark.png";
@@ -307,8 +308,9 @@ const LandingPage = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const isAdmin = user?.email === import.meta.env.VITE_ADMIN_EMAIL;
 
-  const [showAuthModal, setShowAuthModal] = useState(false);
+   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("login");
+  const [showForgotModal, setShowForgotModal] = useState(false);
 
   const closeModal = () => {
     setShowAuthModal(false);
@@ -348,14 +350,25 @@ const LandingPage = () => {
       {showAuthModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-2xl bg-white shadow-xl">
-            {authMode === "login" ? (
-              <LoginModal onSuccess={closeModal} onClose={closeModal} onSignupClick={switchToRegister} />
+                        {authMode === "login" ? (
+              <LoginModal
+                onSuccess={closeModal}
+                onClose={closeModal}
+                onSignupClick={switchToRegister}
+                onForgotClick={() => { setShowAuthModal(false); setShowForgotModal(true); }}
+              />
             ) : (
               <SignupModal onSuccess={switchToLogin} onClose={closeModal} onLoginClick={switchToLogin} />
             )}
           </div>
         </div>
       )}
+
+      <ForgotPasswordModal
+        isOpen={showForgotModal}
+        onClose={() => setShowForgotModal(false)}
+        onLoginClick={() => { setShowForgotModal(false); setShowAuthModal(true); setAuthMode("login"); }}
+      />
 
       <SiteFooter />
     </div>
