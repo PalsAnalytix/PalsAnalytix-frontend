@@ -46,8 +46,11 @@ const Nav = ({ isAuthenticated, isAdmin, onLoginClick }) => {
   const navigate = useNavigate();
   return (
     <nav className="sticky top-0 z-20 flex items-center justify-between gap-8 border-b border-line bg-ink px-6 py-4 sm:px-12">
-            <Link to="/" className="flex items-center shrink-0">
+                 <Link to="/" className="flex items-center gap-2.5 shrink-0">
         <img src={PalsAnalytixLogo} alt="PalsAnalytix" className="block h-10 w-auto" />
+        <span className="font-sora text-xl font-semibold tracking-tight text-paper">
+          palsanalytix
+        </span>
       </Link>
 
       <div className="hidden lg:flex items-center gap-9">
