@@ -27,9 +27,10 @@ import { store } from "./redux/store";
 import { fetchUserProfile } from "./redux/slices/authSlice";
 
 function App() {
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
   const isAuthenticated = useAuth(); // Using the custom hook
-  const { user } = useSelector((state) => state.auth);
+  const { user, authChecked } = useSelector((state) => state.auth);
+  const hasToken = !!localStorage.getItem("token");
     const mbaAuthenticated = useSelector((state) => state.mbaAuth.isAuthenticated);
   const isAdmin = user?.email === import.meta.env.VITE_ADMIN_EMAIL;
 
@@ -40,20 +41,31 @@ function App() {
   }, [dispatch]);
 
   // Protected Route component
-  const ProtectedRoute = ({ children }) => {
-    if (!isAuthenticated) {
-      return <Navigate to="/" />;
+    // While a saved login is still being verified after a page load/refresh, wait rather than guessing
+  const AuthGate = ({ children }) => {
+    if (hasToken && !authChecked) {
+      return (
+        <div className="min-h-screen flex items-center justify-center text-gray-500">
+          Loading...
+        </div>
+      );
     }
     return children;
   };
 
+  // Protected Route component
+  const ProtectedRoute = ({ children }) => (
+    <AuthGate>
+      {!isAuthenticated ? <Navigate to="/" /> : children}
+    </AuthGate>
+  );
+
   // Admin Route component
-  const AdminRoute = ({ children }) => {
-    if (!isAuthenticated || !isAdmin) {
-      return <Navigate to="/" />;
-    }
-    return children;
-  };
+  const AdminRoute = ({ children }) => (
+    <AuthGate>
+      {!isAuthenticated || !isAdmin ? <Navigate to="/" /> : children}
+    </AuthGate>
+  );
 
     // MBA Student Route component
   const MbaProtectedRoute = ({ children }) => {
