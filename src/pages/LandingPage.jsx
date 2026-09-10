@@ -39,6 +39,7 @@ const NAV_LINKS = [
   { label: "Pricing", to: "/pricing" },
   { label: "FAQ", to: "/FAQ" },
   { label: "Contact", to: "/contact" },
+  { label: "MBA Evaluation", to: "/mba-evaluation" },
 ];
 
 const Nav = ({ isAuthenticated, isAdmin, onLoginClick }) => {
