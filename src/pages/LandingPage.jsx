@@ -45,11 +45,8 @@ const Nav = ({ isAuthenticated, isAdmin, onLoginClick }) => {
   const navigate = useNavigate();
   return (
     <nav className="sticky top-0 z-20 flex items-center justify-between gap-8 border-b border-line bg-ink px-6 py-4 sm:px-12">
-      <Link to="/" className="flex items-center gap-2.5 shrink-0">
+            <Link to="/" className="flex items-center shrink-0">
         <img src={PalsAnalytixLogo} alt="PalsAnalytix" className="block h-10 w-auto" />
-        <span className="font-sora text-xl font-semibold tracking-tight text-paper">
-          palsanalytix
-        </span>
       </Link>
 
       <div className="hidden lg:flex items-center gap-9">
@@ -67,25 +64,13 @@ const Nav = ({ isAuthenticated, isAdmin, onLoginClick }) => {
       </div>
 
       <div className="flex items-center gap-5 shrink-0">
-        {isAuthenticated ? (
-          <button
-            onClick={() => navigate(isAdmin ? "/admin" : "/dashboard")}
-            className="text-[15px] text-sand-300 hover:text-paper transition-colors"
-          >
-            Dashboard
-          </button>
-        ) : (
-          <button onClick={onLoginClick} className="text-[15px] text-sand-300 hover:text-paper transition-colors">
-            Login
-          </button>
-        )}
         <button
           onClick={() =>
             isAuthenticated ? navigate(isAdmin ? "/admin" : "/dashboard") : onLoginClick()
           }
           className="rounded-[3px] bg-brand-gradient-alt px-[22px] py-[11px] text-sm font-semibold text-charcoal hover:brightness-105 transition"
         >
-          Book a free class
+          {isAuthenticated ? "Dashboard" : "Login"}
         </button>
       </div>
     </nav>
