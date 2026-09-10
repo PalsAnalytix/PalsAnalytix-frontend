@@ -75,9 +75,9 @@ const MbaDashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-paper via-white to-accent-yellow/5 font-sans">
       <MbaHeader>
         <span className="text-base text-paper">Welcome, {fullName}</span>
-        <button
+                <button
           onClick={handleLogout}
-          className="text-base text-paper border border-line-light rounded px-6 py-3 hover:bg-white/10"
+          className="rounded-[3px] bg-brand-gradient-alt px-6 py-3 text-base font-semibold text-charcoal hover:brightness-105 transition"
         >
           Log Out
         </button>
