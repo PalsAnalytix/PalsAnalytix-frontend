@@ -123,9 +123,9 @@ export const fetchUserProfile = createAsyncThunk(
       const token = localStorage.getItem("token");
       const admin = localStorage.getItem("isAdmin");
 
-      // If admin, return early without fetching profile
+            // If admin, return early without fetching profile
       if (admin === "true") {
-        return { isAdmin: true };
+        return { isAdmin: true, email: import.meta.env.VITE_ADMIN_EMAIL };
       }
 
       if (!token) {
@@ -396,17 +396,18 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+            .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
 
-        // If it's an admin, just mark as authenticated
+        // If it's an admin, mark as authenticated AND restore the email
+        // so the isAdmin check in App.jsx passes correctly after a refresh
         if (action.payload.isAdmin) {
           state.isAuthenticated = true;
+          state.user = { email: action.payload.email, isAdmin: true };
           return;
         }
 
         state.user = action.payload;
-        // console.log(state.user);
         state.isAuthenticated = true;
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
