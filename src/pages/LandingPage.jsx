@@ -7,6 +7,7 @@ import LoginModal from "../components/auth/LoginModal";
 import SignupModal from "../components/auth/SignupModal";
 import LandingPageImage from "../assets/landing_page_image.jpg";
 import PalsAnalytixLogo from "../assets/palsanalytix-logo.png";
+import PalsAnalytixWordmark from "../assets/palsanalytix-wordmark.png";
 
 const SEOMetadata = () => (
   <Helmet>
@@ -46,11 +47,9 @@ const Nav = ({ isAuthenticated, isAdmin, onLoginClick }) => {
   const navigate = useNavigate();
   return (
     <nav className="sticky top-0 z-20 flex items-center justify-between gap-8 border-b border-line bg-ink px-6 py-4 sm:px-12">
-                 <Link to="/" className="flex items-center gap-2.5 shrink-0">
+                 <      <Link to="/" className="flex items-center gap-2.5 shrink-0">
         <img src={PalsAnalytixLogo} alt="PalsAnalytix" className="block h-10 w-auto" />
-        <span className="font-sora text-xl font-semibold tracking-tight text-paper">
-          palsanalytix
-        </span>
+        <img src={PalsAnalytixWordmark} alt="palsanalytix" className="block h-6 w-auto" />
       </Link>
 
       <div className="hidden lg:flex items-center gap-9">
