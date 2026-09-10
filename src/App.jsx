@@ -117,6 +117,7 @@ function App() {
 
           {/* Public Routes */}
           <Route path="/exams" element={<div>Exams Page</div>} />
+          <Route path="/resources" element={<div>Resources Page</div>} />
           <Route path="/test-series" element={<div>Test Series Page</div>} />
           <Route path="/quizzes" element={<div>Quizzes Page</div>} />
           <Route path="/news" element={<div>News Page</div>} />
