@@ -108,12 +108,17 @@ const Navbar = () => {
         className={`${className} hover:text-blue-500`}
       >
         FAQ
-      </button>
-      <button
+            <button
         onClick={() => handleNavigation("/contact")}
         className={`${className} hover:text-blue-500`}
       >
         Contact-Us
+      </button>
+      <button
+        onClick={() => handleNavigation("/mba-evaluation")}
+        className={`${className} hover:text-blue-500`}
+      >
+        MBA Evaluation
       </button>
     </>
   );
