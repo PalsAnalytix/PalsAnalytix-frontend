@@ -47,18 +47,13 @@ const Nav = ({ isAuthenticated, isAdmin, onLoginClick }) => {
   const navigate = useNavigate();
   return (
     <nav className="sticky top-0 z-20 flex items-center justify-between gap-8 border-b border-line bg-ink px-6 py-4 sm:px-12">
-                             <Link to="/" className="flex flex-col shrink-0">
+         <Link to="/" className="flex flex-col shrink-0">
         <div className="flex items-center gap-2.5">
-          <img src={PalsAnalytixLogo} alt="PalsAnalytix" className="block h-10 w-auto" />
+          <img src={PalsAnalytixLogo} alt="PalsAnalytix" className="block h-6 w-auto" />
           <img src={PalsAnalytixWordmark} alt="palsanalytix" className="block h-6 w-auto" />
         </div>
-        <div className="mt-0.5 pl-[50px] leading-tight">
-          <div className="font-mono text-[10px] tracking-wide text-sand-500">
-            विद्याधनं सर्वधनप्रधानम् ॥
-          </div>
-          <div className="text-[10px] italic text-sand-600">
-            (The wealth of knowledge is the supreme wealth of all)
-          </div>
+        <div className="mt-0.5 pl-[34px] font-mono text-[10px] tracking-wide text-sand-500 leading-tight">
+          विद्याधनं सर्वधनप्रधानम् ॥
         </div>
       </Link>
 
