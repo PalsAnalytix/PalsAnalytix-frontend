@@ -261,6 +261,7 @@ const initialState = {
   token: localStorage.getItem("token"),
   isAuthenticated: false,
   loading: false,
+  authChecked: false, // becomes true once we've confirmed login status after a page load/refresh
   error: null,
   otpSent: false,
   otpVerified: false,
@@ -396,8 +397,9 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-            .addCase(fetchUserProfile.fulfilled, (state, action) => {
+                  .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
+        state.authChecked = true;
 
         // If it's an admin, mark as authenticated AND restore the email
         // so the isAdmin check in App.jsx passes correctly after a refresh
@@ -412,6 +414,7 @@ const authSlice = createSlice({
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;
+        state.authChecked = true;
         state.error = action.payload?.message || "Failed to fetch user profile";
         state.isAuthenticated = false;
       })
