@@ -4,6 +4,7 @@ import { signupUser } from '../../redux/slices/authSlice';
 import OTPModal from './OTPModal';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import { Loader } from 'lucide-react';
 
 const darkPhoneInputStyle = {
   width: '100%',
@@ -169,17 +170,23 @@ const SignupModal = ({ onSuccess, onLoginClick, onClose }) => {
               />
             </div>
 
-            <button
+                       <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3 rounded-[3px] font-semibold text-base transition ${
+              className={`w-full py-3 rounded-[3px] font-semibold text-base transition flex items-center justify-center gap-2 ${
                 loading
                   ? 'bg-sand-700 text-sand-400 cursor-not-allowed'
                   : 'bg-brand-gradient-alt text-charcoal hover:brightness-105'
               }`}
             >
+              {loading && <Loader className="animate-spin h-4 w-4" />}
               {loading ? 'Creating Account...' : 'Create Account'}
             </button>
+            {loading && (
+              <p className="text-xs text-sand-600 text-center">
+                This can take up to a minute if the server's been idle for a while.
+              </p>
+            )}
           </form>
 
           <div className="mt-6 text-center">
