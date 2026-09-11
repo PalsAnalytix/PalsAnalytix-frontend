@@ -348,9 +348,10 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
+            .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.isAuthenticated = true;
+        state.authChecked = true;
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isAdmin = action.payload.user.isAdmin || false;
