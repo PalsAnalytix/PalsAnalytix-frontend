@@ -126,8 +126,12 @@ function App() {
           />
 
           {/* Public Routes */}
-          <Route path="/exams" element={<div>Exams Page</div>} />
+                   <Route path="/exams" element={<div>Exams Page</div>} />
           <Route path="/resources" element={<div>Resources Page</div>} />
+          <Route path="/frm" element={<div>FRM Page — Coming Soon</div>} />
+          <Route path="/excel" element={<div>Excel Page — Coming Soon</div>} />
+          <Route path="/advanced-excel" element={<div>Advanced Excel Page — Coming Soon</div>} />
+          <Route path="/excel-for-finance" element={<div>Excel for Finance Page — Coming Soon</div>} />
           <Route path="/test-series" element={<div>Test Series Page</div>} />
           <Route path="/quizzes" element={<div>Quizzes Page</div>} />
           <Route path="/news" element={<div>News Page</div>} />
