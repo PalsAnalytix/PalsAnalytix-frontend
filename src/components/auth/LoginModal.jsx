@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
+import { Loader } from 'lucide-react';
 
 const LoginModal = ({ onSuccess, onSignupClick, onClose, onForgotClick }) => {
   const navigate = useNavigate();
@@ -74,17 +75,23 @@ const LoginModal = ({ onSuccess, onSignupClick, onClose, onForgotClick }) => {
               />
             </div>
 
-            <button
+                       <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3 rounded-[3px] font-semibold text-base transition ${
+              className={`w-full py-3 rounded-[3px] font-semibold text-base transition flex items-center justify-center gap-2 ${
                 loading
                   ? 'bg-sand-700 text-sand-400'
                   : 'bg-brand-gradient-alt text-charcoal hover:brightness-105'
               }`}
             >
+              {loading && <Loader className="animate-spin h-4 w-4" />}
               {loading ? 'Logging in...' : 'Login'}
             </button>
+            {loading && (
+              <p className="text-xs text-sand-600 text-center">
+                This can take up to a minute if the server's been idle for a while.
+              </p>
+            )}
           </form>
 
           <div className="mt-6 flex justify-between items-center">
