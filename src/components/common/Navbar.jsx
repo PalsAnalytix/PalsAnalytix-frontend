@@ -161,8 +161,8 @@ const Navbar = () => {
                 </div>
               </Link>
 
-              <div className="hidden md:flex items-center space-x-6">
-                <NavLinks className="text-sand-300 text-[15px]" />
+                 <div className="hidden md:flex items-center space-x-6">
+                <NavLinks className="text-sand-300 text-lg" />
               </div>
 
               <div className="hidden md:flex items-center">
