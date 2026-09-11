@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader } from "lucide-react";
 import { loginMbaStudent, clearMbaError } from "../../redux/slices/mbaAuthSlice";
 import mbaLogo from "../../assets/mba-logo.png";
 
@@ -82,15 +82,20 @@ const MbaLoginPage = () => {
               </button>
             </div>
           </div>
-          <button
+                    <button
             type="submit"
             disabled={loading}
-            className="w-full bg-brand-gradient hover:opacity-90 text-charcoal font-semibold py-3 rounded transition duration-300 disabled:opacity-60"
+            className="w-full bg-brand-gradient hover:opacity-90 text-charcoal font-semibold py-3 rounded transition duration-300 disabled:opacity-60 flex items-center justify-center gap-2"
           >
+            {loading && <Loader className="animate-spin h-4 w-4" />}
             {loading ? "Logging in..." : "Log In"}
           </button>
-        </form>
-      </div>
+          {loading && (
+            <p className="text-xs text-sand-500 text-center mt-2">
+              This can take up to a minute if the server's been idle for a while.
+            </p>
+          )}
+        </form>      </div>
     </div>
   );
 };
