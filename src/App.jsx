@@ -5,6 +5,7 @@ import {
   Route,
   Routes,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import MbaLoginPage from "./pages/mba/MbaLoginPage";
@@ -26,8 +27,16 @@ import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import { fetchUserProfile } from "./redux/slices/authSlice";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function App() {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const isAuthenticated = useAuth(); // Using the custom hook
   const { user, authChecked } = useSelector((state) => state.auth);
   const hasToken = !!localStorage.getItem("token");
@@ -76,8 +85,9 @@ function App() {
   };
   
   return (
-    <Provider store={store}>
+        <Provider store={store}>
       <Router>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/mba-evaluation" element={<MbaLoginPage />} />
