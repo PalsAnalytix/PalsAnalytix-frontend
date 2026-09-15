@@ -12,6 +12,7 @@ import AddQuestionModal from "../components/admin/AddQuestionModal";
 import TestModal from "../components/admin/TestModal";
 import BulkUpload from "../components/admin/BulkUpload";
 import MbaEvaluationPanel from "../components/admin/MbaEvaluationPanel";
+import UsersPanel from "../components/admin/UsersPanel";
 import Navbar from "../components/common/Navbar";
 const BASE_URL = import.meta.env.VITE_BASE_URL; // Make sure this is correctly set up
 
@@ -98,12 +99,18 @@ const AdminDashboard = () => {
       <Navbar />
 
       <div className="min-h-screen bg-paper p-4 sm:p-6">
-        <div className="flex gap-2 mb-6">
+               <div className="flex gap-2 mb-6">
           <button
             onClick={() => setActiveSection("main")}
             className={`px-4 py-2 rounded font-medium ${activeSection === "main" ? "bg-brand-gradient text-charcoal" : "bg-white text-sand-700 border border-sand-300"}`}
           >
             CFA / FRM / SCR
+          </button>
+          <button
+            onClick={() => setActiveSection("users")}
+            className={`px-4 py-2 rounded font-medium ${activeSection === "users" ? "bg-brand-gradient text-charcoal" : "bg-white text-sand-700 border border-sand-300"}`}
+          >
+            Users
           </button>
           <button
             onClick={() => setActiveSection("mba")}
@@ -115,6 +122,8 @@ const AdminDashboard = () => {
 
         {activeSection === "mba" ? (
           <MbaEvaluationPanel />
+        ) : activeSection === "users" ? (
+          <UsersPanel />
         ) : (
           <>
             <div className="font-mono text-xs tracking-[.14em] uppercase text-accent-orange2 mb-1">Admin</div>
