@@ -38,8 +38,8 @@ const StatCard = ({ title, value, icon: Icon, color, change }) => {
         <Icon className={`w-full h-full ${color.replace("bg-", "text-")}`} />
       </div>
       <div className="flex items-center gap-3 relative z-10">
-        <div
-          className={`p-2.5 rounded-lg ${color} transform transition-transform duration-300 group-hover:scale-110`}
+                <div
+          className={`p-2.5 rounded-lg ${color} flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110`}
         >
           <Icon className="w-5 h-5 text-charcoal" />
         </div>
