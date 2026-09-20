@@ -137,8 +137,25 @@ const SignupModal = ({ onSuccess, onLoginClick, onClose }) => {
                 searchStyle={{ width: '100%', margin: '0.5rem 0', padding: '0.75rem', borderRadius: '4px' }}
                 enableSearch={true}
                 disableSearchIcon={true}
-                searchPlaceholder="Search country..."
+                                searchPlaceholder="Search country..."
               />
+            </div>
+
+            <div>
+              <select
+                value={formData.program}
+                onChange={(e) => setFormData({ ...formData, program: e.target.value })}
+                className="w-full px-4 py-3 text-base bg-transparent border border-line-light rounded text-paper focus:ring-1 focus:ring-accent-orange2 focus:border-accent-orange2 focus:outline-none"
+                required
+              >
+                <option value="" disabled className="text-charcoal">Which program are you interested in?</option>
+                <option value="CFA" className="text-charcoal">CFA</option>
+                <option value="FRM" className="text-charcoal">FRM</option>
+                <option value="SCR" className="text-charcoal">SCR</option>
+                <option value="EXCEL" className="text-charcoal">Excel</option>
+                <option value="ADVANCED_EXCEL" className="text-charcoal">Advanced Excel</option>
+                <option value="EXCEL_FOR_FINANCE" className="text-charcoal">Excel for Finance</option>
+              </select>
             </div>
 
             <div className="relative">
