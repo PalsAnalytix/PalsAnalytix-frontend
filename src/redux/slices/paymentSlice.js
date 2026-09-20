@@ -6,19 +6,19 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 // Async thunks
 export const createPaymentOrder = createAsyncThunk(
   'payment/createOrder',
-  async (planDetails, { rejectWithValue }) => {
+  async (courseDetails, { rejectWithValue }) => {
     try {
-      // Calculate amount in paise (₹1 = 100 paise)
-      // const amountInPaise = planDetails.price * 100;
-      const amountInPaise = 1 * 100;
+      // Price is enforced entirely server-side (see paymentController.js) —
+      // whatever we send here is informational only.
       const token = localStorage.getItem('token');
       const response = await axios.post(
         `${BASE_URL}/api/payments/create-order`,
         {
-          amount: amountInPaise,
           currency: 'INR',
+          course: courseDetails.course,
           notes: {
-            planName: planDetails.name,
+            course: courseDetails.course,
+            courseName: courseDetails.name,
           }
         },
         {
@@ -35,7 +35,6 @@ export const createPaymentOrder = createAsyncThunk(
     }
   }
 );
-
 export const verifyPayment = createAsyncThunk(
   'payment/verifyPayment',
   async (paymentData, { rejectWithValue }) => {
