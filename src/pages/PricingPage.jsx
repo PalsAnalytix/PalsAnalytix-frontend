@@ -34,8 +34,8 @@ const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID;
 // All 6 courses. Only CFA and SCR are purchasable today — the rest show
 // "Coming Soon" until those course pages actually exist.
 const COURSES = [
-  { code: "CFA", label: "CFA", purchasable: true },
-  { code: "SCR", label: "SCR", purchasable: true },
+  { code: "CFA", label: "CFA", purchasable: false },
+  { code: "SCR", label: "SCR", purchasable: false },
   { code: "FRM", label: "FRM", purchasable: false },
   { code: "EXCEL", label: "Excel", purchasable: false },
   { code: "ADVANCED_EXCEL", label: "Advanced Excel", purchasable: false },
