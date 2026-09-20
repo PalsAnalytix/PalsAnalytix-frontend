@@ -27,14 +27,14 @@ const SignupModal = ({ onSuccess, onLoginClick, onClose }) => {
   const dispatch = useDispatch();
   const { loading, error, otpSent } = useSelector((state) => state.auth);
 
-  const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
+    program: '',
     password: '',
     confirmPassword: '',
   });
-
   const [showPassword, setShowPassword] = useState(false);
   const [passwordMismatch, setPasswordMismatch] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
