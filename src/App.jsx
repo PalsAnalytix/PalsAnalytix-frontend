@@ -27,6 +27,10 @@ import useAuth from "./hooks/useAuth";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import { fetchUserProfile } from "./redux/slices/authSlice";
+import CustomAssignmentSetup from "./pages/CustomAssignmentSetup";
+import AssignmentTestPage from "./pages/AssignmentTestPage";
+import AssignmentResultsPage from "./pages/AssignmentResultsPage";
+import AssignmentHistoryPage from "./pages/AssignmentHistoryPage";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -150,6 +154,38 @@ function App() {
             <ProtectedRoute>
           <CourseHubPage />
         </ProtectedRoute>
+  }
+/>
+          <Route
+  path="/dashboard/course/:courseCode/assignments/new"
+  element={
+    <ProtectedRoute>
+      <CustomAssignmentSetup />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/dashboard/course/:courseCode/assignments/history"
+  element={
+    <ProtectedRoute>
+      <AssignmentHistoryPage />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/dashboard/course/:courseCode/assignments/:assignmentId/take"
+  element={
+    <ProtectedRoute>
+      <AssignmentTestPage />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/dashboard/course/:courseCode/assignments/:assignmentId/results"
+  element={
+    <ProtectedRoute>
+      <AssignmentResultsPage />
+    </ProtectedRoute>
   }
 />
           <Route
