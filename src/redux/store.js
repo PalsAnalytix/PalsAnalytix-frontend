@@ -3,6 +3,7 @@ import questionReducer from "./slices/questionsSlice";
 import testsReducer from "./slices/testsSlice"
 import testPageReducer  from "./slices/testPageSlice";
 import authReducer from "./slices/authSlice";
+import assignmentReducer from "./slices/assignmentSlice";
 import paymentReducer from "./slices/paymentSlice"
 import mbaAuthReducer from "./slices/mbaAuthSlice";
 export const store = configureStore({
@@ -13,6 +14,7 @@ export const store = configureStore({
     auth: authReducer,
     payment : paymentReducer,
     mbaAuth: mbaAuthReducer,
+    assignment: assignmentReducer,
   },
   
 })
