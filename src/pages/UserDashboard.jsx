@@ -292,9 +292,9 @@ const UserDashboard = () => {
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const profile = user;
-    const isPremium = profile?.currentSubscriptionPlan !== "FREE";
+     const isPremium = profile?.currentSubscriptionPlan !== "FREE";
   const loading = useSelector((state) => state.auth.loading);
-  const navigate2 = useNavigate();
+  const navigate = useNavigate();
   const purchasedCourses = profile ? getActivePurchasedCourses(profile) : [];
 
   useEffect(() => {
@@ -325,6 +325,7 @@ const UserDashboard = () => {
 
       <div className="container mx-auto px-4 py-6">
         {/* User Profile Card */}
+                {/* User Profile Card */}
         <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
           <div className="bg-white rounded-lg border border-sand-200 p-3 sm:p-4 mb-4">
             <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
@@ -348,7 +349,7 @@ const UserDashboard = () => {
                   </p>
                 </div>
               </div>
-                            {/*
+              {/*
                 "Update Questions Preferences" button — removed from here for now,
                 kept for reuse elsewhere later. The WhatsAppModal it opens is still
                 wired up below (isWhatsAppModalOpen state + <WhatsAppModal />), just
@@ -364,8 +365,26 @@ const UserDashboard = () => {
               */}
             </div>
           </div>
+
+          {purchasedCourses.length > 0 && (
+            <div className="bg-white rounded-lg border border-sand-200 p-4 mb-4">
+              <p className="text-sm font-semibold text-sand-700 mb-3">Your Courses</p>
+              <div className="flex flex-wrap gap-3">
+                {purchasedCourses.map((course) => (
+                  <button
+                    key={course.code}
+                    onClick={() => navigate(`/dashboard/course/${course.code}`)}
+                    className="px-5 py-2.5 bg-brand-gradient text-charcoal font-semibold rounded-[3px] hover:opacity-90 transition"
+                  >
+                    {course.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
+        {/* Main content area with requested layout */}
                   {purchasedCourses.length > 0 && (
             <div className="bg-white rounded-lg border border-sand-200 p-4 mb-4">
               <p className="text-sm font-semibold text-sand-700 mb-3">Your Courses</p>
