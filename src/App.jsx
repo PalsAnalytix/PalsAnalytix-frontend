@@ -17,6 +17,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import CFAPage from "./pages/CFAPage";
 import SCRPage from "./pages/SCRPage";
 import UserDashboard from "./pages/UserDashboard";
+import CourseHubPage from "./pages/CourseHubPage";
 import TestPage from "./pages/TestPage";
 import PricingPage from "./pages/PricingPage";
 import ContactPage from "./pages/ContactUs";
@@ -140,8 +141,17 @@ function App() {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/FAQ" element={<EnhancedFAQPage />} />
+       
 
           {/* Protected Routes */}
+             <Route
+              path="/dashboard/course/:courseCode"
+          element={
+            <ProtectedRoute>
+          <CourseHubPage />
+        </ProtectedRoute>
+  }
+/>
           <Route
             path="/dashboard"
             element={
