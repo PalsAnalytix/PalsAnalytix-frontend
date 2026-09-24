@@ -28,6 +28,29 @@ import Footer from "../components/common/Footer";
 import { ProgressChart } from "../components/user/ProgressCard";
 import { useNavigate } from "react-router-dom";
 
+const COURSE_LABELS = {
+  CFA: "CFA",
+  FRM: "FRM",
+  SCR: "SCR",
+  EXCEL: "Excel",
+  ADVANCED_EXCEL: "Advanced Excel",
+  EXCEL_FOR_FINANCE: "Excel for Finance",
+};
+
+const getActivePurchasedCourses = (user) => {
+  if (!user?.coursePremium) return [];
+  const now = new Date();
+  const seen = new Set();
+  const active = [];
+  user.coursePremium.forEach((entry) => {
+    if (entry.status === "ACTIVE" && new Date(entry.expiryDate) > now && !seen.has(entry.course)) {
+      seen.add(entry.course);
+      active.push({ code: entry.course, label: COURSE_LABELS[entry.course] || entry.course });
+    }
+  });
+  return active;
+};
+
 // Enhanced StatCard with animation and improved visuals
 const StatCard = ({ title, value, icon: Icon, color, change }) => {
   const isPositive = change > 0;
@@ -269,8 +292,10 @@ const UserDashboard = () => {
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const profile = user;
-  const isPremium = profile?.currentSubscriptionPlan !== "FREE";
+    const isPremium = profile?.currentSubscriptionPlan !== "FREE";
   const loading = useSelector((state) => state.auth.loading);
+  const navigate2 = useNavigate();
+  const purchasedCourses = profile ? getActivePurchasedCourses(profile) : [];
 
   useEffect(() => {
     if (isAuthenticated && !user) {
@@ -323,16 +348,40 @@ const UserDashboard = () => {
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setIsWhatsAppModalOpen(true)}
-                className="w-full sm:w-auto px-3 py-1.5 bg-green-600 text-white text-xs sm:text-sm rounded-[3px] hover:bg-green-700 transition-colors flex items-center justify-center"
-              >
-                <Bell className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
-                Update Questions Preferences
-              </button>
+                            {/*
+                "Update Questions Preferences" button — removed from here for now,
+                kept for reuse elsewhere later. The WhatsAppModal it opens is still
+                wired up below (isWhatsAppModalOpen state + <WhatsAppModal />), just
+                nothing currently triggers it.
+
+                <button
+                  onClick={() => setIsWhatsAppModalOpen(true)}
+                  className="w-full sm:w-auto px-3 py-1.5 bg-green-600 text-white text-xs sm:text-sm rounded-[3px] hover:bg-green-700 transition-colors flex items-center justify-center"
+                >
+                  <Bell className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
+                  Update Questions Preferences
+                </button>
+              */}
             </div>
           </div>
         </div>
+
+                  {purchasedCourses.length > 0 && (
+            <div className="bg-white rounded-lg border border-sand-200 p-4 mb-4">
+              <p className="text-sm font-semibold text-sand-700 mb-3">Your Courses</p>
+              <div className="flex flex-wrap gap-3">
+                {purchasedCourses.map((course) => (
+                  <button
+                    key={course.code}
+                    onClick={() => navigate2(`/dashboard/course/${course.code}`)}
+                    className="px-5 py-2.5 bg-brand-gradient text-charcoal font-semibold rounded-[3px] hover:opacity-90 transition"
+                  >
+                    {course.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
         {/* Main content area with requested layout */}
         <div className="space-y-6">
