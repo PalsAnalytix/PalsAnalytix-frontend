@@ -383,25 +383,6 @@ const UserDashboard = () => {
             </div>
           )}
         </div>
-
-        {/* Main content area with requested layout */}
-                  {purchasedCourses.length > 0 && (
-            <div className="bg-white rounded-lg border border-sand-200 p-4 mb-4">
-              <p className="text-sm font-semibold text-sand-700 mb-3">Your Courses</p>
-              <div className="flex flex-wrap gap-3">
-                {purchasedCourses.map((course) => (
-                  <button
-                    key={course.code}
-                    onClick={() => navigate2(`/dashboard/course/${course.code}`)}
-                    className="px-5 py-2.5 bg-brand-gradient text-charcoal font-semibold rounded-[3px] hover:opacity-90 transition"
-                  >
-                    {course.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
         {/* Main content area with requested layout */}
         <div className="space-y-6">
           {/* Subscription and Progress side by side */}
