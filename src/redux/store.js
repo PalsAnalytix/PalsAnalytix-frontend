@@ -6,6 +6,7 @@ import authReducer from "./slices/authSlice";
 import assignmentReducer from "./slices/assignmentSlice";
 import paymentReducer from "./slices/paymentSlice"
 import mbaAuthReducer from "./slices/mbaAuthSlice";
+import whatsappQuizReducer from "./slices/whatsappQuizSlice";
 export const store = configureStore({
   reducer: {
     questions : questionReducer,
@@ -15,6 +16,7 @@ export const store = configureStore({
     payment : paymentReducer,
     mbaAuth: mbaAuthReducer,
     assignment: assignmentReducer,
+    whatsappQuiz: whatsappQuizReducer,
   },
   
 })
