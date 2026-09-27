@@ -31,6 +31,7 @@ import CustomAssignmentSetup from "./pages/CustomAssignmentSetup";
 import AssignmentTestPage from "./pages/AssignmentTestPage";
 import AssignmentResultsPage from "./pages/AssignmentResultsPage";
 import AssignmentHistoryPage from "./pages/AssignmentHistoryPage";
+import WhatsAppQuizSetup from "./pages/WhatsAppQuizSetup";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -120,6 +121,14 @@ function App() {
               </MbaProtectedRoute>
             }
           />
+          <Route
+  path="/dashboard/course/:courseCode/whatsapp-quiz"
+  element={
+    <ProtectedRoute>
+      <WhatsAppQuizSetup />
+    </ProtectedRoute>
+  }
+/>
           {/* Admin Route */}
           <Route
             path="/admin"
