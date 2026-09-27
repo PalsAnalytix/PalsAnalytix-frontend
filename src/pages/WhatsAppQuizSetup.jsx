@@ -118,17 +118,17 @@ const WhatsAppQuizSetup = () => {
             </p>
           </div>
           <button
-            onClick={() => setActive((a) => !a)}
-            className={`w-14 h-8 rounded-full transition-colors relative flex-shrink-0 ${
-              active ? "bg-accent-orange" : "bg-sand-300"
-            }`}
-          >
-            <span
-              className={`absolute top-1 w-6 h-6 rounded-full bg-white transition-transform ${
-                active ? "translate-x-7" : "translate-x-1"
-              }`}
-            />
-          </button>
+  onClick={() => setActive((a) => !a)}
+  className={`w-14 h-8 rounded-full transition-colors relative flex-shrink-0 ${
+    active ? "bg-accent-orange" : "bg-sand-300"
+  }`}
+>
+  <span
+    className={`absolute top-1 left-1 w-6 h-6 rounded-full bg-white transition-transform duration-200 ${
+      active ? "translate-x-6" : "translate-x-0"
+    }`}
+  />
+</button>
         </div>
 
         {/* Chapters */}
